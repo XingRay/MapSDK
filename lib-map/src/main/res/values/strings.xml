@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">lib-map</string>
+    <string name="wufahuoqushuju">无法获取数据</string>
+    <string name="dingweishibai">定位失败</string>
+</resources>
