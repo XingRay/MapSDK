@@ -25,6 +25,10 @@ import com.ray.lib_map.extern.MapType;
 import com.ray.mapsdk.R;
 import com.ray.mapsdk.base.OnItemClickListener;
 import com.ray.mapsdk.helper.ThreadPools;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
+import com.yanzhenjie.permission.Rationale;
+import com.yanzhenjie.permission.RationaleListener;
 
 import java.util.List;
 
@@ -87,7 +91,7 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
-        mvMap.inflate(MapType.GAODE);
+        mvMap.createMap(MapType.GAODE);
         mvMap.onCreate(null);
         mvMap.setMapLoadListener(new MapViewInterface.MapLoadListener() {
             @Override
@@ -98,7 +102,17 @@ public class MapActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-
+        AndPermission
+                .with(mActivity)
+                .requestCode(200)
+                .permission(Permission.LOCATION)
+                .rationale(new RationaleListener() {
+                    @Override
+                    public void showRequestPermissionRationale(int requestCode, Rationale rationale) {
+                        AndPermission.rationaleDialog(mActivity, rationale).show();
+                    }
+                })
+                .start();
     }
 
     @OnClick({R.id.bt_gaode_map, R.id.bt_baidu_map, R.id.bt_google_map})

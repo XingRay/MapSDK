@@ -1,12 +1,14 @@
-package com.ray.lib_map.impl.baidu;
+package com.ray.lib_map.impl.google;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
-import com.baidu.mapapi.SDKInitializer;
-import com.baidu.mapapi.map.MapView;
-import com.ray.lib_map.MapHolder;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.ray.lib_map.MapDelegate;
 import com.ray.lib_map.MapViewInterface;
 import com.ray.lib_map.MarkerInflater;
 import com.ray.lib_map.entity.Circle;
@@ -16,7 +18,6 @@ import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -28,31 +29,28 @@ import java.util.List;
  * Description : xxx
  */
 
-public class BaiduMapHolder implements MapHolder {
+public class GoogleMapDelegate implements MapDelegate {
+
+    private static final String MAP_VIEW_BUNDLE_KEY = "google_map_view_bundle_key";
 
     private final Context mContext;
-    private WeakReference<View> mapViewReference;
-    private static boolean hasInited;
+    private final MapView mMapView;
+    private MapViewInterface.MapLoadListener mMapLoadListener;
+    private static boolean sHasInited;
 
-    public BaiduMapHolder(Context context) {
-        if (!hasInited) {
-            SDKInitializer.initialize(context.getApplicationContext());
-            hasInited = true;
+    public GoogleMapDelegate(Context context) {
+        if (!sHasInited) {
+            MapsInitializer.initialize(context);
         }
+        sHasInited = true;
 
         mContext = context;
-    }
-
-    @Override
-    public View inflateMapView() {
-        MapView mapView = new MapView(mContext);
-        mapViewReference = new WeakReference<View>(mapView);
-        return mapView;
+        mMapView = new MapView(mContext);
     }
 
     @Override
     public View getMapView() {
-        return mapViewReference.get();
+        return mMapView;
     }
 
     @Override
@@ -62,32 +60,50 @@ public class BaiduMapHolder implements MapHolder {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
+        mMapView.onCreate(mapViewBundle);
 
+        mMapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                if (mMapLoadListener != null) {
+                    mMapLoadListener.onMapLoaded();
+                }
+            }
+        });
     }
 
     @Override
     public void onResume() {
-
+        mMapView.onResume();
     }
 
     @Override
     public void onPause() {
-
+        mMapView.onPause();
     }
 
     @Override
     public void onDestroy() {
-
+        mMapView.onPause();
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-
+        Bundle mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            savedInstanceState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+        mMapView.onSaveInstanceState(mapViewBundle);
     }
 
     @Override
     public void setMapLoadListener(MapViewInterface.MapLoadListener listener) {
-
+        mMapLoadListener = listener;
     }
 
     @Override
@@ -206,11 +222,6 @@ public class BaiduMapHolder implements MapHolder {
     }
 
     @Override
-    public void addOverlays(List<MapOverlay> overlays) {
-
-    }
-
-    @Override
     public void removeOverlay(MapOverlay overlay) {
 
     }
@@ -271,11 +282,6 @@ public class BaiduMapHolder implements MapHolder {
     }
 
     @Override
-    public void addPolylines(MapLine... mapLines) {
-
-    }
-
-    @Override
     public void removePolyline(MapLine p) {
 
     }
@@ -292,11 +298,6 @@ public class BaiduMapHolder implements MapHolder {
 
     @Override
     public void removeMarker(MapMarker mapMarker) {
-
-    }
-
-    @Override
-    public void addMarkers(List<MapMarker> mapMarkers) {
 
     }
 }

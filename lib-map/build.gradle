@@ -30,4 +30,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile files('lib/AMap3DMap_5.3.0_AMapNavi_5.3.0_AMapSearch_5.3.1_AMapLocation_3.6.0_20170918.jar')
     compile files('lib/BaiduLBS_Android.jar')
+    compile 'com.google.android.gms:play-services-maps:11.0.4'
 }

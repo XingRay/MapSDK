@@ -1,10 +1,12 @@
-package com.ray.lib_map.impl.google;
+package com.ray.lib_map.impl.baidu;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
-import com.ray.lib_map.MapHolder;
+import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.map.MapView;
+import com.ray.lib_map.MapDelegate;
 import com.ray.lib_map.MapViewInterface;
 import com.ray.lib_map.MarkerInflater;
 import com.ray.lib_map.entity.Circle;
@@ -25,22 +27,26 @@ import java.util.List;
  * Description : xxx
  */
 
-public class GoogleMapHolder implements MapHolder {
+public class BaiduMapDelegate implements MapDelegate {
+    private static final String MAP_VIEW_BUNDLE_KEY = "baidu_map_view_bundle_key";
 
     private final Context mContext;
+    private static boolean sHasInited;
+    private MapView mMapView;
 
-    public GoogleMapHolder(Context context) {
+    public BaiduMapDelegate(Context context) {
+        if (!sHasInited) {
+            SDKInitializer.initialize(context.getApplicationContext());
+            sHasInited = true;
+        }
+
         mContext = context;
-    }
-
-    @Override
-    public View inflateMapView() {
-        return null;
+        mMapView = new MapView(mContext);
     }
 
     @Override
     public View getMapView() {
-        return null;
+        return mMapView;
     }
 
     @Override
@@ -50,27 +56,36 @@ public class GoogleMapHolder implements MapHolder {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
+        mMapView.onCreate(mContext, mapViewBundle);
     }
 
     @Override
     public void onResume() {
-
+        mMapView.onResume();
     }
 
     @Override
     public void onPause() {
-
+        mMapView.onPause();
     }
 
     @Override
     public void onDestroy() {
-
+        mMapView.onDestroy();
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-
+        Bundle mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            savedInstanceState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+        mMapView.onSaveInstanceState(mapViewBundle);
     }
 
     @Override
@@ -194,11 +209,6 @@ public class GoogleMapHolder implements MapHolder {
     }
 
     @Override
-    public void addOverlays(List<MapOverlay> overlays) {
-
-    }
-
-    @Override
     public void removeOverlay(MapOverlay overlay) {
 
     }
@@ -259,11 +269,6 @@ public class GoogleMapHolder implements MapHolder {
     }
 
     @Override
-    public void addPolylines(MapLine... mapLines) {
-
-    }
-
-    @Override
     public void removePolyline(MapLine p) {
 
     }
@@ -280,11 +285,6 @@ public class GoogleMapHolder implements MapHolder {
 
     @Override
     public void removeMarker(MapMarker mapMarker) {
-
-    }
-
-    @Override
-    public void addMarkers(List<MapMarker> mapMarkers) {
 
     }
 }

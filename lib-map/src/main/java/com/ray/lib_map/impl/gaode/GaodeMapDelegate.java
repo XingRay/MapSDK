@@ -2,11 +2,9 @@ package com.ray.lib_map.impl.gaode;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.amap.api.maps.AMap;
-import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
@@ -14,8 +12,7 @@ import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
-import com.amap.api.maps.model.Polyline;
-import com.ray.lib_map.MapHolder;
+import com.ray.lib_map.MapDelegate;
 import com.ray.lib_map.MapViewInterface;
 import com.ray.lib_map.MarkerInflater;
 import com.ray.lib_map.entity.Circle;
@@ -25,9 +22,6 @@ import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
 
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,82 +33,65 @@ import java.util.List;
  * Description : xxx
  */
 
-public class GaodeMapHolder implements MapHolder {
-    private Reference<MapView> mapViewReference;
-    private List<Marker> mMarkers;
-    private List<Polyline> mPolylines;
+public class GaodeMapDelegate implements MapDelegate {
+    private static final String MAP_VIEW_BUNDLE_KEY = "gaode_map_view_bundle_key";
+
     private MapViewInterface.AnimationListener mAnimationListener;
     private MapViewInterface.MapScreenCaptureListener mMapScreenCaptureListener;
     private final Context mContext;
-    private final AMapOptions mOptions;
+    private MapView mMapView;
+    private boolean mIsCreated;
 
-    public GaodeMapHolder(Context context) {
+    public GaodeMapDelegate(Context context) {
         mContext = context;
-        mOptions = new AMapOptions();
-        mOptions.zoomControlsEnabled(false);
-        mMarkers = new ArrayList<>();
-        mPolylines = new ArrayList<>();
+        mMapView = new MapView(mContext);
+    }
+
+    private AMap getAMap() {
+        return mMapView.getMap();
     }
 
     @Override
     public View getMapView() {
-        if (mapViewReference == null) {
-            throw new IllegalStateException("must invoke inflateMapView() first");
-        }
-        return mapViewReference.get();
-    }
-
-    @Nullable
-    @Override
-    public View inflateMapView() {
-        MapView mapView = new MapView(mContext, mOptions);
-        mapViewReference = new WeakReference<>(mapView);
-        return mapView;
+        return mMapView;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        MapView mapView = mapViewReference.get();
-        if (mapView != null) {
-            mapView.onCreate(savedInstanceState);
+//        if (mIsCreated) {
+//            return;
+//        }
+//        mIsCreated = true;
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
         }
+        mMapView.onCreate(mapViewBundle);
     }
 
     @Override
     public void onResume() {
-        MapView mapView = mapViewReference.get();
-        if (mapView != null) {
-            mapView.onResume();
-        }
+        mMapView.onResume();
     }
 
     @Override
     public void onPause() {
-        MapView mapView = mapViewReference.get();
-        if (mapView != null) {
-            mapView.onPause();
-        }
+        mMapView.onPause();
     }
 
     @Override
     public void onDestroy() {
-        MapView mapView = mapViewReference.get();
-        if (mapView != null) {
-            mapView.onDestroy();
-        }
+        mMapView.onDestroy();
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        MapView mapView = mapViewReference.get();
-        if (mapView != null) {
-            mapView.onSaveInstanceState(savedInstanceState);
+        Bundle mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            savedInstanceState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
         }
-    }
-
-    private AMap getAMap() {
-        final MapView mapView = mapViewReference.get();
-        return mapView == null ? null : mapView.getMap();
+        mMapView.onSaveInstanceState(mapViewBundle);
     }
 
     @Override
@@ -171,10 +148,7 @@ public class GaodeMapHolder implements MapHolder {
         aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if (listener != null) {
-                    return listener.onMarkClick(marker, getMapPoint(marker));
-                }
-                return false;
+                return listener != null && listener.onMarkClick(marker, getMapPoint(marker));
             }
         });
     }
@@ -368,11 +342,6 @@ public class GaodeMapHolder implements MapHolder {
     }
 
     @Override
-    public void addOverlays(List<MapOverlay> overlays) {
-
-    }
-
-    @Override
     public void removeOverlay(MapOverlay overlay) {
 
     }
@@ -455,11 +424,6 @@ public class GaodeMapHolder implements MapHolder {
     }
 
     @Override
-    public void addPolylines(MapLine... polylines) {
-
-    }
-
-    @Override
     public void removePolyline(MapLine p) {
 
     }
@@ -471,11 +435,6 @@ public class GaodeMapHolder implements MapHolder {
 
     @Override
     public void removeCircle(Circle circle) {
-
-    }
-
-    @Override
-    public void addMarkers(List<MapMarker> mapMarkers) {
 
     }
 }

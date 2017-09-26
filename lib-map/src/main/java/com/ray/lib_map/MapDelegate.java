@@ -21,9 +21,7 @@ import java.util.List;
  * Description : xxx
  */
 
-public interface MapHolder {
-
-    View inflateMapView();
+public interface MapDelegate {
 
     View getMapView();
 
@@ -87,14 +85,21 @@ public interface MapHolder {
 
     float getMinZoomLevel();
 
+    // ========== marker ========== //
 
-    // ========== marker and overlay ========= //
+    void addMarker(MapMarker mapMarker);
+
+    void removeMarker(MapMarker mapMarker);
+
+    void clearMarker();
+
+    void setMarkerVisible(MapMarker mapMarker, boolean visible);
+
+    // ========== overlay ========= //
 
     void setMarkerInflater(MarkerInflater inflater);
 
     void addOverlay(MapOverlay overlay);
-
-    void addOverlays(List<MapOverlay> overlays);
 
     void removeOverlay(MapOverlay overlay);
 
@@ -108,30 +113,18 @@ public interface MapHolder {
 
     List<MapOverlay> getOverlays();
 
-    // ========== marker ========== //
-
-    void addMarker(MapMarker mapMarker);
-
-    void clearMarker();
-
-    void setMarkerVisible(MapMarker mapMarker, boolean visible);
-
-    // ========== polygon and polyline ========== //
-    Polygon addPolygon(Polygon polygon);
-
-    void removePolygon(Polygon p);
-
+    // == polyline == //
     void addPolyline(MapLine mapLine);
-
-    void addPolylines(MapLine... mapLines);
 
     void removePolyline(MapLine p);
 
+    // == circle == //
     void addCircle(Circle circle);
 
     void removeCircle(Circle circle);
 
-    void removeMarker(MapMarker mapMarker);
+    // ========== polygon ========== //
+    Polygon addPolygon(Polygon polygon);
 
-    void addMarkers(List<MapMarker> mapMarkers);
+    void removePolygon(Polygon p);
 }

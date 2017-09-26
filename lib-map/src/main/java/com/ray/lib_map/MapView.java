@@ -34,11 +34,11 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public class MapView extends View {
-    private Map<MapType, MapHolder> mHolders;
+    private Map<MapType, MapDelegate> mMapDelegates;
     private View mCurrentMapView;
     private MapType mMapType;
     private Context mContext;
-    private MapHolder mHolder;
+    private MapDelegate mMapDelegate;
 
     public MapView(@NonNull Context context) {
         this(context, null);
@@ -51,7 +51,7 @@ public class MapView extends View {
     public MapView(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        mHolders = new HashMap<>();
+        mMapDelegates = new HashMap<>();
 
         setVisibility(GONE);
         setWillNotDraw(true);
@@ -59,19 +59,19 @@ public class MapView extends View {
     }
 
     public void onCreate(Bundle savedInstanceState) {
-        mHolder.onCreate(savedInstanceState);
+        mMapDelegate.onCreate(savedInstanceState);
     }
 
     public void onResume() {
-        mHolder.onResume();
+        mMapDelegate.onResume();
     }
 
     public void onPause() {
-        mHolder.onPause();
+        mMapDelegate.onPause();
     }
 
     public void onDestroy() {
-        mHolder.onDestroy();
+        mMapDelegate.onDestroy();
     }
 
     @Override
@@ -86,7 +86,7 @@ public class MapView extends View {
 
     @Nullable
     public View getMapView() {
-        return mHolder == null ? null : mHolder.getMapView();
+        return mMapDelegate == null ? null : mMapDelegate.getMapView();
     }
 
     @Override
@@ -99,10 +99,15 @@ public class MapView extends View {
         }
     }
 
-    public void inflate(MapType mapType) {
+    public void createMap(MapType mapType) {
+        mMapDelegate = inflate(mapType);
+        mCurrentMapView = mMapDelegate.getMapView();
+    }
+
+    private MapDelegate inflate(MapType mapType) {
         mMapType = mapType;
-        mHolder = getMapHolder();
-        View mapView = mHolder.inflateMapView();
+        MapDelegate mapDelegate = getMapDelegate(mMapType);
+        View mapView = mapDelegate.getMapView();
 
         final ViewParent viewParent = mCurrentMapView.getParent();
         if (viewParent == null || !(viewParent instanceof ViewGroup)) {
@@ -124,7 +129,7 @@ public class MapView extends View {
         } else {
             parent.addView(mapView, index, layoutParams);
         }
-        mCurrentMapView = mapView;
+        return mapDelegate;
     }
 
     public void switchMapType(MapType mapType) {
@@ -136,201 +141,223 @@ public class MapView extends View {
             return;
         }
 
-        inflate(mapType);
-        mHolder.onCreate(savedInstanceState);
+        // == 地图切换 注意：不同的地图类型切换时执行的生命周期方法不一样
+        // 旧地图切换出界面
+        mMapType.onSwitchOut(mMapDelegate);
+
+        mMapDelegate = inflate(mapType);
+        mCurrentMapView = mMapDelegate.getMapView();
+
+        //新地图控件切换进界面
+        mMapType.onSwitchIn(mMapDelegate, savedInstanceState);
     }
 
-    private MapHolder getMapHolder() {
-        MapHolder holder = mHolders.get(mMapType);
-        if (holder == null) {
-            holder = mMapType.createMapHolder(mContext);
-            mHolders.put(mMapType, holder);
+    private MapDelegate getMapDelegate(MapType mapType) {
+        MapDelegate mapDelegate = mMapDelegates.get(mapType);
+        if (mapDelegate == null) {
+            mapDelegate = mapType.createMapDelegate(mContext);
+            mMapDelegates.put(mapType, mapDelegate);
         }
-        return holder;
+        return mapDelegate;
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        mHolder.onSaveInstanceState(savedInstanceState);
+        mMapDelegate.onSaveInstanceState(savedInstanceState);
     }
 
     public void setMapLoadListener(MapViewInterface.MapLoadListener listener) {
-        mHolder.setMapLoadListener(listener);
+        mMapDelegate.setMapLoadListener(listener);
     }
 
     public void setCameraMoveListener(MapViewInterface.CameraMoveListener listener) {
-        mHolder.setCameraMoveListener(listener);
+        mMapDelegate.setCameraMoveListener(listener);
     }
 
     public void setAnimationListener(MapViewInterface.AnimationListener listener) {
-        mHolder.setAnimationListener(listener);
+        mMapDelegate.setAnimationListener(listener);
     }
 
     public void setMarkerClickListener(MapViewInterface.MarkerClickListener listener) {
-        mHolder.setMarkerClickListener(listener);
+        mMapDelegate.setMarkerClickListener(listener);
     }
 
     public void setInfoWindowClickListenr(MapViewInterface.InfoWindowClickListener listener) {
-        mHolder.setInfoWindowClickListener(listener);
+        mMapDelegate.setInfoWindowClickListener(listener);
     }
 
     public void setMapScreenCaptureListener(MapViewInterface.MapScreenCaptureListener listener) {
-        mHolder.setMapScreenCaptureListener(listener);
+        mMapDelegate.setMapScreenCaptureListener(listener);
     }
 
 
     public void clearMap() {
-        mHolder.clearMap();
+        mMapDelegate.clearMap();
     }
 
     public void setInfoWindowClickListener(MapViewInterface.InfoWindowClickListener listener) {
-        mHolder.setInfoWindowClickListener(listener);
+        mMapDelegate.setInfoWindowClickListener(listener);
     }
 
     public void screenShotAndSave(String saveFilePath) {
-        mHolder.screenShotAndSave(saveFilePath);
+        mMapDelegate.screenShotAndSave(saveFilePath);
     }
 
     public void setZoomControlsEnabled(boolean enabled) {
-        mHolder.setZoomControlsEnabled(enabled);
+        mMapDelegate.setZoomControlsEnabled(enabled);
     }
 
     public void zoomTo(float zoom) {
-        mHolder.zoomTo(zoom);
+        mMapDelegate.zoomTo(zoom);
     }
 
     public void zoomOut() {
-        mHolder.zoomOut();
+        mMapDelegate.zoomOut();
     }
 
     public void zoomIn() {
-        mHolder.zoomIn();
+        mMapDelegate.zoomIn();
     }
 
     public void animateTo(MapPoint mapPoint, MapViewInterface.AnimationListener listener) {
-        mHolder.animateTo(mapPoint, listener);
+        mMapDelegate.animateTo(mapPoint, listener);
     }
 
     public void moveTo(MapPoint point, boolean isSmooth, float zoom) {
-        mHolder.moveTo(point, isSmooth, zoom);
+        mMapDelegate.moveTo(point, isSmooth, zoom);
     }
 
     public void moveByBounds(List<MapPoint> points, int padding) {
-        mHolder.moveByBounds(points, padding);
+        mMapDelegate.moveByBounds(points, padding);
     }
 
     public void moveByPolygon(Polygon polygon, int padding) {
-        mHolder.moveByPolygon(polygon, padding);
+        mMapDelegate.moveByPolygon(polygon, padding);
     }
 
     public void moveByCircle(Circle circle, int padding) {
-        mHolder.moveByCircle(circle, padding);
+        mMapDelegate.moveByCircle(circle, padding);
     }
 
     public void setGestureEnable(boolean enable) {
-        mHolder.setGestureEnable(enable);
+        mMapDelegate.setGestureEnable(enable);
     }
 
     public void setZoomGestureEnable(boolean enable) {
-        mHolder.setZoomGestureEnable(enable);
+        mMapDelegate.setZoomGestureEnable(enable);
     }
 
     public MapPoint getCameraPosition() {
-        return mHolder.getCameraPosition();
+        return mMapDelegate.getCameraPosition();
     }
 
     public float getCurrentZoom() {
-        return mHolder.getCurrentZoom();
+        return mMapDelegate.getCurrentZoom();
     }
 
     public float getMaxZoomLevel() {
-        return mHolder.getMaxZoomLevel();
+        return mMapDelegate.getMaxZoomLevel();
     }
 
     public float getMinZoomLevel() {
-        return mHolder.getMinZoomLevel();
+        return mMapDelegate.getMinZoomLevel();
     }
 
     public void setMarkerInflater(MarkerInflater inflater) {
-        mHolder.setMarkerInflater(inflater);
+        mMapDelegate.setMarkerInflater(inflater);
     }
 
     public void addOverlay(MapOverlay overlay) {
-        mHolder.addOverlay(overlay);
+        mMapDelegate.addOverlay(overlay);
     }
 
     public void addOverlays(List<MapOverlay> overlays) {
-        mHolder.addOverlays(overlays);
+        if (overlays == null) {
+            return;
+        }
+        for (MapOverlay overlay : overlays) {
+            mMapDelegate.addOverlay(overlay);
+        }
     }
 
     public void removeOverlay(MapOverlay overlay) {
-        mHolder.removeOverlay(overlay);
+        mMapDelegate.removeOverlay(overlay);
     }
 
     public void clearOverlay() {
-        mHolder.clearOverlay();
+        mMapDelegate.clearOverlay();
     }
 
     public void moveOverlay(MapOverlay overlay, MapPoint toPoint) {
-        mHolder.moveOverlay(overlay, toPoint);
+        mMapDelegate.moveOverlay(overlay, toPoint);
     }
 
     public void updateOverlay(MapOverlay overlay, float xOffset, float yOffset) {
-        mHolder.updateOverlay(overlay, xOffset, yOffset);
+        mMapDelegate.updateOverlay(overlay, xOffset, yOffset);
     }
 
     public MapOverlay getOverlay(MapPoint mapPoint) {
-        return mHolder.getOverlay(mapPoint);
+        return mMapDelegate.getOverlay(mapPoint);
     }
 
     public List<MapOverlay> getOverlays() {
-        return mHolder.getOverlays();
+        return mMapDelegate.getOverlays();
     }
 
     public void clearMarker() {
-        mHolder.clearMarker();
+        mMapDelegate.clearMarker();
     }
 
     public void setMarkerVisible(MapMarker mapMarker, boolean visible) {
-        mHolder.setMarkerVisible(mapMarker, visible);
+        mMapDelegate.setMarkerVisible(mapMarker, visible);
     }
 
     public void addPolygon(Polygon polygon) {
-        mHolder.addPolygon(polygon);
+        mMapDelegate.addPolygon(polygon);
     }
 
     public void removePolygon(Polygon polygon) {
-        mHolder.removePolygon(polygon);
+        mMapDelegate.removePolygon(polygon);
     }
 
     public void addPolyline(MapLine mapLine) {
-        mHolder.addPolyline(mapLine);
+        mMapDelegate.addPolyline(mapLine);
     }
 
-    public void addPolylines(MapLine... mapLines) {
-        mHolder.addPolylines(mapLines);
+    public void addPolylines(List<MapLine> mapLines) {
+        if (mapLines == null) {
+            return;
+        }
+        for (MapLine mapLine : mapLines) {
+            mMapDelegate.addPolyline(mapLine);
+        }
     }
 
     public void removePolyline(MapLine mapLine) {
-        mHolder.removePolyline(mapLine);
+        mMapDelegate.removePolyline(mapLine);
     }
 
     public void addCircle(Circle circle) {
-        mHolder.addCircle(circle);
+        mMapDelegate.addCircle(circle);
     }
 
     public void removeCircle(Circle circle) {
-        mHolder.removeCircle(circle);
+        mMapDelegate.removeCircle(circle);
     }
 
     public void addMarker(MapMarker mapMarker) {
-        mHolder.addMarker(mapMarker);
+        mMapDelegate.addMarker(mapMarker);
     }
 
     public void addMarkers(List<MapMarker> mapMarkers) {
-        mHolder.addMarkers(mapMarkers);
+        if (mapMarkers == null) {
+            return;
+        }
+        for (MapMarker mapMarker : mapMarkers) {
+            mMapDelegate.addMarker(mapMarker);
+        }
     }
 
     public void removeMarker(MapMarker mapMarker) {
-        mHolder.removeMarker(mapMarker);
+        mMapDelegate.removeMarker(mapMarker);
     }
 }
