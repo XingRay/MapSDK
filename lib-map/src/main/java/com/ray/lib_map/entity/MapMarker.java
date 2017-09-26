@@ -1,5 +1,7 @@
 package com.ray.lib_map.entity;
 
+import android.graphics.Bitmap;
+
 /**
  * Author      : leixing
  * Date        : 2017-07-13
@@ -21,11 +23,34 @@ public class MapMarker {
      */
     private double longitude;
 
-    private Anchor anchor;
-    private int iconResId;
+    /**
+     * 锚点X坐标
+     */
+    private float anchorX;
+
+    /**
+     * 锚点Y坐标
+     */
+    private float anchorY;
+
+    /**
+     * 图标
+     */
+    private Bitmap icon;
+
+    /**
+     * 标题
+     */
     private String title;
+
+    /**
+     * 副标题
+     */
     private String subTitle;
 
+    /**
+     * sdk中的标记对象
+     */
     private Object rawMarker;
 
     public double getLatitude() {
@@ -44,24 +69,28 @@ public class MapMarker {
         this.longitude = longitude;
     }
 
-    public Anchor getAnchor() {
-        return anchor;
+    public float getAnchorX() {
+        return anchorX;
     }
 
-    public void setAnchor(Anchor anchor) {
-        this.anchor = anchor;
+    public void setAnchorX(float anchorX) {
+        this.anchorX = anchorX;
     }
 
-    public void setAnchor(float x, float y) {
-        this.anchor = new Anchor(x, y);
+    public float getAnchorY() {
+        return anchorY;
     }
 
-    public int getIconResId() {
-        return iconResId;
+    public void setAnchorY(float anchorY) {
+        this.anchorY = anchorY;
     }
 
-    public void setIconResId(int iconResId) {
-        this.iconResId = iconResId;
+    public Bitmap getIcon() {
+        return icon;
+    }
+
+    public void setIcon(Bitmap icon) {
+        this.icon = icon;
     }
 
     public String getTitle() {
@@ -90,11 +119,12 @@ public class MapMarker {
 
     @Override
     public String toString() {
-        return "Marker{" +
+        return "MapMarker{" +
                 "latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", anchor=" + anchor +
-                ", iconResId=" + iconResId +
+                ", anchorX=" + anchorX +
+                ", anchorY=" + anchorY +
+                ", icon=" + icon +
                 ", title='" + title + '\'' +
                 ", subTitle='" + subTitle + '\'' +
                 ", rawMarker=" + rawMarker +

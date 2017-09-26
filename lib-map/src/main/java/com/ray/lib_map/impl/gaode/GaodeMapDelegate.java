@@ -35,12 +35,10 @@ import java.util.List;
 
 public class GaodeMapDelegate implements MapDelegate {
     private static final String MAP_VIEW_BUNDLE_KEY = "gaode_map_view_bundle_key";
-
+    private final Context mContext;
     private MapViewInterface.AnimationListener mAnimationListener;
     private MapViewInterface.MapScreenCaptureListener mMapScreenCaptureListener;
-    private final Context mContext;
     private MapView mMapView;
-    private boolean mIsCreated;
 
     public GaodeMapDelegate(Context context) {
         mContext = context;
@@ -58,10 +56,6 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-//        if (mIsCreated) {
-//            return;
-//        }
-//        mIsCreated = true;
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
@@ -376,8 +370,8 @@ public class GaodeMapDelegate implements MapDelegate {
         AMap aMap = getAMap();
         if (aMap != null) {
             Marker addMarker = aMap.addMarker(new MarkerOptions()
-                    .anchor(marker.getAnchor().getX(), marker.getAnchor().getY())
-                    .icon(BitmapDescriptorFactory.fromResource(marker.getIconResId()))
+                    .anchor(marker.getAnchorX(), marker.getAnchorY())
+                    .icon(BitmapDescriptorFactory.fromBitmap(marker.getIcon()))
                     .title(marker.getTitle())
                     .snippet(marker.getSubTitle())
                     .position(new LatLng(marker.getLatitude(), marker.getLongitude())));

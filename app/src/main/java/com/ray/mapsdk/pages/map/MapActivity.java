@@ -145,7 +145,7 @@ public class MapActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 MapPoint mapPoint = address.getMapPoint();
-                                mvMap.addMarker(MapHelper.buildLocationMarker(address, R.mipmap.icon_location));
+                                mvMap.addMarker(MapHelper.buildLocationMarker(address, mContext, R.mipmap.icon_location));
                                 mvMap.animateTo(mapPoint, null);
                                 queryPoi(mapPoint);
                             }

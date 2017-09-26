@@ -1,9 +1,11 @@
 package com.ray.lib_map.extern;
 
+import android.content.Context;
+
 import com.ray.lib_map.entity.Address;
-import com.ray.lib_map.entity.Anchor;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.Poi;
+import com.ray.lib_map.util.BitmapUtil;
 
 /**
  * Author      : leixing
@@ -19,10 +21,11 @@ public class MapHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static MapMarker buildLocationMarker(Address address, int resId) {
+    public static MapMarker buildLocationMarker(Address address, Context context, int resId) {
         MapMarker mapMarker = new MapMarker();
-        mapMarker.setAnchor(new Anchor(0.5f, 0.5f));
-        mapMarker.setIconResId(resId);
+        mapMarker.setAnchorX(0.5f);
+        mapMarker.setAnchorY(0.5f);
+        mapMarker.setIcon(BitmapUtil.fromResource(context, resId));
         mapMarker.setTitle(address.getName());
         mapMarker.setSubTitle(address.getFormattedAddress());
         mapMarker.setLatitude(address.getLatitude());
@@ -31,10 +34,11 @@ public class MapHelper {
         return mapMarker;
     }
 
-    public static MapMarker buildLocationMarker(Poi poi, int resId) {
+    public static MapMarker buildLocationMarker(Poi poi, Context context, int resId) {
         MapMarker mapMarker = new MapMarker();
-        mapMarker.setAnchor(new Anchor(0.5f, 0.5f));
-        mapMarker.setIconResId(resId);
+        mapMarker.setAnchorX(0.5f);
+        mapMarker.setAnchorY(0.5f);
+        mapMarker.setIcon(BitmapUtil.fromResource(context, resId));
         mapMarker.setTitle(poi.getName());
         mapMarker.setSubTitle(poi.getAddress());
         mapMarker.setLatitude(poi.getLatitude());
