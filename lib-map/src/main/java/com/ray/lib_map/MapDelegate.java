@@ -27,6 +27,10 @@ public interface MapDelegate {
 
     void clearMap();
 
+    void onSwitchOut();
+
+    void onSwitchIn(Bundle savedInstanceState);
+
     // ========== lifecycle ========== //
     void onCreate(Bundle savedInstanceState);
 
@@ -91,14 +95,9 @@ public interface MapDelegate {
 
     void removeMarker(MapMarker mapMarker);
 
-    void clearMarker();
-
     void setMarkerVisible(MapMarker mapMarker, boolean visible);
 
     // ========== overlay ========= //
-
-    void setMarkerInflater(MarkerInflater inflater);
-
     void addOverlay(MapOverlay overlay);
 
     void removeOverlay(MapOverlay overlay);

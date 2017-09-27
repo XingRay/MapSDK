@@ -14,13 +14,13 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.ray.lib_map.MapDelegate;
 import com.ray.lib_map.MapViewInterface;
-import com.ray.lib_map.MarkerInflater;
 import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
+import com.ray.lib_map.extern.MapType;
 
 import java.util.List;
 
@@ -52,6 +52,20 @@ public class GaodeMapDelegate implements MapDelegate {
     @Override
     public View getMapView() {
         return mMapView;
+    }
+
+    @Override
+    public void onSwitchOut() {
+        onPause();
+        onDestroy();
+        mMapView = null;
+    }
+
+    @Override
+    public void onSwitchIn(Bundle savedInstanceState) {
+        mMapView = new MapView(mContext);
+        onCreate(savedInstanceState);
+        onResume();
     }
 
     @Override
@@ -326,11 +340,6 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setMarkerInflater(MarkerInflater inflater) {
-
-    }
-
-    @Override
     public void addOverlay(MapOverlay overlay) {
 
     }
@@ -367,34 +376,20 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void addMarker(MapMarker marker) {
-        AMap aMap = getAMap();
-        if (aMap != null) {
-            Marker addMarker = aMap.addMarker(new MarkerOptions()
-                    .anchor(marker.getAnchorX(), marker.getAnchorY())
-                    .icon(BitmapDescriptorFactory.fromBitmap(marker.getIcon()))
-                    .title(marker.getTitle())
-                    .snippet(marker.getSubTitle())
-                    .position(new LatLng(marker.getLatitude(), marker.getLongitude())));
-            marker.setRawMarker(addMarker);
-        }
+        Marker addMarker = getAMap().addMarker(new MarkerOptions()
+                .anchor(marker.getAnchorX(), marker.getAnchorY())
+                .icon(BitmapDescriptorFactory.fromBitmap(marker.getIcon()))
+                .title(marker.getTitle())
+                .snippet(marker.getSubTitle())
+                .position(new LatLng(marker.getLatitude(), marker.getLongitude())));
+        marker.setRawMarker(MapType.GAODE, addMarker);
     }
 
     @Override
     public void removeMarker(MapMarker marker) {
-        AMap aMap = getAMap();
-        if (aMap != null) {
-            Object raw = marker.getRawMarker();
-            if (raw != null && raw instanceof Marker) {
-                Marker rawMarker = (Marker) raw;
-                rawMarker.remove();
-                marker.setRawMarker(null);
-            }
-        }
-    }
-
-    @Override
-    public void clearMarker() {
-
+        Marker rawMarker = (Marker) marker.getRawMarker(MapType.GAODE);
+        rawMarker.remove();
+        marker.removeRawMarker(MapType.GAODE);
     }
 
     @Override

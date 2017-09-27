@@ -2,6 +2,11 @@ package com.ray.lib_map.entity;
 
 import android.graphics.Bitmap;
 
+import com.ray.lib_map.extern.MapType;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Author      : leixing
  * Date        : 2017-07-13
@@ -51,7 +56,7 @@ public class MapMarker {
     /**
      * sdk中的标记对象
      */
-    private Object rawMarker;
+    private Map<MapType, Object> rawMarkers = new HashMap<>();
 
     public double getLatitude() {
         return latitude;
@@ -109,12 +114,16 @@ public class MapMarker {
         this.subTitle = subTitle;
     }
 
-    public Object getRawMarker() {
-        return rawMarker;
+    public Object getRawMarker(MapType mapType) {
+        return rawMarkers.get(mapType);
     }
 
-    public void setRawMarker(Object rawMarker) {
-        this.rawMarker = rawMarker;
+    public Object setRawMarker(MapType mapType, Object rawMarker) {
+        return rawMarkers.put(mapType, rawMarker);
+    }
+
+    public Object removeRawMarker(MapType mapType) {
+        return rawMarkers.remove(mapType);
     }
 
     @Override
@@ -126,8 +135,7 @@ public class MapMarker {
                 ", anchorY=" + anchorY +
                 ", icon=" + icon +
                 ", title='" + title + '\'' +
-                ", subTitle='" + subTitle + '\'' +
-                ", rawMarker=" + rawMarker +
+                ", rawMarkers=" + rawMarkers +
                 '}';
     }
 }

@@ -8,8 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 
 import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.MapLine;
@@ -17,11 +15,13 @@ import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
+import com.ray.lib_map.extern.MapDelegateFactory;
 import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.util.ViewUtil;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Author      : leixing
@@ -34,11 +34,12 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public class MapView extends View {
-    private Map<MapType, MapDelegate> mMapDelegates;
     private View mCurrentMapView;
     private MapType mMapType;
     private Context mContext;
     private MapDelegate mMapDelegate;
+    private List<MapMarker> mMapMarkers;
+    private MapDelegateFactory mMapDelegateFactory;
 
     public MapView(@NonNull Context context) {
         this(context, null);
@@ -50,12 +51,14 @@ public class MapView extends View {
 
     public MapView(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mCurrentMapView = this;
         mContext = context;
-        mMapDelegates = new HashMap<>();
+        mMapDelegateFactory = new MapDelegateFactory(context);
+        mMapMarkers = new ArrayList<>();
 
         setVisibility(GONE);
         setWillNotDraw(true);
-        mCurrentMapView = this;
+
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -84,52 +87,19 @@ public class MapView extends View {
         //do nothing
     }
 
-    @Nullable
-    public View getMapView() {
-        return mMapDelegate == null ? null : mMapDelegate.getMapView();
-    }
-
     @Override
     public void setVisibility(int visibility) {
-        View mapView = getMapView();
-        if (mapView == null) {
+        if (mCurrentMapView == this) {
             super.setVisibility(visibility);
         } else {
-            mapView.setVisibility(visibility);
+            mCurrentMapView.setVisibility(visibility);
         }
     }
 
     public void createMap(MapType mapType) {
-        mMapDelegate = inflate(mapType);
-        mCurrentMapView = mMapDelegate.getMapView();
-    }
-
-    private MapDelegate inflate(MapType mapType) {
         mMapType = mapType;
-        MapDelegate mapDelegate = getMapDelegate(mMapType);
-        View mapView = mapDelegate.getMapView();
-
-        final ViewParent viewParent = mCurrentMapView.getParent();
-        if (viewParent == null || !(viewParent instanceof ViewGroup)) {
-            throw new IllegalStateException("must have a non-null ViewGroup viewParent");
-        }
-        ViewGroup parent = (ViewGroup) viewParent;
-
-        int id = mCurrentMapView.getId();
-        if (id != NO_ID) {
-            mapView.setId(id);
-        }
-
-        final int index = parent.indexOfChild(mCurrentMapView);
-        parent.removeViewAt(index);
-
-        final ViewGroup.LayoutParams layoutParams = mCurrentMapView.getLayoutParams();
-        if (layoutParams == null) {
-            parent.addView(mapView, index);
-        } else {
-            parent.addView(mapView, index, layoutParams);
-        }
-        return mapDelegate;
+        mMapDelegate = mMapDelegateFactory.getMapDelegate(mMapType);
+        mCurrentMapView = ViewUtil.replaceView(mCurrentMapView, mMapDelegate.getMapView());
     }
 
     public void switchMapType(MapType mapType) {
@@ -143,22 +113,17 @@ public class MapView extends View {
 
         // == 地图切换 注意：不同的地图类型切换时执行的生命周期方法不一样
         // 旧地图切换出界面
-        mMapType.onSwitchOut(mMapDelegate);
+        mMapDelegate.onSwitchOut();
+        clearAllMarkers(mMapDelegate);
 
-        mMapDelegate = inflate(mapType);
-        mCurrentMapView = mMapDelegate.getMapView();
+        mMapType = mapType;
+        mMapDelegate = mMapDelegateFactory.getMapDelegate(mMapType);
 
         //新地图控件切换进界面
-        mMapType.onSwitchIn(mMapDelegate, savedInstanceState);
-    }
+        mMapDelegate.onSwitchIn(savedInstanceState);
+        addAllMarkers(mMapDelegate);
 
-    private MapDelegate getMapDelegate(MapType mapType) {
-        MapDelegate mapDelegate = mMapDelegates.get(mapType);
-        if (mapDelegate == null) {
-            mapDelegate = mapType.createMapDelegate(mContext);
-            mMapDelegates.put(mapType, mapDelegate);
-        }
-        return mapDelegate;
+        mCurrentMapView = ViewUtil.replaceView(mCurrentMapView, mMapDelegate.getMapView());
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -262,10 +227,6 @@ public class MapView extends View {
         return mMapDelegate.getMinZoomLevel();
     }
 
-    public void setMarkerInflater(MarkerInflater inflater) {
-        mMapDelegate.setMarkerInflater(inflater);
-    }
-
     public void addOverlay(MapOverlay overlay) {
         mMapDelegate.addOverlay(overlay);
     }
@@ -301,10 +262,6 @@ public class MapView extends View {
 
     public List<MapOverlay> getOverlays() {
         return mMapDelegate.getOverlays();
-    }
-
-    public void clearMarker() {
-        mMapDelegate.clearMarker();
     }
 
     public void setMarkerVisible(MapMarker mapMarker, boolean visible) {
@@ -346,18 +303,48 @@ public class MapView extends View {
 
     public void addMarker(MapMarker mapMarker) {
         mMapDelegate.addMarker(mapMarker);
+        mMapMarkers.add(mapMarker);
     }
 
-    public void addMarkers(List<MapMarker> mapMarkers) {
+    public void addMarkers(Collection<MapMarker> mapMarkers) {
         if (mapMarkers == null) {
             return;
         }
         for (MapMarker mapMarker : mapMarkers) {
             mMapDelegate.addMarker(mapMarker);
         }
+        mMapMarkers.addAll(mapMarkers);
     }
 
     public void removeMarker(MapMarker mapMarker) {
         mMapDelegate.removeMarker(mapMarker);
+        mMapMarkers.remove(mapMarker);
+    }
+
+    public void removeMarkers(Collection<MapMarker> mapMarkers) {
+        if (mapMarkers == null) {
+            return;
+        }
+        for (MapMarker mapMarker : mapMarkers) {
+            mMapDelegate.removeMarker(mapMarker);
+        }
+        mMapMarkers.removeAll(mapMarkers);
+    }
+
+    public void clearMarkers() {
+        clearAllMarkers(mMapDelegate);
+        mMapMarkers.clear();
+    }
+
+    private void clearAllMarkers(MapDelegate mapDelegate) {
+        for (MapMarker markers : mMapMarkers) {
+            mapDelegate.removeMarker(markers);
+        }
+    }
+
+    private void addAllMarkers(MapDelegate mapDelegate) {
+        for (MapMarker mapMarker : mMapMarkers) {
+            mapDelegate.addMarker(mapMarker);
+        }
     }
 }

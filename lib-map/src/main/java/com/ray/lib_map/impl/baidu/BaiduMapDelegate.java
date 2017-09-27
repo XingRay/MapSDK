@@ -5,16 +5,20 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.Overlay;
+import com.baidu.mapapi.model.LatLng;
 import com.ray.lib_map.MapDelegate;
 import com.ray.lib_map.MapViewInterface;
-import com.ray.lib_map.MarkerInflater;
 import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
+import com.ray.lib_map.extern.MapType;
 
 import java.util.List;
 
@@ -29,9 +33,8 @@ import java.util.List;
 
 public class BaiduMapDelegate implements MapDelegate {
     private static final String MAP_VIEW_BUNDLE_KEY = "baidu_map_view_bundle_key";
-
-    private final Context mContext;
     private static boolean sHasInited;
+    private final Context mContext;
     private MapView mMapView;
 
     public BaiduMapDelegate(Context context) {
@@ -52,6 +55,17 @@ public class BaiduMapDelegate implements MapDelegate {
     @Override
     public void clearMap() {
 
+    }
+
+    @Override
+    public void onSwitchOut() {
+        onPause();
+    }
+
+    @Override
+    public void onSwitchIn(Bundle savedInstanceState) {
+        onCreate(savedInstanceState);
+        onResume();
     }
 
     @Override
@@ -199,11 +213,6 @@ public class BaiduMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setMarkerInflater(MarkerInflater inflater) {
-
-    }
-
-    @Override
     public void addOverlay(MapOverlay overlay) {
 
     }
@@ -239,13 +248,20 @@ public class BaiduMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void addMarker(MapMarker mapMarker) {
-
+    public void addMarker(MapMarker marker) {
+        Overlay overlay = mMapView.getMap().addOverlay(new MarkerOptions()
+                .position(new LatLng(marker.getLatitude(), marker.getLongitude()))
+                .icon(BitmapDescriptorFactory.fromBitmap(marker.getIcon()))
+                .anchor(marker.getAnchorX(), marker.getAnchorY())
+                .title(marker.getTitle()));
+        marker.setRawMarker(MapType.BAIDU, overlay);
     }
 
     @Override
-    public void clearMarker() {
-
+    public void removeMarker(MapMarker mapMarker) {
+        Overlay overlay = (Overlay) mapMarker.getRawMarker(MapType.BAIDU);
+        overlay.remove();
+        mapMarker.removeRawMarker(MapType.BAIDU);
     }
 
     @Override
@@ -283,8 +299,5 @@ public class BaiduMapDelegate implements MapDelegate {
 
     }
 
-    @Override
-    public void removeMarker(MapMarker mapMarker) {
 
-    }
 }

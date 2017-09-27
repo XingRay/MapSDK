@@ -16,6 +16,7 @@ import com.ray.lib_map.MapViewInterface;
 import com.ray.lib_map.data.DataCallback;
 import com.ray.lib_map.data.MapDataSource;
 import com.ray.lib_map.entity.Address;
+import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Poi;
 import com.ray.lib_map.entity.PoiSearchSuggestion;
@@ -145,7 +146,7 @@ public class MapActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 MapPoint mapPoint = address.getMapPoint();
-                                mvMap.addMarker(MapHelper.buildLocationMarker(address, mContext, R.mipmap.icon_location));
+                                mvMap.addMarker(MapHelper.createMarker(address, mContext, R.mipmap.icon_location));
                                 mvMap.animateTo(mapPoint, null);
                                 queryPoi(mapPoint);
                             }
@@ -199,6 +200,9 @@ public class MapActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 mAdapter.set(PoiWrapper.fromPois(pois));
+                                List<MapMarker> markers = MapHelper.createMarkers(pois, mContext, R.mipmap.icon_location);
+                                mvMap.clearMarkers();
+                                mvMap.addMarkers(markers);
                             }
                         });
                     }

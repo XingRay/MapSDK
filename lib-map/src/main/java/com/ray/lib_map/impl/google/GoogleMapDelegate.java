@@ -10,7 +10,6 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.ray.lib_map.MapDelegate;
 import com.ray.lib_map.MapViewInterface;
-import com.ray.lib_map.MarkerInflater;
 import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
@@ -32,11 +31,10 @@ import java.util.List;
 public class GoogleMapDelegate implements MapDelegate {
 
     private static final String MAP_VIEW_BUNDLE_KEY = "google_map_view_bundle_key";
-
+    private static boolean sHasInited;
     private final Context mContext;
     private final MapView mMapView;
     private MapViewInterface.MapLoadListener mMapLoadListener;
-    private static boolean sHasInited;
 
     public GoogleMapDelegate(Context context) {
         if (!sHasInited) {
@@ -56,6 +54,18 @@ public class GoogleMapDelegate implements MapDelegate {
     @Override
     public void clearMap() {
 
+    }
+
+    @Override
+    public void onSwitchOut() {
+        onPause();
+        onDestroy();
+    }
+
+    @Override
+    public void onSwitchIn(Bundle savedInstanceState) {
+        onCreate(savedInstanceState);
+        onResume();
     }
 
     @Override
@@ -212,11 +222,6 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setMarkerInflater(MarkerInflater inflater) {
-
-    }
-
-    @Override
     public void addOverlay(MapOverlay overlay) {
 
     }
@@ -253,11 +258,6 @@ public class GoogleMapDelegate implements MapDelegate {
 
     @Override
     public void addMarker(MapMarker mapMarker) {
-
-    }
-
-    @Override
-    public void clearMarker() {
 
     }
 
