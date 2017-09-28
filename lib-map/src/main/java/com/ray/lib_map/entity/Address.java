@@ -11,13 +11,9 @@ package com.ray.lib_map.entity;
 
 public class Address {
     /**
-     * 纬度
+     * 地图点
      */
-    private double latitude;
-    /**
-     * 经度
-     */
-    private double longitude;
+    private MapPoint mapPoint;
 
     /**
      * 省/直辖市的名称
@@ -54,20 +50,15 @@ public class Address {
      */
     private String formattedAddress;
 
-    public double getLatitude() {
-        return latitude;
+    public Address() {
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public MapPoint getMapPoint() {
+        return this.mapPoint;
     }
 
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setMapPoint(MapPoint mapPoint) {
+        this.mapPoint = mapPoint;
     }
 
     public String getProvince() {
@@ -129,8 +120,7 @@ public class Address {
     @Override
     public String toString() {
         return "Address{" +
-                "latitude=" + latitude +
-                ", longitude=" + longitude +
+                "mapPoint=" + mapPoint +
                 ", province='" + province + '\'' +
                 ", city='" + city + '\'' +
                 ", cityCode='" + cityCode + '\'' +
@@ -139,9 +129,5 @@ public class Address {
                 ", name='" + name + '\'' +
                 ", formattedAddress='" + formattedAddress + '\'' +
                 '}';
-    }
-
-    public MapPoint getMapPoint(){
-        return new MapPoint(latitude, longitude);
     }
 }

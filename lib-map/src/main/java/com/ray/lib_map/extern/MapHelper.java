@@ -32,8 +32,7 @@ public class MapHelper {
         mapMarker.setIcon(BitmapUtil.fromResource(context, resId));
         mapMarker.setTitle(address.getName());
         mapMarker.setSubTitle(address.getFormattedAddress());
-        mapMarker.setLatitude(address.getLatitude());
-        mapMarker.setLongitude(address.getLongitude());
+        mapMarker.setMapPoint(address.getMapPoint());
 
         return mapMarker;
     }
@@ -45,8 +44,7 @@ public class MapHelper {
         mapMarker.setIcon(BitmapUtil.fromResource(context, resId));
         mapMarker.setTitle(poi.getName());
         mapMarker.setSubTitle(poi.getAddress());
-        mapMarker.setLatitude(poi.getLatitude());
-        mapMarker.setLongitude(poi.getLongitude());
+        mapMarker.setMapPoint(poi.getMapPoint());
 
         return mapMarker;
     }

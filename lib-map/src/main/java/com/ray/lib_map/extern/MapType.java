@@ -1,12 +1,5 @@
 package com.ray.lib_map.extern;
 
-import android.content.Context;
-
-import com.ray.lib_map.MapDelegate;
-import com.ray.lib_map.impl.baidu.BaiduMapDelegate;
-import com.ray.lib_map.impl.gaode.GaodeMapDelegate;
-import com.ray.lib_map.impl.google.GoogleMapDelegate;
-
 /**
  * Author      : leixing
  * Date        : 2017-09-22
@@ -17,26 +10,28 @@ import com.ray.lib_map.impl.google.GoogleMapDelegate;
  */
 
 public enum MapType {
-    GAODE {
-        @Override
-        public MapDelegate createMapDelegate(Context context) {
-            return new GaodeMapDelegate(context);
-        }
-    },
+    /**
+     * 高德地图
+     */
+    GAODE(CoordinateType.GCJ02),
 
-    BAIDU {
-        @Override
-        public MapDelegate createMapDelegate(Context context) {
-            return new BaiduMapDelegate(context);
-        }
-    },
+    /**
+     * 百度地图
+     */
+    BAIDU(CoordinateType.GCJ02),
 
-    GOOGLE {
-        @Override
-        public MapDelegate createMapDelegate(Context context) {
-            return new GoogleMapDelegate(context);
-        }
-    };
+    /**
+     * google地图
+     */
+    GOOGLE(CoordinateType.WGS84);
 
-    public abstract MapDelegate createMapDelegate(Context context);
+    private final CoordinateType coordinateType;
+
+    MapType(CoordinateType coordinateType) {
+        this.coordinateType = coordinateType;
+    }
+
+    public CoordinateType getCoordinateType() {
+        return coordinateType;
+    }
 }

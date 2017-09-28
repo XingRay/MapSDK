@@ -20,6 +20,7 @@ import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
+import com.ray.lib_map.extern.CoordinateType;
 import com.ray.lib_map.extern.MapType;
 
 import java.util.List;
@@ -185,12 +186,12 @@ public class GaodeMapDelegate implements MapDelegate {
     private MapPoint getMapPoint(CameraPosition cameraPosition) {
         double latitude = cameraPosition.target.latitude;
         double longitude = cameraPosition.target.longitude;
-        return new MapPoint(latitude, longitude);
+        return new MapPoint(latitude, longitude, CoordinateType.GCJ02);
     }
 
     private MapPoint getMapPoint(Marker marker) {
         LatLng position = marker.getPosition();
-        return new MapPoint(position.latitude, position.longitude);
+        return new MapPoint(position.latitude, position.longitude, CoordinateType.GCJ02);
     }
 
     @Override
@@ -376,12 +377,16 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void addMarker(MapMarker marker) {
+        MapPoint point = marker.getMapPoint().as(CoordinateType.GCJ02);
+        double latitude = point.getLatitude();
+        double longitude = point.getLongitude();
+
         Marker addMarker = getAMap().addMarker(new MarkerOptions()
                 .anchor(marker.getAnchorX(), marker.getAnchorY())
                 .icon(BitmapDescriptorFactory.fromBitmap(marker.getIcon()))
                 .title(marker.getTitle())
                 .snippet(marker.getSubTitle())
-                .position(new LatLng(marker.getLatitude(), marker.getLongitude())));
+                .position(new LatLng(latitude, longitude)));
         marker.setRawMarker(MapType.GAODE, addMarker);
     }
 

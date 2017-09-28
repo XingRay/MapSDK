@@ -20,6 +20,7 @@ import static com.ray.lib_map.extern.MapType.GAODE;
  * Description : xxx
  */
 
+@SuppressWarnings("WeakerAccess")
 public class MapDataRepository implements MapDataSource {
     private final Context mContext;
     private MapType mMapType;

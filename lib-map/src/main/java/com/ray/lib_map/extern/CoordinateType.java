@@ -1,8 +1,6 @@
 package com.ray.lib_map.extern;
 
 
-import com.ray.lib_map.entity.MapPoint;
-
 /**
  * Author      : leixing
  * Date        : 2017-07-13
@@ -14,36 +12,17 @@ import com.ray.lib_map.entity.MapPoint;
 
 public enum CoordinateType {
     /**
-     * 高德使用的坐标系
+     * 国际标准坐标系
      */
-    GAODE {
-        @Override
-        public MapPoint toStandard(MapPoint srcPoint, CoordinateType srcType) {
-            return null;
-        }
-
-        @Override
-        public MapPoint fromStandard(MapPoint srcPoint, CoordinateType dstType) {
-            return null;
-        }
-    },
+    WGS84,
 
     /**
-     * 标准坐标系
+     * 中国国标坐标系（火星坐标系）
      */
-    STANDARD {
-        @Override
-        public MapPoint toStandard(MapPoint srcPoint, CoordinateType srcType) {
-            return null;
-        }
+    GCJ02,
 
-        @Override
-        public MapPoint fromStandard(MapPoint srcPoint, CoordinateType dstType) {
-            return null;
-        }
-    };
-
-    public abstract MapPoint toStandard(MapPoint srcPoint, CoordinateType srcType);
-
-    public abstract MapPoint fromStandard(MapPoint srcPoint, CoordinateType dstType);
+    /**
+     * 百度坐标系
+     */
+    BD09
 }

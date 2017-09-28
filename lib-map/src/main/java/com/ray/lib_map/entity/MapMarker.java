@@ -20,58 +20,44 @@ import java.util.Map;
 
 public class MapMarker {
     /**
-     * 纬度
+     * sdk中的标记对象
      */
-    private double latitude;
+    private final Map<MapType, Object> rawMarkers;
     /**
-     * 经度
+     * 地图点的位置
      */
-    private double longitude;
-
+    private MapPoint mapPoint;
     /**
      * 锚点X坐标
      */
     private float anchorX;
-
     /**
      * 锚点Y坐标
      */
     private float anchorY;
-
     /**
      * 图标
      */
     private Bitmap icon;
-
     /**
      * 标题
      */
     private String title;
-
     /**
      * 副标题
      */
     private String subTitle;
 
-    /**
-     * sdk中的标记对象
-     */
-    private Map<MapType, Object> rawMarkers = new HashMap<>();
-
-    public double getLatitude() {
-        return latitude;
+    public MapMarker() {
+        rawMarkers = new HashMap<>();
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public MapPoint getMapPoint() {
+        return mapPoint;
     }
 
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setMapPoint(MapPoint mapPoint) {
+        this.mapPoint = mapPoint;
     }
 
     public float getAnchorX() {
@@ -129,13 +115,41 @@ public class MapMarker {
     @Override
     public String toString() {
         return "MapMarker{" +
-                "latitude=" + latitude +
-                ", longitude=" + longitude +
+                "mapPoint=" + mapPoint +
                 ", anchorX=" + anchorX +
                 ", anchorY=" + anchorY +
                 ", icon=" + icon +
                 ", title='" + title + '\'' +
+                ", subTitle='" + subTitle + '\'' +
                 ", rawMarkers=" + rawMarkers +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MapMarker mapMarker = (MapMarker) o;
+
+        if (Float.compare(mapMarker.anchorX, anchorX) != 0) return false;
+        if (Float.compare(mapMarker.anchorY, anchorY) != 0) return false;
+        if (mapPoint != null ? !mapPoint.equals(mapMarker.mapPoint) : mapMarker.mapPoint != null)
+            return false;
+        if (icon != null ? !icon.equals(mapMarker.icon) : mapMarker.icon != null) return false;
+        if (title != null ? !title.equals(mapMarker.title) : mapMarker.title != null) return false;
+        return subTitle != null ? subTitle.equals(mapMarker.subTitle) : mapMarker.subTitle == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mapPoint != null ? mapPoint.hashCode() : 0;
+        result = 31 * result + (anchorX != +0.0f ? Float.floatToIntBits(anchorX) : 0);
+        result = 31 * result + (anchorY != +0.0f ? Float.floatToIntBits(anchorY) : 0);
+        result = 31 * result + (icon != null ? icon.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (subTitle != null ? subTitle.hashCode() : 0);
+        return result;
     }
 }

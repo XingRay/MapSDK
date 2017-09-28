@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
+import com.baidu.mapapi.CoordType;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapView;
@@ -40,11 +41,29 @@ public class BaiduMapDelegate implements MapDelegate {
     public BaiduMapDelegate(Context context) {
         if (!sHasInited) {
             SDKInitializer.initialize(context.getApplicationContext());
+            CoordType coordType = getCoordinateType();
+            SDKInitializer.setCoordType(coordType);
             sHasInited = true;
         }
 
         mContext = context;
         mMapView = new MapView(mContext);
+    }
+
+    private CoordType getCoordinateType() {
+        CoordType coordType = null;
+        switch (MapType.BAIDU.getCoordinateType()) {
+            case GCJ02:
+                coordType = CoordType.GCJ02;
+                break;
+            case BD09:
+                coordType = CoordType.BD09LL;
+                break;
+        }
+        if (coordType == null) {
+            throw new IllegalStateException("unknown coordinate type");
+        }
+        return coordType;
     }
 
     @Override
@@ -249,8 +268,12 @@ public class BaiduMapDelegate implements MapDelegate {
 
     @Override
     public void addMarker(MapMarker marker) {
+        MapPoint point = marker.getMapPoint().as(MapType.BAIDU.getCoordinateType());
+        double latitude = point.getLatitude();
+        double longitude = point.getLongitude();
+
         Overlay overlay = mMapView.getMap().addOverlay(new MarkerOptions()
-                .position(new LatLng(marker.getLatitude(), marker.getLongitude()))
+                .position(new LatLng(latitude, longitude))
                 .icon(BitmapDescriptorFactory.fromBitmap(marker.getIcon()))
                 .anchor(marker.getAnchorX(), marker.getAnchorY())
                 .title(marker.getTitle()));

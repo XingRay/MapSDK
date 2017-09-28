@@ -23,6 +23,7 @@ import com.ray.lib_map.data.FailureCallback;
 import com.ray.lib_map.data.MapDataSource;
 import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapPoint;
+import com.ray.lib_map.extern.CoordinateType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +39,10 @@ import java.util.List;
  */
 
 public class GaodeMapDataSource implements MapDataSource {
-
-    public static final int LOCATION_INTERVAL = 180 * 1000;
+    private static final int LOCATION_INTERVAL = 180 * 1000;
+    private static final String SEARCH_TYPE = "";//"汽车服务|汽车销售|汽车维修|摩托车服务|餐饮服务|购物服务|生活服务|体育休闲服务|医疗保健服务|住宿服务|风景名胜|商务住宅|政府机构及社会团体|科教文化服务|交通设施服务|金融保险服务|公司企业|道路附属设施|地名地址信息|公共设施";
     private final Context mContext;
     private AMapLocationClient mLocationClient;
-    private static final String SEARCH_TYPE = "";//"汽车服务|汽车销售|汽车维修|摩托车服务|餐饮服务|购物服务|生活服务|体育休闲服务|医疗保健服务|住宿服务|风景名胜|商务住宅|政府机构及社会团体|科教文化服务|交通设施服务|金融保险服务|公司企业|道路附属设施|地名地址信息|公共设施";
 
     public GaodeMapDataSource(Context context) {
         mContext = context;
@@ -185,7 +185,7 @@ public class GaodeMapDataSource implements MapDataSource {
                 continue;
             }
 
-            callback.onSuccess(GaodeDataConverter.toMapPoint(latLonPoint));
+            callback.onSuccess(new MapPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude(), CoordinateType.GCJ02));
             return;
         }
 

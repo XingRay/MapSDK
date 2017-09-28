@@ -87,7 +87,7 @@ public class MapActivity extends AppCompatActivity {
                 mAdapter.select(position);
                 Poi poi = mAdapter.getSelectedPoi();
                 if (poi != null) {
-                    mvMap.animateTo(poi.getPoint(), null);
+                    mvMap.animateTo(poi.getMapPoint(), null);
                 }
             }
         });

@@ -11,6 +11,8 @@ import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Poi;
 import com.ray.lib_map.entity.PoiSearchSuggestion;
+import com.ray.lib_map.extern.CoordinateType;
+import com.ray.lib_map.extern.MapType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +59,7 @@ public class GaodeDataConverter {
         poi.setAddress(poiItem.getSnippet());
 
         LatLonPoint latLonPoint = poiItem.getLatLonPoint();
-        poi.setLatitude(latLonPoint.getLatitude());
-        poi.setLongitude(latLonPoint.getLongitude());
+        poi.setMapPoint(new MapPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude(), MapType.GAODE.getCoordinateType()));
 
         poi.setProvinceName(poiItem.getProvinceName());
         poi.setProvinceCode(poiItem.getProvinceCode());
@@ -99,18 +100,13 @@ public class GaodeDataConverter {
     }
 
 
-    public static MapPoint toMapPoint(LatLonPoint latLonPoint) {
-        return latLonPoint != null ? new MapPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude()) : null;
-    }
-
     public static Address toAddress(AMapLocation aMapLocation) {
         if (aMapLocation == null) {
             return null;
         }
         Address address = new Address();
 
-        address.setLatitude(aMapLocation.getLatitude());
-        address.setLongitude(aMapLocation.getLongitude());
+        address.setMapPoint(new MapPoint(aMapLocation.getLatitude(), aMapLocation.getLongitude(), CoordinateType.GCJ02));
 
         address.setCity(aMapLocation.getCity());
         address.setCityCode(aMapLocation.getCityCode());
@@ -129,8 +125,7 @@ public class GaodeDataConverter {
         }
         Address address = new Address();
 
-        address.setLatitude(latitude);
-        address.setLongitude(longitude);
+        address.setMapPoint(new MapPoint(latitude, longitude, CoordinateType.GCJ02));
 
         List<PoiItem> pois = regeocodeAddress.getPois();
         if (pois != null) {
