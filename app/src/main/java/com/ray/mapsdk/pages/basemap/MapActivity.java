@@ -1,4 +1,4 @@
-package com.ray.mapsdk.pages.map;
+package com.ray.mapsdk.pages.basemap;
 
 import android.app.Activity;
 import android.content.Context;

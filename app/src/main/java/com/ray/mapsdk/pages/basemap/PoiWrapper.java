@@ -1,4 +1,4 @@
-package com.ray.mapsdk.pages.map;
+package com.ray.mapsdk.pages.basemap;
 
 import com.ray.lib_map.entity.Poi;
 
@@ -27,6 +27,16 @@ public class PoiWrapper {
         this.isSelected = isSelected;
     }
 
+    public static List<PoiWrapper> fromPois(List<Poi> pois) {
+        List<PoiWrapper> poiWrappers = new ArrayList<>();
+        if (pois != null) {
+            for (Poi poi : pois) {
+                poiWrappers.add(new PoiWrapper(poi));
+            }
+        }
+        return poiWrappers;
+    }
+
     public Poi getPoi() {
         return poi;
     }
@@ -49,15 +59,5 @@ public class PoiWrapper {
                 "poi=" + poi +
                 ", isSelected=" + isSelected +
                 '}';
-    }
-
-    public static List<PoiWrapper> fromPois(List<Poi> pois) {
-        List<PoiWrapper> poiWrappers = new ArrayList<>();
-        if (pois != null) {
-            for (Poi poi : pois) {
-                poiWrappers.add(new PoiWrapper(poi));
-            }
-        }
-        return poiWrappers;
     }
 }

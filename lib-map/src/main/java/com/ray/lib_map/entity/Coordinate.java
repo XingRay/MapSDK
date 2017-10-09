@@ -3,6 +3,8 @@ package com.ray.lib_map.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
+
 /**
  * Author      : leixing
  * Date        : 2017-09-28
@@ -12,7 +14,7 @@ import android.os.Parcelable;
  * Description : xxx
  */
 
-public class Coordinate implements Parcelable {
+public class Coordinate implements Parcelable, Serializable {
     public static final Parcelable.Creator<Coordinate> CREATOR = new Parcelable.Creator<Coordinate>() {
         @Override
         public Coordinate createFromParcel(Parcel source) {

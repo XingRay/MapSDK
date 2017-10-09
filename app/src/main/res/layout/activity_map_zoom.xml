@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/bt_gaode_map"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:text="高德地图"/>
+
+        <Button
+            android:id="@+id/bt_baidu_map"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:text="百度地图"/>
+
+        <Button
+            android:id="@+id/bt_google_map"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:text="Google地图"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="100px"
+        android:layout_height="1dp"
+        android:background="#333"/>
+
+    <com.ray.lib_map.MapView
+        android:id="@+id/mv_map"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"/>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:id="@+id/tv_distance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/tv_zoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textSize="20sp"/>
+
+    <Button
+        android:id="@+id/bt_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="refresh"
+        android:textSize="16sp"/>
+
+    <EditText
+        android:id="@+id/et_zoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"/>
+
+    <Button
+        android:id="@+id/bt_set"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="set"
+        android:textSize="16sp"/>
+</LinearLayout>

@@ -1,6 +1,7 @@
 package com.ray.lib_map.impl.gaode;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
 
@@ -20,7 +21,6 @@ import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
-import com.ray.lib_map.extern.CoordinateType;
 import com.ray.lib_map.extern.MapType;
 
 import java.util.List;
@@ -37,8 +37,6 @@ import java.util.List;
 public class GaodeMapDelegate implements MapDelegate {
     private static final String MAP_VIEW_BUNDLE_KEY = "gaode_map_view_bundle_key";
     private final Context mContext;
-    private MapViewInterface.AnimationListener mAnimationListener;
-    private MapViewInterface.MapScreenCaptureListener mMapScreenCaptureListener;
     private MapView mMapView;
 
     public GaodeMapDelegate(Context context) {
@@ -46,7 +44,7 @@ public class GaodeMapDelegate implements MapDelegate {
         mMapView = new MapView(mContext);
     }
 
-    private AMap getAMap() {
+    private AMap getMap() {
         return mMapView.getMap();
     }
 
@@ -105,11 +103,7 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void setMapLoadListener(final MapViewInterface.MapLoadListener listener) {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return;
-        }
-        aMap.setOnMapLoadedListener(new AMap.OnMapLoadedListener() {
+        getMap().setOnMapLoadedListener(new AMap.OnMapLoadedListener() {
             @Override
             public void onMapLoaded() {
                 if (listener != null) {
@@ -121,12 +115,7 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void setCameraMoveListener(final MapViewInterface.CameraMoveListener listener) {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return;
-        }
-
-        aMap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
+        getMap().setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 if (listener != null) {
@@ -145,16 +134,11 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void setAnimationListener(MapViewInterface.AnimationListener listener) {
-        mAnimationListener = listener;
     }
 
     @Override
     public void setMarkerClickListener(final MapViewInterface.MarkerClickListener listener) {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return;
-        }
-        aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
+        getMap().setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 return listener != null && listener.onMarkClick(marker, getMapPoint(marker));
@@ -164,11 +148,7 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void setInfoWindowClickListener(final MapViewInterface.InfoWindowClickListener listener) {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return;
-        }
-        aMap.setOnInfoWindowClickListener(new AMap.OnInfoWindowClickListener() {
+        getMap().setOnInfoWindowClickListener(new AMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 if (listener != null) {
@@ -180,27 +160,22 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void setMapScreenCaptureListener(MapViewInterface.MapScreenCaptureListener listener) {
-        mMapScreenCaptureListener = listener;
     }
 
     private MapPoint getMapPoint(CameraPosition cameraPosition) {
         double latitude = cameraPosition.target.latitude;
         double longitude = cameraPosition.target.longitude;
-        return new MapPoint(latitude, longitude, CoordinateType.GCJ02);
+        return new MapPoint(latitude, longitude, MapType.GAODE.getCoordinateType());
     }
 
     private MapPoint getMapPoint(Marker marker) {
         LatLng position = marker.getPosition();
-        return new MapPoint(position.latitude, position.longitude, CoordinateType.GCJ02);
+        return new MapPoint(position.latitude, position.longitude, MapType.GAODE.getCoordinateType());
     }
 
     @Override
     public void clearMap() {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return;
-        }
-        aMap.clear();
+        getMap().clear();
     }
 
     @Override
@@ -209,14 +184,9 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void animateTo(MapPoint mapPoint, final MapViewInterface.AnimationListener listener) {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return;
-        }
-
+    public void animateTo(MapPoint mapPoint, float zoom, final MapViewInterface.AnimationListener listener) {
         LatLng latLng = new LatLng(mapPoint.getLatitude(), mapPoint.getLongitude());
-        aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17), new AMap.CancelableCallback() {
+        getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom), new AMap.CancelableCallback() {
             @Override
             public void onFinish() {
                 if (listener != null) {
@@ -255,89 +225,66 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public MapPoint getCameraPosition() {
+        CameraPosition cameraPosition = getMap().getCameraPosition();
+        return new MapPoint(cameraPosition.target.latitude, cameraPosition.target.longitude, MapType.GAODE.getCoordinateType());
+    }
+
+    @Override
+    public MapPoint fromScreenLocation(Point point) {
+        LatLng latLng = getMap().getProjection().fromScreenLocation(point);
+        return new MapPoint(latLng.latitude, latLng.longitude, MapType.GAODE.getCoordinateType());
+    }
+
+    @Override
+    public Point toScreenLocation(MapPoint point) {
+        MapPoint copy = point.copy(MapType.GAODE.getCoordinateType());
+        getMap().getProjection().toScreenLocation(new LatLng(copy.getLatitude(), copy.getLongitude()));
         return null;
     }
 
     @Override
     public void setGestureEnable(boolean enable) {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return;
-        }
-        aMap.getUiSettings().setAllGesturesEnabled(enable);
+        getMap().getUiSettings().setAllGesturesEnabled(enable);
     }
 
     @Override
-    public void setZoomControlsEnabled(boolean enable) {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return;
-        }
-        aMap.getUiSettings().setZoomControlsEnabled(enable);
+    public void setZoomControlEnable(boolean enable) {
+        getMap().getUiSettings().setZoomControlsEnabled(enable);
     }
 
     @Override
     public void setZoomGestureEnable(boolean enable) {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return;
-        }
-        aMap.getUiSettings().setZoomGesturesEnabled(enable);
+        getMap().getUiSettings().setZoomGesturesEnabled(enable);
     }
 
     @Override
     public void zoomTo(float zoom) {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return;
-        }
-
-        aMap.animateCamera(CameraUpdateFactory.zoomTo(zoom));
+        getMap().animateCamera(CameraUpdateFactory.zoomTo(zoom));
     }
 
     @Override
     public void zoomOut() {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return;
-        }
-
-        aMap.animateCamera(CameraUpdateFactory.zoomOut());
+        getMap().animateCamera(CameraUpdateFactory.zoomOut());
     }
 
     @Override
     public void zoomIn() {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return;
-        }
-
-        aMap.animateCamera(CameraUpdateFactory.zoomIn());
+        getMap().animateCamera(CameraUpdateFactory.zoomIn());
     }
 
     @Override
     public float getCurrentZoom() {
-        AMap aMap = getAMap();
-        if (aMap == null) {
-            return -1;
-        }
-
-        CameraPosition cameraPosition = aMap.getCameraPosition();
-        if (cameraPosition == null) {
-            return -1;
-        }
-
-        return cameraPosition.zoom;
+        return getMap().getCameraPosition().zoom;
     }
 
     @Override
     public float getMaxZoomLevel() {
-        return 19.0f;
+        return getMap().getMaxZoomLevel();
     }
 
     @Override
     public float getMinZoomLevel() {
-        return 3.0f;
+        return getMap().getMinZoomLevel();
     }
 
     @Override
@@ -377,11 +324,11 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void addMarker(MapMarker marker) {
-        MapPoint point = marker.getMapPoint().as(CoordinateType.GCJ02);
+        MapPoint point = marker.getMapPoint().copy(MapType.GAODE.getCoordinateType());
         double latitude = point.getLatitude();
         double longitude = point.getLongitude();
 
-        Marker addMarker = getAMap().addMarker(new MarkerOptions()
+        Marker addMarker = getMap().addMarker(new MarkerOptions()
                 .anchor(marker.getAnchorX(), marker.getAnchorY())
                 .icon(BitmapDescriptorFactory.fromBitmap(marker.getIcon()))
                 .title(marker.getTitle())

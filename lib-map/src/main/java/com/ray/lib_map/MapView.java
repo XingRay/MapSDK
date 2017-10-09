@@ -2,6 +2,7 @@ package com.ray.lib_map;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
@@ -112,18 +113,21 @@ public class MapView extends View {
         }
 
         // == 地图切换 注意：不同的地图类型切换时执行的生命周期方法不一样
-        // 旧地图切换出界面
-        mMapDelegate.onSwitchOut();
+        float currentZoom = mMapDelegate.getCurrentZoom();
+        MapPoint position = mMapDelegate.getCameraPosition();
         clearAllMarkers(mMapDelegate);
 
+        // 旧地图切换出界面
+        mMapDelegate.onSwitchOut();
         mMapType = mapType;
         mMapDelegate = mMapDelegateFactory.getMapDelegate(mMapType);
 
         //新地图控件切换进界面
         mMapDelegate.onSwitchIn(savedInstanceState);
-        addAllMarkers(mMapDelegate);
-
         mCurrentMapView = ViewUtil.replaceView(mCurrentMapView, mMapDelegate.getMapView());
+
+        addAllMarkers(mMapDelegate);
+        mMapDelegate.animateTo(position, currentZoom, null);
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -168,7 +172,7 @@ public class MapView extends View {
     }
 
     public void setZoomControlsEnabled(boolean enabled) {
-        mMapDelegate.setZoomControlsEnabled(enabled);
+        mMapDelegate.setZoomControlEnable(enabled);
     }
 
     public void zoomTo(float zoom) {
@@ -184,7 +188,11 @@ public class MapView extends View {
     }
 
     public void animateTo(MapPoint mapPoint, MapViewInterface.AnimationListener listener) {
-        mMapDelegate.animateTo(mapPoint, listener);
+        animateTo(mapPoint, 17, listener);
+    }
+
+    public void animateTo(MapPoint mapPoint, float zoom, MapViewInterface.AnimationListener listener) {
+        mMapDelegate.animateTo(mapPoint, 17, listener);
     }
 
     public void moveTo(MapPoint point, boolean isSmooth, float zoom) {
@@ -215,7 +223,15 @@ public class MapView extends View {
         return mMapDelegate.getCameraPosition();
     }
 
-    public float getCurrentZoom() {
+    public MapPoint fromScreenLocation(Point point) {
+        return mMapDelegate.fromScreenLocation(point);
+    }
+
+    public Point toScreenLocation(MapPoint point) {
+        return mMapDelegate.toScreenLocation(point);
+    }
+
+    public float getZoom() {
         return mMapDelegate.getCurrentZoom();
     }
 

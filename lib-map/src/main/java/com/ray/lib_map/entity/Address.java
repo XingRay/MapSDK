@@ -1,5 +1,10 @@
 package com.ray.lib_map.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
 /**
  * Author      : leixing
  * Date        : 2017-07-12
@@ -9,48 +14,63 @@ package com.ray.lib_map.entity;
  * Description : 地址
  */
 
-public class Address {
+public class Address implements Parcelable, Serializable {
+    public static final Parcelable.Creator<Address> CREATOR = new Parcelable.Creator<Address>() {
+        @Override
+        public Address createFromParcel(Parcel source) {
+            return new Address(source);
+        }
+
+        @Override
+        public Address[] newArray(int size) {
+            return new Address[size];
+        }
+    };
     /**
      * 地图点
      */
     private MapPoint mapPoint;
-
     /**
      * 省/直辖市的名称
      */
     private String province;
-
     /**
      * 城市的名称
      */
     private String city;
-
     /**
      * 城市的编码
      */
     private String cityCode;
-
     /**
      * 区/县的名称
      */
     private String district;
-
     /**
      * 区/县的编码
      */
     private String districtCode;
-
     /**
      * 地址名称
      */
     private String name;
-
     /**
      * 格式化后的地址
      */
     private String formattedAddress;
 
     public Address() {
+    }
+
+    protected Address(Parcel in) {
+        this.mapPoint = in.readParcelable(MapPoint.class.getClassLoader());
+        this.province = in.readString();
+        this.city = in.readString();
+        this.cityCode = in.readString();
+        this.district = in.readString();
+        this.districtCode = in.readString();
+        this.name = in.readString();
+        this.formattedAddress = in.readString();
     }
 
     public MapPoint getMapPoint() {
@@ -129,5 +149,57 @@ public class Address {
                 ", name='" + name + '\'' +
                 ", formattedAddress='" + formattedAddress + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Address address = (Address) o;
+
+        if (!mapPoint.equals(address.mapPoint)) return false;
+        if (province != null ? !province.equals(address.province) : address.province != null)
+            return false;
+        if (city != null ? !city.equals(address.city) : address.city != null) return false;
+        if (cityCode != null ? !cityCode.equals(address.cityCode) : address.cityCode != null)
+            return false;
+        if (district != null ? !district.equals(address.district) : address.district != null)
+            return false;
+        if (districtCode != null ? !districtCode.equals(address.districtCode) : address.districtCode != null)
+            return false;
+        if (name != null ? !name.equals(address.name) : address.name != null) return false;
+        return formattedAddress != null ? formattedAddress.equals(address.formattedAddress) : address.formattedAddress == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mapPoint.hashCode();
+        result = 31 * result + (province != null ? province.hashCode() : 0);
+        result = 31 * result + (city != null ? city.hashCode() : 0);
+        result = 31 * result + (cityCode != null ? cityCode.hashCode() : 0);
+        result = 31 * result + (district != null ? district.hashCode() : 0);
+        result = 31 * result + (districtCode != null ? districtCode.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (formattedAddress != null ? formattedAddress.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(this.mapPoint, flags);
+        dest.writeString(this.province);
+        dest.writeString(this.city);
+        dest.writeString(this.cityCode);
+        dest.writeString(this.district);
+        dest.writeString(this.districtCode);
+        dest.writeString(this.name);
+        dest.writeString(this.formattedAddress);
     }
 }

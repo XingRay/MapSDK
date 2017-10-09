@@ -23,7 +23,7 @@ import com.ray.lib_map.data.FailureCallback;
 import com.ray.lib_map.data.MapDataSource;
 import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapPoint;
-import com.ray.lib_map.extern.CoordinateType;
+import com.ray.lib_map.extern.MapType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +88,7 @@ public class GaodeMapDataSource implements MapDataSource {
         PoiSearch.Query query = new PoiSearch.Query(SEARCH_TYPE, null);
         query.setPageSize(pageSize);
         query.setPageNum(pageIndex);
+        mapPoint = mapPoint.copy(MapType.GAODE.getCoordinateType());
         LatLonPoint lp = new LatLonPoint(mapPoint.getLatitude(), mapPoint.getLongitude());
         PoiSearch poiSearch = new PoiSearch(mContext, query);
         poiSearch.setBound(new PoiSearch.SearchBound(lp, searchBound, true));
@@ -185,7 +186,7 @@ public class GaodeMapDataSource implements MapDataSource {
                 continue;
             }
 
-            callback.onSuccess(new MapPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude(), CoordinateType.GCJ02));
+            callback.onSuccess(new MapPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude(), MapType.GAODE.getCoordinateType()));
             return;
         }
 

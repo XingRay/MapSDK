@@ -1,6 +1,7 @@
 package com.ray.lib_map.impl.google;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
 
@@ -152,7 +153,7 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void animateTo(MapPoint mapPoint, MapViewInterface.AnimationListener listener) {
+    public void animateTo(MapPoint mapPoint, float zoom, MapViewInterface.AnimationListener listener) {
 
     }
 
@@ -187,7 +188,17 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setZoomControlsEnabled(boolean enabled) {
+    public MapPoint fromScreenLocation(Point point) {
+        return null;
+    }
+
+    @Override
+    public Point toScreenLocation(MapPoint point) {
+        return null;
+    }
+
+    @Override
+    public void setZoomControlEnable(boolean enable) {
 
     }
 

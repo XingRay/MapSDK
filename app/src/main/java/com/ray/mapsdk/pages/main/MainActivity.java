@@ -9,7 +9,8 @@ import android.support.v7.widget.RecyclerView;
 
 import com.ray.mapsdk.R;
 import com.ray.mapsdk.base.OnItemClickListener;
-import com.ray.mapsdk.pages.map.MapActivity;
+import com.ray.mapsdk.pages.basemap.MapActivity;
+import com.ray.mapsdk.pages.zoom.MapZoomActivity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,10 @@ public class MainActivity extends AppCompatActivity {
     private PageListAdapter mAdapter;
 
     @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
-    private List<Page> mPages = Arrays.asList(new Page("map", MapActivity.class));
+    private List<Page> mPages = Arrays.asList(
+            new Page("base map", MapActivity.class),
+            new Page("zoom", MapZoomActivity.class)
+    );
     private Activity mActivity;
 
     @Override

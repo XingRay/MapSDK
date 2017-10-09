@@ -1,12 +1,17 @@
 package com.ray.lib_map.impl.baidu;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
 
 import com.baidu.mapapi.CoordType;
 import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.Overlay;
@@ -71,9 +76,13 @@ public class BaiduMapDelegate implements MapDelegate {
         return mMapView;
     }
 
+    private BaiduMap getMap() {
+        return mMapView.getMap();
+    }
+
     @Override
     public void clearMap() {
-
+        getMap().clear();
     }
 
     @Override
@@ -162,8 +171,12 @@ public class BaiduMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void animateTo(MapPoint mapPoint, MapViewInterface.AnimationListener listener) {
-
+    public void animateTo(MapPoint mapPoint, float zoom, MapViewInterface.AnimationListener listener) {
+        MapPoint point = mapPoint.copy(MapType.BAIDU.getCoordinateType());
+        LatLng latLng = new LatLng(point.getLatitude(), point.getLongitude());
+        MapStatus status = new MapStatus.Builder(getMap().getMapStatus()).zoom(zoom).target(latLng).build();
+        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
+        getMap().animateMapStatus(update);
     }
 
     @Override
@@ -193,32 +206,48 @@ public class BaiduMapDelegate implements MapDelegate {
 
     @Override
     public MapPoint getCameraPosition() {
-        return null;
+        LatLng target = getMap().getMapStatus().target;
+        return new MapPoint(target.latitude, target.longitude, MapType.BAIDU.getCoordinateType());
     }
 
     @Override
-    public void setZoomControlsEnabled(boolean enabled) {
+    public MapPoint fromScreenLocation(Point point) {
+        LatLng latLng = getMap().getProjection().fromScreenLocation(point);
+        return new MapPoint(latLng.latitude, latLng.longitude, MapType.BAIDU.getCoordinateType());
+    }
+
+    @Override
+    public Point toScreenLocation(MapPoint point) {
+        MapPoint copy = point.copy(MapType.BAIDU.getCoordinateType());
+        return getMap().getProjection().toScreenLocation(new LatLng(copy.getLatitude(), copy.getLongitude()));
+    }
+
+    @Override
+    public void setZoomControlEnable(boolean enable) {
 
     }
 
     @Override
     public void zoomTo(float zoom) {
-
+        MapStatusUpdate u = MapStatusUpdateFactory.zoomTo(zoom);
+        getMap().animateMapStatus(u);
     }
 
     @Override
     public void zoomOut() {
-
+        MapStatusUpdate u = MapStatusUpdateFactory.zoomOut();
+        getMap().animateMapStatus(u);
     }
 
     @Override
     public void zoomIn() {
-
+        MapStatusUpdate u = MapStatusUpdateFactory.zoomIn();
+        getMap().animateMapStatus(u);
     }
 
     @Override
     public float getCurrentZoom() {
-        return 0;
+        return getMap().getMapStatus().zoom;
     }
 
     @Override
@@ -268,11 +297,11 @@ public class BaiduMapDelegate implements MapDelegate {
 
     @Override
     public void addMarker(MapMarker marker) {
-        MapPoint point = marker.getMapPoint().as(MapType.BAIDU.getCoordinateType());
+        MapPoint point = marker.getMapPoint().copy(MapType.BAIDU.getCoordinateType());
         double latitude = point.getLatitude();
         double longitude = point.getLongitude();
 
-        Overlay overlay = mMapView.getMap().addOverlay(new MarkerOptions()
+        Overlay overlay = getMap().addOverlay(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .icon(BitmapDescriptorFactory.fromBitmap(marker.getIcon()))
                 .anchor(marker.getAnchorX(), marker.getAnchorY())
@@ -321,6 +350,4 @@ public class BaiduMapDelegate implements MapDelegate {
     public void removeCircle(Circle circle) {
 
     }
-
-
 }

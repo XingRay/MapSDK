@@ -1,5 +1,6 @@
 package com.ray.lib_map;
 
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
 
@@ -55,12 +56,27 @@ public interface MapDelegate {
 
     void setMapScreenCaptureListener(MapViewInterface.MapScreenCaptureListener listener);
 
+    // ========== zoom ========== //
+    void setZoomControlEnable(boolean enable);
+
+    void zoomTo(float zoom);
+
+    void zoomOut();
+
+    void zoomIn();
+
+    float getCurrentZoom();
+
+    float getMaxZoomLevel();
+
+    float getMinZoomLevel();
+
     // ========== basic function =========//
     void setGestureEnable(boolean enable);
 
     void screenShotAndSave(String saveFilePath);
 
-    void animateTo(MapPoint mapPoint, MapViewInterface.AnimationListener listener);
+    void animateTo(MapPoint mapPoint, float zoom, MapViewInterface.AnimationListener listener);
 
     void moveTo(MapPoint point, boolean isSmooth, float zoom);
 
@@ -74,20 +90,9 @@ public interface MapDelegate {
 
     MapPoint getCameraPosition();
 
-    // ========== zoom ========== //
-    void setZoomControlsEnabled(boolean enabled);
+    MapPoint fromScreenLocation(Point point);
 
-    void zoomTo(float zoom);
-
-    void zoomOut();
-
-    void zoomIn();
-
-    float getCurrentZoom();
-
-    float getMaxZoomLevel();
-
-    float getMinZoomLevel();
+    Point toScreenLocation(MapPoint point);
 
     // ========== marker ========== //
 

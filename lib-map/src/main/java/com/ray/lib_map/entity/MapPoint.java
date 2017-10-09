@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import com.ray.lib_map.extern.CoordinateConverter;
 import com.ray.lib_map.extern.CoordinateType;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +20,8 @@ import java.util.Map;
  */
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class MapPoint implements Parcelable {
+public class MapPoint implements Parcelable, Serializable {
+
     public static final Parcelable.Creator<MapPoint> CREATOR = new Parcelable.Creator<MapPoint>() {
         @Override
         public MapPoint createFromParcel(Parcel source) {
@@ -32,18 +34,21 @@ public class MapPoint implements Parcelable {
         }
     };
     private final Map<CoordinateType, Coordinate> coordinates;
-    /**
-     * 坐标系类型
-     */
     private CoordinateType type;
+    private Coordinate coordinate;
 
     public MapPoint(double latitude, double longitude, CoordinateType type) {
-        coordinates = new HashMap<>();
         this.type = type;
-        coordinates.put(this.type, new Coordinate(latitude, longitude));
+        this.coordinate = new Coordinate(latitude, longitude);
+
+        coordinates = new HashMap<>(CoordinateType.values().length);
+        coordinates.put(this.type, this.coordinate);
     }
 
     protected MapPoint(Parcel in) {
+        int tmpType = in.readInt();
+        this.type = tmpType == -1 ? null : CoordinateType.values()[tmpType];
+        this.coordinate = in.readParcelable(Coordinate.class.getClassLoader());
         int coordinatesSize = in.readInt();
         this.coordinates = new HashMap<>(coordinatesSize);
         for (int i = 0; i < coordinatesSize; i++) {
@@ -52,29 +57,46 @@ public class MapPoint implements Parcelable {
             Coordinate value = in.readParcelable(Coordinate.class.getClassLoader());
             this.coordinates.put(key, value);
         }
-        int tmpType = in.readInt();
-        this.type = tmpType == -1 ? null : CoordinateType.values()[tmpType];
     }
 
     public double getLatitude() {
-        return coordinates.get(type).getLatitude();
+        return this.coordinate.getLatitude();
     }
 
     public double getLongitude() {
-        return coordinates.get(type).getLongitude();
+        return this.coordinate.getLongitude();
     }
 
     public CoordinateType getType() {
         return type;
     }
 
-    @Override
-    public String toString() {
-        return "MapPoint{" +
-                "latitude=" + getLatitude() +
-                ", longitude=" + getLongitude() +
-                ", type=" + type +
-                '}';
+    public MapPoint asDefault() {
+        return as(CoordinateType.WGS84);
+    }
+
+    public MapPoint as(CoordinateType type) {
+        if (type != this.type) {
+            this.coordinate = coordinates.get(type);
+            if (this.coordinate == null) {
+                this.coordinate = CoordinateConverter.convert(coordinates.get(this.type), this.type, type);
+                coordinates.put(type, this.coordinate);
+            }
+            this.type = type;
+        }
+        return this;
+    }
+
+    public MapPoint copy() {
+        MapPoint mapPoint = new MapPoint(coordinate.getLatitude(), coordinate.getLongitude(), type);
+        for (Map.Entry<CoordinateType, Coordinate> entry : coordinates.entrySet()) {
+            mapPoint.coordinates.put(entry.getKey(), entry.getValue());
+        }
+        return mapPoint;
+    }
+
+    public MapPoint copy(CoordinateType type) {
+        return copy().as(type);
     }
 
     @Override
@@ -84,30 +106,23 @@ public class MapPoint implements Parcelable {
 
         MapPoint mapPoint = (MapPoint) o;
 
-        return coordinates.equals(mapPoint.coordinates) && type == mapPoint.type;
+        return type == mapPoint.type && coordinate.equals(mapPoint.coordinate);
     }
 
     @Override
     public int hashCode() {
-        int result = coordinates.hashCode();
-        result = 31 * result + type.hashCode();
+        int result = type.hashCode();
+        result = 31 * result + coordinate.hashCode();
         return result;
     }
 
-    public MapPoint asDefault() {
-        return as(CoordinateType.WGS84);
-    }
-
-    public MapPoint as(CoordinateType type) {
-        if (type != this.type) {
-            Coordinate coordinate = coordinates.get(type);
-            if (coordinate == null) {
-                coordinate = CoordinateConverter.convert(coordinates.get(this.type), this.type, type);
-                coordinates.put(type, coordinate);
-            }
-            this.type = type;
-        }
-        return this;
+    @Override
+    public String toString() {
+        return "MapPoint{" +
+                "type=" + type +
+                ", coordinate=" + coordinate +
+                ", coordinates=" + coordinates +
+                '}';
     }
 
     @Override
@@ -117,11 +132,12 @@ public class MapPoint implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.type == null ? -1 : this.type.ordinal());
+        dest.writeParcelable(this.coordinate, flags);
         dest.writeInt(this.coordinates.size());
         for (Map.Entry<CoordinateType, Coordinate> entry : this.coordinates.entrySet()) {
             dest.writeInt(entry.getKey() == null ? -1 : entry.getKey().ordinal());
             dest.writeParcelable(entry.getValue(), flags);
         }
-        dest.writeInt(this.type == null ? -1 : this.type.ordinal());
     }
 }
