@@ -9,12 +9,10 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
-import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.ray.lib_map.MapDelegate;
-import com.ray.lib_map.MapViewInterface;
 import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
@@ -22,6 +20,13 @@ import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
 import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.ZoomStandardization;
+import com.ray.lib_map.listener.AnimationListener;
+import com.ray.lib_map.listener.CameraMoveListener;
+import com.ray.lib_map.listener.InfoWindowClickListener;
+import com.ray.lib_map.listener.MapLoadListener;
+import com.ray.lib_map.listener.MapScreenCaptureListener;
+import com.ray.lib_map.listener.MarkerClickListener;
 
 import java.util.List;
 
@@ -102,7 +107,7 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setMapLoadListener(final MapViewInterface.MapLoadListener listener) {
+    public void setMapLoadListener(final MapLoadListener listener) {
         getMap().setOnMapLoadedListener(new AMap.OnMapLoadedListener() {
             @Override
             public void onMapLoaded() {
@@ -114,17 +119,17 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setCameraMoveListener(final MapViewInterface.CameraMoveListener listener) {
+    public void setCameraMoveListener(final CameraMoveListener listener) {
         getMap().setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
             @Override
-            public void onCameraChange(CameraPosition cameraPosition) {
+            public void onCameraChange(com.amap.api.maps.model.CameraPosition cameraPosition) {
                 if (listener != null) {
                     listener.onCameraMoving(getMapPoint(cameraPosition));
                 }
             }
 
             @Override
-            public void onCameraChangeFinish(CameraPosition cameraPosition) {
+            public void onCameraChangeFinish(com.amap.api.maps.model.CameraPosition cameraPosition) {
                 if (listener != null) {
                     listener.onCameraMoved(getMapPoint(cameraPosition));
                 }
@@ -133,11 +138,11 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setAnimationListener(MapViewInterface.AnimationListener listener) {
+    public void setAnimationListener(AnimationListener listener) {
     }
 
     @Override
-    public void setMarkerClickListener(final MapViewInterface.MarkerClickListener listener) {
+    public void setMarkerClickListener(final MarkerClickListener listener) {
         getMap().setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -147,7 +152,7 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setInfoWindowClickListener(final MapViewInterface.InfoWindowClickListener listener) {
+    public void setInfoWindowClickListener(final InfoWindowClickListener listener) {
         getMap().setOnInfoWindowClickListener(new AMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
@@ -159,10 +164,94 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setMapScreenCaptureListener(MapViewInterface.MapScreenCaptureListener listener) {
+    public void setMapScreenCaptureListener(MapScreenCaptureListener listener) {
     }
 
-    private MapPoint getMapPoint(CameraPosition cameraPosition) {
+    @Override
+    public boolean isZoomGestureEnable() {
+        return getMap().getUiSettings().isZoomGesturesEnabled();
+    }
+
+    @Override
+    public void setZoomGestureEnable(boolean enable) {
+        getMap().getUiSettings().setZoomGesturesEnabled(enable);
+    }
+
+    @Override
+    public boolean isScrollGestureEnable() {
+        return getMap().getUiSettings().isScrollGesturesEnabled();
+    }
+
+    @Override
+    public void setScrollGestureEnable(boolean enable) {
+        getMap().getUiSettings().setScrollGesturesEnabled(enable);
+    }
+
+    @Override
+    public boolean isRotateGestureEnable() {
+        return getMap().getUiSettings().isRotateGesturesEnabled();
+    }
+
+    @Override
+    public void setRotateGestureEnable(boolean enable) {
+        getMap().getUiSettings().setScrollGesturesEnabled(enable);
+    }
+
+    @Override
+    public boolean isOverlookGestureEnable() {
+        return getMap().getUiSettings().isTiltGesturesEnabled();
+    }
+
+    @Override
+    public void setOverlookGestureEnable(boolean enable) {
+        getMap().getUiSettings().setTiltGesturesEnabled(enable);
+    }
+
+    @Override
+    public MapPoint getPosition() {
+        com.amap.api.maps.model.CameraPosition cameraPosition = getMap().getCameraPosition();
+        return new MapPoint(cameraPosition.target.latitude, cameraPosition.target.longitude, MapType.GAODE.getCoordinateType());
+    }
+
+    @Override
+    public void setPosition(MapPoint mapPoint) {
+        MapPoint gaodePoint = mapPoint.copy(MapType.GAODE.getCoordinateType());
+        LatLng latLng = new LatLng(gaodePoint.getLatitude(), gaodePoint.getLongitude());
+        getMap().animateCamera(CameraUpdateFactory.newLatLng(latLng));
+    }
+
+    @Override
+    public float getZoom() {
+        return ZoomStandardization.toStandardZoom(getMap().getCameraPosition().zoom, MapType.GAODE);
+    }
+
+    @Override
+    public void setZoom(float zoom) {
+        float gaodeZoom = ZoomStandardization.fromStandardZoom(zoom, MapType.GAODE);
+        getMap().animateCamera(CameraUpdateFactory.zoomTo(gaodeZoom));
+    }
+
+    @Override
+    public float getOverlook() {
+        return getMap().getCameraPosition().tilt;
+    }
+
+    @Override
+    public void setOverlook(float overlook) {
+        getMap().animateCamera(CameraUpdateFactory.changeTilt(overlook));
+    }
+
+    @Override
+    public float getRotate() {
+        return getMap().getCameraPosition().bearing;
+    }
+
+    @Override
+    public void setRotate(float rotate) {
+        getMap().animateCamera(CameraUpdateFactory.changeBearing(rotate));
+    }
+
+    private MapPoint getMapPoint(com.amap.api.maps.model.CameraPosition cameraPosition) {
         double latitude = cameraPosition.target.latitude;
         double longitude = cameraPosition.target.longitude;
         return new MapPoint(latitude, longitude, MapType.GAODE.getCoordinateType());
@@ -184,7 +273,7 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void animateTo(MapPoint mapPoint, float zoom, final MapViewInterface.AnimationListener listener) {
+    public void animateTo(MapPoint mapPoint, float zoom, final AnimationListener listener) {
         LatLng latLng = new LatLng(mapPoint.getLatitude(), mapPoint.getLongitude());
         getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom), new AMap.CancelableCallback() {
             @Override
@@ -224,43 +313,18 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public MapPoint getCameraPosition() {
-        CameraPosition cameraPosition = getMap().getCameraPosition();
-        return new MapPoint(cameraPosition.target.latitude, cameraPosition.target.longitude, MapType.GAODE.getCoordinateType());
-    }
-
-    @Override
-    public MapPoint fromScreenLocation(Point point) {
+    public MapPoint graphicPointToMapPoint(Point point) {
         LatLng latLng = getMap().getProjection().fromScreenLocation(point);
         return new MapPoint(latLng.latitude, latLng.longitude, MapType.GAODE.getCoordinateType());
     }
 
     @Override
-    public Point toScreenLocation(MapPoint point) {
+    public Point mapPointToGraphicPoint(MapPoint point) {
         MapPoint copy = point.copy(MapType.GAODE.getCoordinateType());
         getMap().getProjection().toScreenLocation(new LatLng(copy.getLatitude(), copy.getLongitude()));
         return null;
     }
 
-    @Override
-    public void setGestureEnable(boolean enable) {
-        getMap().getUiSettings().setAllGesturesEnabled(enable);
-    }
-
-    @Override
-    public void setZoomControlEnable(boolean enable) {
-        getMap().getUiSettings().setZoomControlsEnabled(enable);
-    }
-
-    @Override
-    public void setZoomGestureEnable(boolean enable) {
-        getMap().getUiSettings().setZoomGesturesEnabled(enable);
-    }
-
-    @Override
-    public void zoomTo(float zoom) {
-        getMap().animateCamera(CameraUpdateFactory.zoomTo(zoom));
-    }
 
     @Override
     public void zoomOut() {
@@ -273,18 +337,13 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public float getCurrentZoom() {
-        return getMap().getCameraPosition().zoom;
+    public float getMaxZoom() {
+        return ZoomStandardization.toStandardZoom(getMap().getMaxZoomLevel(), MapType.GAODE);
     }
 
     @Override
-    public float getMaxZoomLevel() {
-        return getMap().getMaxZoomLevel();
-    }
-
-    @Override
-    public float getMinZoomLevel() {
-        return getMap().getMinZoomLevel();
+    public float getMinZoom() {
+        return ZoomStandardization.toStandardZoom(getMap().getMinZoomLevel(), MapType.GAODE);
     }
 
     @Override

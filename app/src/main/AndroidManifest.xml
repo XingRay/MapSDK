@@ -57,7 +57,9 @@
 
         <activity android:name=".pages.basemap.MapActivity"/>
 
-        <activity android:name=".pages.zoom.MapZoomActivity"/>
+        <activity
+            android:name=".pages.zoom.CameraActivity"
+            android:windowSoftInputMode="adjustPan"/>
 
     </application>
 

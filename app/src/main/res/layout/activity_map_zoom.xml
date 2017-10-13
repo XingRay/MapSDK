@@ -46,45 +46,198 @@
     <com.ray.lib_map.MapView
         android:id="@+id/mv_map"
         android:layout_width="match_parent"
-        android:layout_height="300dp"/>
+        android:layout_height="260dp"/>
 
-    <Space
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1">
 
-    <TextView
-        android:id="@+id/tv_distance"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:textSize="16sp"/>
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="zoom"
+            android:textSize="16sp"/>
 
-    <TextView
-        android:id="@+id/tv_zoom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="10dp"
-        android:textSize="20sp"/>
+        <EditText
+            android:id="@+id/et_zoom"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"/>
 
-    <Button
-        android:id="@+id/bt_refresh"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="refresh"
-        android:textSize="16sp"/>
+        <Button
+            android:id="@+id/bt_set_zoom"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="set"/>
 
-    <EditText
-        android:id="@+id/et_zoom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"/>
+        <Button
+            android:id="@+id/bt_get_zoom"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="get"/>
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/bt_set"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="set"
-        android:textSize="16sp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="rotate"
+            android:textSize="16sp"/>
+
+        <EditText
+            android:id="@+id/et_rotate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"/>
+
+        <Button
+            android:id="@+id/bt_set_rotate"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="set"/>
+
+        <Button
+            android:id="@+id/bt_get_rotate"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="get"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="overlook"
+            android:textSize="16sp"/>
+
+        <EditText
+            android:id="@+id/et_overlook"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"/>
+
+        <Button
+            android:id="@+id/bt_set_overlook"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="set"/>
+
+        <Button
+            android:id="@+id/bt_get_overlook"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="get"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="latitude"
+            android:textSize="16sp"/>
+
+        <EditText
+            android:id="@+id/et_latitude"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"/>
+
+        <Button
+            android:id="@+id/bt_set_latitude"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="set"/>
+
+        <Button
+            android:id="@+id/bt_get_latitude"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="get"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="longitude"
+            android:textSize="16sp"/>
+
+        <EditText
+            android:id="@+id/et_longitude"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"/>
+
+        <Button
+            android:id="@+id/bt_set_longitude"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="set"/>
+
+        <Button
+            android:id="@+id/bt_get_longitude"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="get"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/bt_set_all"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:text="set"/>
+
+        <Button
+            android:id="@+id/bt_get_all"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:text="get"/>
+    </LinearLayout>
+
 </LinearLayout>

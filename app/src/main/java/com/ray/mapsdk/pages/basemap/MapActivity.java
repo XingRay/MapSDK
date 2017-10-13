@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.ray.lib_map.MapView;
-import com.ray.lib_map.MapViewInterface;
 import com.ray.lib_map.data.DataCallback;
 import com.ray.lib_map.data.MapDataSource;
 import com.ray.lib_map.entity.Address;
@@ -23,6 +22,7 @@ import com.ray.lib_map.entity.PoiSearchSuggestion;
 import com.ray.lib_map.extern.MapDataRepository;
 import com.ray.lib_map.extern.MapHelper;
 import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.listener.MapLoadListener;
 import com.ray.mapsdk.R;
 import com.ray.mapsdk.base.OnItemClickListener;
 import com.ray.mapsdk.helper.ThreadPools;
@@ -94,7 +94,7 @@ public class MapActivity extends AppCompatActivity {
 
         mvMap.createMap(MapType.GAODE);
         mvMap.onCreate(null);
-        mvMap.setMapLoadListener(new MapViewInterface.MapLoadListener() {
+        mvMap.setMapLoadListener(new MapLoadListener() {
             @Override
             public void onMapLoaded() {
                 location();

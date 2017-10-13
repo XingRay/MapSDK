@@ -14,22 +14,22 @@ import java.io.Serializable;
  * Description : xxx
  */
 
-public class MapStatus implements Parcelable, Serializable {
-    public static final Parcelable.Creator<MapStatus> CREATOR = new Parcelable.Creator<MapStatus>() {
+public class CameraPosition implements Parcelable, Serializable {
+    public static final Parcelable.Creator<CameraPosition> CREATOR = new Parcelable.Creator<CameraPosition>() {
         @Override
-        public MapStatus createFromParcel(Parcel source) {
-            return new MapStatus(source);
+        public CameraPosition createFromParcel(Parcel source) {
+            return new CameraPosition(source);
         }
 
         @Override
-        public MapStatus[] newArray(int size) {
-            return new MapStatus[size];
+        public CameraPosition[] newArray(int size) {
+            return new CameraPosition[size];
         }
     };
     /**
      * center point of camera
      */
-    private MapPoint cameraPosition;
+    private MapPoint position;
     /**
      * zoom level, 1-20
      */
@@ -39,26 +39,26 @@ public class MapStatus implements Parcelable, Serializable {
      */
     private float rotate;
     /**
-     * overlook angle, -45~0
+     * overlook angle, 0-45
      */
     private float overlook;
 
-    public MapStatus() {
+    public CameraPosition() {
     }
 
-    protected MapStatus(Parcel in) {
-        this.cameraPosition = in.readParcelable(MapPoint.class.getClassLoader());
+    private CameraPosition(Parcel in) {
+        this.position = in.readParcelable(MapPoint.class.getClassLoader());
         this.zoom = in.readFloat();
         this.rotate = in.readFloat();
         this.overlook = in.readFloat();
     }
 
-    public MapPoint getCameraPosition() {
-        return cameraPosition;
+    public MapPoint getPosition() {
+        return position;
     }
 
-    public void setCameraPosition(MapPoint cameraPosition) {
-        this.cameraPosition = cameraPosition;
+    public void setPosition(MapPoint position) {
+        this.position = position;
     }
 
     public float getZoom() {
@@ -88,30 +88,31 @@ public class MapStatus implements Parcelable, Serializable {
     @Override
     public String toString() {
         return "MapStatus{" +
-                "cameraPosition=" + cameraPosition +
+                "cameraPosition=" + position +
                 ", zoom=" + zoom +
                 ", rotate=" + rotate +
                 ", overlook=" + overlook +
                 '}';
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        MapStatus mapStatus = (MapStatus) o;
+        CameraPosition cameraPosition = (CameraPosition) o;
 
-        if (Float.compare(mapStatus.zoom, zoom) != 0) return false;
-        if (Float.compare(mapStatus.rotate, rotate) != 0) return false;
-        if (Float.compare(mapStatus.overlook, overlook) != 0) return false;
-        return cameraPosition.equals(mapStatus.cameraPosition);
+        if (Float.compare(cameraPosition.zoom, zoom) != 0) return false;
+        if (Float.compare(cameraPosition.rotate, rotate) != 0) return false;
+        if (Float.compare(cameraPosition.overlook, overlook) != 0) return false;
+        return position.equals(cameraPosition.position);
 
     }
 
     @Override
     public int hashCode() {
-        int result = cameraPosition.hashCode();
+        int result = position.hashCode();
         result = 31 * result + (zoom != +0.0f ? Float.floatToIntBits(zoom) : 0);
         result = 31 * result + (rotate != +0.0f ? Float.floatToIntBits(rotate) : 0);
         result = 31 * result + (overlook != +0.0f ? Float.floatToIntBits(overlook) : 0);
@@ -125,7 +126,7 @@ public class MapStatus implements Parcelable, Serializable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(this.cameraPosition, flags);
+        dest.writeParcelable(this.position, flags);
         dest.writeFloat(this.zoom);
         dest.writeFloat(this.rotate);
         dest.writeFloat(this.overlook);

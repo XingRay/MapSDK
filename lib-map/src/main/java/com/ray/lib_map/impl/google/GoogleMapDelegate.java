@@ -10,13 +10,18 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.ray.lib_map.MapDelegate;
-import com.ray.lib_map.MapViewInterface;
 import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
+import com.ray.lib_map.listener.AnimationListener;
+import com.ray.lib_map.listener.CameraMoveListener;
+import com.ray.lib_map.listener.InfoWindowClickListener;
+import com.ray.lib_map.listener.MapLoadListener;
+import com.ray.lib_map.listener.MapScreenCaptureListener;
+import com.ray.lib_map.listener.MarkerClickListener;
 
 import java.util.List;
 
@@ -35,7 +40,7 @@ public class GoogleMapDelegate implements MapDelegate {
     private static boolean sHasInited;
     private final Context mContext;
     private final MapView mMapView;
-    private MapViewInterface.MapLoadListener mMapLoadListener;
+    private MapLoadListener mMapLoadListener;
 
     public GoogleMapDelegate(Context context) {
         if (!sHasInited) {
@@ -113,37 +118,102 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setMapLoadListener(MapViewInterface.MapLoadListener listener) {
+    public void setMapLoadListener(MapLoadListener listener) {
         mMapLoadListener = listener;
     }
 
     @Override
-    public void setCameraMoveListener(MapViewInterface.CameraMoveListener listener) {
+    public void setCameraMoveListener(CameraMoveListener listener) {
 
     }
 
     @Override
-    public void setAnimationListener(MapViewInterface.AnimationListener listener) {
+    public void setAnimationListener(AnimationListener listener) {
 
     }
 
     @Override
-    public void setMarkerClickListener(MapViewInterface.MarkerClickListener listener) {
+    public void setMarkerClickListener(MarkerClickListener listener) {
 
     }
 
     @Override
-    public void setInfoWindowClickListener(MapViewInterface.InfoWindowClickListener listener) {
+    public void setInfoWindowClickListener(InfoWindowClickListener listener) {
 
     }
 
     @Override
-    public void setMapScreenCaptureListener(MapViewInterface.MapScreenCaptureListener listener) {
+    public void setMapScreenCaptureListener(MapScreenCaptureListener listener) {
 
     }
 
     @Override
-    public void setGestureEnable(boolean enable) {
+    public boolean isZoomGestureEnable() {
+        return false;
+    }
+
+    @Override
+    public void setZoomGestureEnable(boolean enable) {
+
+    }
+
+    @Override
+    public boolean isScrollGestureEnable() {
+        return false;
+    }
+
+    @Override
+    public void setScrollGestureEnable(boolean enable) {
+
+    }
+
+    @Override
+    public boolean isRotateGestureEnable() {
+        return false;
+    }
+
+    @Override
+    public void setRotateGestureEnable(boolean enable) {
+
+    }
+
+    @Override
+    public boolean isOverlookGestureEnable() {
+        return false;
+    }
+
+    @Override
+    public void setOverlookGestureEnable(boolean enable) {
+
+    }
+
+    @Override
+    public float getOverlook() {
+        return 0;
+    }
+
+    @Override
+    public void setOverlook(float overlook) {
+
+    }
+
+    @Override
+    public float getRotate() {
+        return 0;
+    }
+
+    @Override
+    public void setRotate(float rotate) {
+
+    }
+
+    @Override
+    public MapPoint getPosition() {
+        return null;
+    }
+
+    @Override
+    public void setPosition(MapPoint mapPoint) {
 
     }
 
@@ -153,7 +223,7 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void animateTo(MapPoint mapPoint, float zoom, MapViewInterface.AnimationListener listener) {
+    public void animateTo(MapPoint mapPoint, float zoom, AnimationListener listener) {
 
     }
 
@@ -178,33 +248,13 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setZoomGestureEnable(boolean enable) {
-
-    }
-
-    @Override
-    public MapPoint getCameraPosition() {
+    public MapPoint graphicPointToMapPoint(Point point) {
         return null;
     }
 
     @Override
-    public MapPoint fromScreenLocation(Point point) {
+    public Point mapPointToGraphicPoint(MapPoint point) {
         return null;
-    }
-
-    @Override
-    public Point toScreenLocation(MapPoint point) {
-        return null;
-    }
-
-    @Override
-    public void setZoomControlEnable(boolean enable) {
-
-    }
-
-    @Override
-    public void zoomTo(float zoom) {
-
     }
 
     @Override
@@ -218,17 +268,22 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
-    public float getCurrentZoom() {
+    public float getZoom() {
         return 0;
     }
 
     @Override
-    public float getMaxZoomLevel() {
+    public void setZoom(float zoom) {
+
+    }
+
+    @Override
+    public float getMaxZoom() {
         return 0;
     }
 
     @Override
-    public float getMinZoomLevel() {
+    public float getMinZoom() {
         return 0;
     }
 

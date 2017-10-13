@@ -10,6 +10,12 @@ import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
+import com.ray.lib_map.listener.AnimationListener;
+import com.ray.lib_map.listener.CameraMoveListener;
+import com.ray.lib_map.listener.InfoWindowClickListener;
+import com.ray.lib_map.listener.MapLoadListener;
+import com.ray.lib_map.listener.MapScreenCaptureListener;
+import com.ray.lib_map.listener.MarkerClickListener;
 
 import java.util.List;
 
@@ -44,39 +50,69 @@ public interface MapDelegate {
     void onSaveInstanceState(Bundle savedInstanceState);
 
     // ========== listener ========== //
-    void setMapLoadListener(MapViewInterface.MapLoadListener listener);
+    void setMapLoadListener(MapLoadListener listener);
 
-    void setCameraMoveListener(MapViewInterface.CameraMoveListener listener);
+    void setCameraMoveListener(CameraMoveListener listener);
 
-    void setAnimationListener(MapViewInterface.AnimationListener listener);
+    void setAnimationListener(AnimationListener listener);
 
-    void setMarkerClickListener(MapViewInterface.MarkerClickListener listener);
+    void setMarkerClickListener(MarkerClickListener listener);
 
-    void setInfoWindowClickListener(MapViewInterface.InfoWindowClickListener listener);
+    void setInfoWindowClickListener(InfoWindowClickListener listener);
 
-    void setMapScreenCaptureListener(MapViewInterface.MapScreenCaptureListener listener);
+    void setMapScreenCaptureListener(MapScreenCaptureListener listener);
 
-    // ========== zoom ========== //
-    void setZoomControlEnable(boolean enable);
+    // ===  gesture === //
 
-    void zoomTo(float zoom);
+    boolean isZoomGestureEnable();
+
+    void setZoomGestureEnable(boolean enable);
+
+    boolean isScrollGestureEnable();
+
+    void setScrollGestureEnable(boolean enable);
+
+    boolean isRotateGestureEnable();
+
+    void setRotateGestureEnable(boolean enable);
+
+    boolean isOverlookGestureEnable();
+
+    void setOverlookGestureEnable(boolean enable);
+
+    // == map status == //
+
+    float getZoom();
+
+    void setZoom(float zoom);
+
+    float getOverlook();
+
+    void setOverlook(float overlook);
+
+    float getRotate();
+
+    void setRotate(float rotate);
+
+    MapPoint getPosition();
+
+    void setPosition(MapPoint mapPoint);
+
+    // === zoom === //
 
     void zoomOut();
 
     void zoomIn();
 
-    float getCurrentZoom();
+    float getMaxZoom();
 
-    float getMaxZoomLevel();
-
-    float getMinZoomLevel();
+    float getMinZoom();
 
     // ========== basic function =========//
-    void setGestureEnable(boolean enable);
 
     void screenShotAndSave(String saveFilePath);
 
-    void animateTo(MapPoint mapPoint, float zoom, MapViewInterface.AnimationListener listener);
+    void animateTo(MapPoint mapPoint, float zoom, AnimationListener listener);
 
     void moveTo(MapPoint point, boolean isSmooth, float zoom);
 
@@ -86,13 +122,9 @@ public interface MapDelegate {
 
     void moveByCircle(Circle circle, int padding);
 
-    void setZoomGestureEnable(boolean enable);
+    MapPoint graphicPointToMapPoint(Point point);
 
-    MapPoint getCameraPosition();
-
-    MapPoint fromScreenLocation(Point point);
-
-    Point toScreenLocation(MapPoint point);
+    Point mapPointToGraphicPoint(MapPoint point);
 
     // ========== marker ========== //
 
