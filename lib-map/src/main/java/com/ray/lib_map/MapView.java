@@ -125,8 +125,8 @@ public class MapView extends View {
             return;
         }
 
-        final CameraPosition position = saveCameraPosition();
-        final GestureSetting setting = saveGestureSetting();
+        final CameraPosition position = getCameraPosition();
+        final GestureSetting setting = getGestureSetting();
         clearMarkersInCurrentMap();
 
         // 地图切换 注意：不同的地图类型切换时执行的生命周期方法不一样
@@ -138,20 +138,20 @@ public class MapView extends View {
         mMapDelegate.onSwitchIn(savedInstanceState);
         mCurrentMapView = ViewUtil.replaceView(mCurrentMapView, mMapDelegate.getMapView());
 
-        restoreCameraPosition(position);
-        restoreGestureSetting(setting);
+        setCameraPosition(position);
+        setGestureSetting(setting);
         addMarkersInCurrentMap();
     }
 
-    public CameraPosition saveCameraPosition() {
+    public CameraPosition getCameraPosition() {
         return mMapDelegate.saveCameraPosition();
     }
 
-    public void restoreCameraPosition(CameraPosition cameraPosition) {
+    public void setCameraPosition(CameraPosition cameraPosition) {
         mMapDelegate.restoreCameraPosition(cameraPosition);
     }
 
-    private GestureSetting saveGestureSetting() {
+    public GestureSetting getGestureSetting() {
         MapDelegate mapDelegate = mMapDelegate;
 
         GestureSetting setting = new GestureSetting();
@@ -162,7 +162,7 @@ public class MapView extends View {
         return setting;
     }
 
-    private void restoreGestureSetting(GestureSetting setting) {
+    public void setGestureSetting(GestureSetting setting) {
         MapDelegate mapDelegate = mMapDelegate;
 
         mapDelegate.setZoomGestureEnable(setting.isZoomGestureEnable());

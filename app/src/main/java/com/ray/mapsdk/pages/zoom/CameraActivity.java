@@ -153,7 +153,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     private void getAll() {
-        CameraPosition cameraPosition = mvMap.saveCameraPosition();
+        CameraPosition cameraPosition = mvMap.getCameraPosition();
         MapPoint position = cameraPosition.getPosition();
         etLongitude.setText(String.valueOf(position.getLongitude()));
         etLatitude.setText(String.valueOf(position.getLatitude()));
@@ -175,7 +175,7 @@ public class CameraActivity extends AppCompatActivity {
         cameraPosition.setZoom(zoom);
         cameraPosition.setOverlook(overlook);
         cameraPosition.setRotate(rotate);
-        mvMap.restoreCameraPosition(cameraPosition);
+        mvMap.setCameraPosition(cameraPosition);
     }
 
 

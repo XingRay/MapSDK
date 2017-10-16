@@ -195,7 +195,7 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void setRotateGestureEnable(boolean enable) {
-        getMap().getUiSettings().setScrollGesturesEnabled(enable);
+        getMap().getUiSettings().setRotateGesturesEnabled(enable);
     }
 
     @Override
