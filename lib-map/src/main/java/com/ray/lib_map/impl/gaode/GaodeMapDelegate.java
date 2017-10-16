@@ -12,6 +12,7 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.ray.lib_map.InfoWindowInflater;
 import com.ray.lib_map.MapDelegate;
 import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.Circle;
@@ -29,6 +30,7 @@ import com.ray.lib_map.listener.MapLoadListener;
 import com.ray.lib_map.listener.MapScreenCaptureListener;
 import com.ray.lib_map.listener.MarkerClickListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,11 +45,21 @@ import java.util.List;
 public class GaodeMapDelegate implements MapDelegate {
     private static final String MAP_VIEW_BUNDLE_KEY = "gaode_map_view_bundle_key";
     private final Context mContext;
+    private final List<MapMarker> mMapMarkers;
     private MapView mMapView;
+    private MapMarker mShowingInfoWindowMapMarker;
 
     public GaodeMapDelegate(Context context) {
         mContext = context;
         mMapView = new MapView(mContext);
+
+        mMapMarkers = new ArrayList<>();
+
+        setListeners();
+    }
+
+    private void setListeners() {
+
     }
 
     private AMap getMap() {
@@ -143,22 +155,15 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setMarkerClickListener(final MarkerClickListener listener) {
-        getMap().setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                return listener != null && listener.onMarkClick(marker, getMapPoint(marker));
-            }
-        });
-    }
-
-    @Override
     public void setInfoWindowClickListener(final InfoWindowClickListener listener) {
         getMap().setOnInfoWindowClickListener(new AMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 if (listener != null) {
-                    listener.onInfoWindowClick(marker, getMapPoint(marker));
+                    MapMarker mapMarker = findMapMarker(marker);
+                    if (mapMarker != null) {
+                        listener.onInfoWindowClick(mapMarker);
+                    }
                 }
             }
         });
@@ -233,6 +238,26 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
+    public void zoomOut() {
+        getMap().animateCamera(CameraUpdateFactory.zoomOut());
+    }
+
+    @Override
+    public void zoomIn() {
+        getMap().animateCamera(CameraUpdateFactory.zoomIn());
+    }
+
+    @Override
+    public float getMaxZoom() {
+        return ZoomStandardization.toStandardZoom(getMap().getMaxZoomLevel(), MapType.GAODE);
+    }
+
+    @Override
+    public float getMinZoom() {
+        return ZoomStandardization.toStandardZoom(getMap().getMinZoomLevel(), MapType.GAODE);
+    }
+
+    @Override
     public float getOverlook() {
         return getMap().getCameraPosition().tilt;
     }
@@ -288,8 +313,127 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
+    public void setMarkerClickListener(final MarkerClickListener listener) {
+        getMap().setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if (listener != null) {
+                    MapMarker mapMarker = findMapMarker(marker);
+                    if (mapMarker != null) {
+                        return listener.onMarkClick(mapMarker);
+                    }
+                }
+
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public void setInfoWindowInflater(final InfoWindowInflater inflater) {
+        getMap().setInfoWindowAdapter(new AMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                if (inflater != null) {
+                    MapMarker mapMarker = findMapMarker(marker);
+                    if (mapMarker != null) {
+                        return inflater.inflate(mapMarker);
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                if (inflater != null) {
+                    MapMarker mapMarker = findMapMarker(marker);
+                    if (mapMarker != null) {
+                        return inflater.inflate(mapMarker);
+                    }
+                }
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public void addMarker(MapMarker marker) {
+        MapPoint point = marker.getMapPoint().copy(MapType.GAODE.getCoordinateType());
+        double latitude = point.getLatitude();
+        double longitude = point.getLongitude();
+
+        Marker rawMarker = getMap().addMarker(new MarkerOptions()
+                .anchor(marker.getAnchorX(), marker.getAnchorY())
+                .icon(BitmapDescriptorFactory.fromBitmap(marker.getIcon()))
+                .title(marker.getTitle())
+                .snippet(marker.getContent())
+                .position(new LatLng(latitude, longitude)));
+        marker.setRawMarker(MapType.GAODE, rawMarker);
+
+        if (marker.isInfoWindowVisible()) {
+            setInfoWindow(marker);
+        } else {
+            rawMarker.hideInfoWindow();
+        }
+
+        mMapMarkers.add(marker);
+    }
+
+    @Override
+    public void removeMarker(MapMarker marker) {
+        Marker rawMarker = (Marker) marker.getRawMarker(MapType.GAODE);
+        rawMarker.remove();
+
+        mMapMarkers.remove(marker);
+    }
+
+    @Override
+    public List<MapMarker> getMarkers() {
+        return mMapMarkers;
+    }
+
+    @Override
+    public void clearMarkers() {
+        for (MapMarker mapMarker : mMapMarkers) {
+            Marker rawMarker = (Marker) mapMarker.getRawMarker(MapType.GAODE);
+            rawMarker.remove();
+        }
+
+        mMapMarkers.clear();
+    }
+
+    @Override
+    public void setMarkerVisible(MapMarker marker, boolean visible) {
+        Marker rawMarker = (Marker) marker.getRawMarker(MapType.GAODE);
+        rawMarker.setVisible(visible);
+    }
+
+    @Override
     public void clearMap() {
         getMap().clear();
+    }
+
+    @Override
+    public void hideInfoWindow() {
+        if (mShowingInfoWindowMapMarker != null) {
+            mShowingInfoWindowMapMarker.setInfoWindowVisible(false);
+            Marker rawMarker = (Marker) mShowingInfoWindowMapMarker.getRawMarker(MapType.GAODE);
+            rawMarker.hideInfoWindow();
+        }
+    }
+
+    @Override
+    public void showInfoWindow(MapMarker mapMarker) {
+        mapMarker.setInfoWindowVisible(true);
+
+        setInfoWindow(mapMarker);
+    }
+
+    private void setInfoWindow(MapMarker mapMarker) {
+        hideInfoWindow();
+        mShowingInfoWindowMapMarker = mapMarker;
+        Marker rawMarker = (Marker) mapMarker.getRawMarker(MapType.GAODE);
+        rawMarker.showInfoWindow();
     }
 
     @Override
@@ -350,27 +494,6 @@ public class GaodeMapDelegate implements MapDelegate {
         return null;
     }
 
-
-    @Override
-    public void zoomOut() {
-        getMap().animateCamera(CameraUpdateFactory.zoomOut());
-    }
-
-    @Override
-    public void zoomIn() {
-        getMap().animateCamera(CameraUpdateFactory.zoomIn());
-    }
-
-    @Override
-    public float getMaxZoom() {
-        return ZoomStandardization.toStandardZoom(getMap().getMaxZoomLevel(), MapType.GAODE);
-    }
-
-    @Override
-    public float getMinZoom() {
-        return ZoomStandardization.toStandardZoom(getMap().getMinZoomLevel(), MapType.GAODE);
-    }
-
     @Override
     public void addOverlay(MapOverlay overlay) {
 
@@ -407,33 +530,6 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void addMarker(MapMarker marker) {
-        MapPoint point = marker.getMapPoint().copy(MapType.GAODE.getCoordinateType());
-        double latitude = point.getLatitude();
-        double longitude = point.getLongitude();
-
-        Marker addMarker = getMap().addMarker(new MarkerOptions()
-                .anchor(marker.getAnchorX(), marker.getAnchorY())
-                .icon(BitmapDescriptorFactory.fromBitmap(marker.getIcon()))
-                .title(marker.getTitle())
-                .snippet(marker.getSubTitle())
-                .position(new LatLng(latitude, longitude)));
-        marker.setRawMarker(MapType.GAODE, addMarker);
-    }
-
-    @Override
-    public void removeMarker(MapMarker marker) {
-        Marker rawMarker = (Marker) marker.getRawMarker(MapType.GAODE);
-        rawMarker.remove();
-        marker.removeRawMarker(MapType.GAODE);
-    }
-
-    @Override
-    public void setMarkerVisible(MapMarker marker, boolean visible) {
-
-    }
-
-    @Override
     public Polygon addPolygon(Polygon polygon) {
         return null;
     }
@@ -461,5 +557,14 @@ public class GaodeMapDelegate implements MapDelegate {
     @Override
     public void removeCircle(Circle circle) {
 
+    }
+
+    private MapMarker findMapMarker(Marker marker) {
+        for (MapMarker mapMarker : mMapMarkers) {
+            if (marker.equals(mapMarker.getRawMarker(MapType.GAODE))) {
+                return mapMarker;
+            }
+        }
+        return null;
     }
 }

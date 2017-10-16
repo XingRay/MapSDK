@@ -28,7 +28,6 @@ import com.ray.lib_map.listener.MapScreenCaptureListener;
 import com.ray.lib_map.listener.MarkerClickListener;
 import com.ray.lib_map.util.ViewUtil;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -45,11 +44,12 @@ import java.util.List;
 public class MapView extends View {
     private View mCurrentMapView;
     private MapType mMapType;
-    private Context mContext;
     private MapDelegate mMapDelegate;
 
-    private List<MapMarker> mMapMarkers;
     private MapDelegateFactory mMapDelegateFactory;
+    private MarkerClickListener mMarkerClickListener;
+    private InfoWindowInflater mInfoWindowInflater;
+    private InfoWindowClickListener mInfoWindowClickListener;
 
     public MapView(@NonNull Context context) {
         this(context, null);
@@ -65,10 +65,7 @@ public class MapView extends View {
         setWillNotDraw(true);
 
         mCurrentMapView = this;
-        mContext = context;
         mMapDelegateFactory = new MapDelegateFactory(context);
-
-        mMapMarkers = new ArrayList<>();
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -125,9 +122,9 @@ public class MapView extends View {
             return;
         }
 
-        final CameraPosition position = getCameraPosition();
-        final GestureSetting setting = getGestureSetting();
-        clearMarkersInCurrentMap();
+        CameraPosition position = getCameraPosition();
+        GestureSetting setting = getGestureSetting();
+        List<MapMarker> mapMarkers = getMarkers();
 
         // 地图切换 注意：不同的地图类型切换时执行的生命周期方法不一样
         mMapDelegate.onSwitchOut();
@@ -138,9 +135,13 @@ public class MapView extends View {
         mMapDelegate.onSwitchIn(savedInstanceState);
         mCurrentMapView = ViewUtil.replaceView(mCurrentMapView, mMapDelegate.getMapView());
 
+        mMapDelegate.setMarkerClickListener(mMarkerClickListener);
+        mMapDelegate.setInfoWindowInflater(mInfoWindowInflater);
+        mMapDelegate.setInfoWindowClickListener(mInfoWindowClickListener);
+
         setCameraPosition(position);
         setGestureSetting(setting);
-        addMarkersInCurrentMap();
+        setMarkers(mapMarkers);
     }
 
     public CameraPosition getCameraPosition() {
@@ -187,10 +188,6 @@ public class MapView extends View {
         mMapDelegate.setAnimationListener(listener);
     }
 
-    public void setMarkerClickListener(MarkerClickListener listener) {
-        mMapDelegate.setMarkerClickListener(listener);
-    }
-
     public void setMapScreenCaptureListener(MapScreenCaptureListener listener) {
         mMapDelegate.setMapScreenCaptureListener(listener);
     }
@@ -201,6 +198,7 @@ public class MapView extends View {
     }
 
     public void setInfoWindowClickListener(InfoWindowClickListener listener) {
+        mInfoWindowClickListener = listener;
         mMapDelegate.setInfoWindowClickListener(listener);
     }
 
@@ -268,6 +266,59 @@ public class MapView extends View {
         mMapDelegate.setRotateGestureEnable(enable);
     }
 
+    public void setMarkerClickListener(MarkerClickListener listener) {
+        mMarkerClickListener = listener;
+        mMapDelegate.setMarkerClickListener(listener);
+    }
+
+    public List<MapMarker> getMarkers() {
+        return mMapDelegate.getMarkers();
+    }
+
+    public void setMarkers(List<MapMarker> mapMarkers) {
+        clearMarkers();
+        if (mapMarkers != null) {
+            for (MapMarker mapMarker : mapMarkers) {
+                addMarker(mapMarker);
+            }
+        }
+    }
+
+    public void clearMarkers() {
+        mMapDelegate.clearMarkers();
+    }
+
+    public void addMarker(MapMarker mapMarker) {
+        mMapDelegate.addMarker(mapMarker);
+    }
+
+    public void addMarkers(Collection<MapMarker> mapMarkers) {
+        if (mapMarkers == null) {
+            return;
+        }
+        for (MapMarker mapMarker : mapMarkers) {
+            mMapDelegate.addMarker(mapMarker);
+        }
+    }
+
+    public void removeMarker(MapMarker mapMarker) {
+        mMapDelegate.removeMarker(mapMarker);
+    }
+
+    public void removeMarkers(Collection<MapMarker> mapMarkers) {
+        if (mapMarkers == null) {
+            return;
+        }
+        for (MapMarker mapMarker : mapMarkers) {
+            mMapDelegate.removeMarker(mapMarker);
+        }
+    }
+
+    public void setInfoWindowInflater(InfoWindowInflater inflater) {
+        mInfoWindowInflater = inflater;
+        mMapDelegate.setInfoWindowInflater(inflater);
+    }
+
     public void screenShotAndSave(String saveFilePath) {
         mMapDelegate.screenShotAndSave(saveFilePath);
     }
@@ -281,7 +332,7 @@ public class MapView extends View {
     }
 
     public void animateTo(MapPoint mapPoint, AnimationListener listener) {
-        animateTo(mapPoint, 17, listener);
+        animateTo(mapPoint, 19, listener);
     }
 
     public void animateTo(MapPoint mapPoint, float zoom, AnimationListener listener) {
@@ -394,59 +445,6 @@ public class MapView extends View {
         mMapDelegate.removeCircle(circle);
     }
 
-    public void addMarker(MapMarker mapMarker) {
-        mMapDelegate.addMarker(mapMarker);
-        mMapMarkers.add(mapMarker);
-    }
-
-    public void addMarkers(Collection<MapMarker> mapMarkers) {
-        if (mapMarkers == null) {
-            return;
-        }
-        for (MapMarker mapMarker : mapMarkers) {
-            mMapDelegate.addMarker(mapMarker);
-        }
-        mMapMarkers.addAll(mapMarkers);
-    }
-
-    public void removeMarker(MapMarker mapMarker) {
-        mMapDelegate.removeMarker(mapMarker);
-        mMapMarkers.remove(mapMarker);
-    }
-
-    public void removeMarkers(Collection<MapMarker> mapMarkers) {
-        if (mapMarkers == null) {
-            return;
-        }
-        for (MapMarker mapMarker : mapMarkers) {
-            mMapDelegate.removeMarker(mapMarker);
-        }
-        mMapMarkers.removeAll(mapMarkers);
-    }
-
-    public void clearMarkers() {
-        clearMarkersInCurrentMap();
-        mMapMarkers.clear();
-    }
-
-    private void clearMarkersInCurrentMap() {
-        MapDelegate mapDelegate = mMapDelegate;
-        List<MapMarker> mapMarkers = mMapMarkers;
-
-        for (MapMarker markers : mapMarkers) {
-            mapDelegate.removeMarker(markers);
-        }
-    }
-
-    private void addMarkersInCurrentMap() {
-        MapDelegate mapDelegate = mMapDelegate;
-        List<MapMarker> mapMarkers = mMapMarkers;
-
-        for (MapMarker mapMarker : mapMarkers) {
-            mapDelegate.addMarker(mapMarker);
-        }
-    }
-
     public int getMapHeight() {
         if (mCurrentMapView == null || mCurrentMapView == this) {
             return getHeight();
@@ -461,5 +459,13 @@ public class MapView extends View {
         } else {
             return mCurrentMapView.getWidth();
         }
+    }
+
+    public void hideInfoWindow() {
+        mMapDelegate.hideInfoWindow();
+    }
+
+    public void showInfoWindow(MapMarker mapMarker) {
+        mMapDelegate.showInfoWindow(mapMarker);
     }
 }

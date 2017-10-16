@@ -1,4 +1,4 @@
-package com.ray.mapsdk.pages.basemap;
+package com.ray.mapsdk.pages.poi;
 
 import com.ray.lib_map.entity.Poi;
 

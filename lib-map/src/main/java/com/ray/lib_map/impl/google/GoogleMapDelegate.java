@@ -9,6 +9,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.ray.lib_map.InfoWindowInflater;
 import com.ray.lib_map.MapDelegate;
 import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.Circle;
@@ -39,7 +40,6 @@ public class GoogleMapDelegate implements MapDelegate {
 
     private static final String MAP_VIEW_BUNDLE_KEY = "google_map_view_bundle_key";
     private static boolean sHasInited;
-    private final Context mContext;
     private final MapView mMapView;
     private MapLoadListener mMapLoadListener;
 
@@ -49,8 +49,7 @@ public class GoogleMapDelegate implements MapDelegate {
         }
         sHasInited = true;
 
-        mContext = context;
-        mMapView = new MapView(mContext);
+        mMapView = new MapView(context);
     }
 
     @Override
@@ -229,6 +228,21 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
+    public void setInfoWindowInflater(InfoWindowInflater inflater) {
+
+    }
+
+    @Override
+    public List<MapMarker> getMarkers() {
+        return null;
+    }
+
+    @Override
+    public void clearMarkers() {
+
+    }
+
+    @Override
     public void screenShotAndSave(String saveFilePath) {
 
     }
@@ -375,6 +389,16 @@ public class GoogleMapDelegate implements MapDelegate {
 
     @Override
     public void removeMarker(MapMarker mapMarker) {
+
+    }
+
+    @Override
+    public void hideInfoWindow(MapMarker mapMarker) {
+
+    }
+
+    @Override
+    public void showInfoWindow(MapMarker mapMarker) {
 
     }
 }

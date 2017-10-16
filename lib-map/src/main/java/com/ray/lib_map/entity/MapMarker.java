@@ -27,6 +27,12 @@ public class MapMarker {
      * 地图点的位置
      */
     private MapPoint mapPoint;
+
+    /**
+     * 图标
+     */
+    private Bitmap icon;
+
     /**
      * 锚点X坐标
      */
@@ -35,21 +41,31 @@ public class MapMarker {
      * 锚点Y坐标
      */
     private float anchorY;
-    /**
-     * 图标
-     */
-    private Bitmap icon;
+
     /**
      * 标题
      */
     private String title;
-    /**
-     * 副标题
-     */
-    private String subTitle;
 
-    public MapMarker() {
+    /**
+     * 内容
+     */
+    private String content;
+
+    /**
+     * tag
+     */
+    private Object tag;
+
+    /**
+     * infoWindow是否可见
+     */
+    private boolean infoWindowVisible;
+
+    public MapMarker(MapPoint mapPoint, Bitmap icon) {
         rawMarkers = new HashMap<>();
+        this.mapPoint = mapPoint;
+        this.icon = icon;
     }
 
     public MapPoint getMapPoint() {
@@ -92,12 +108,12 @@ public class MapMarker {
         this.title = title;
     }
 
-    public String getSubTitle() {
-        return subTitle;
+    public String getContent() {
+        return content;
     }
 
-    public void setSubTitle(String subTitle) {
-        this.subTitle = subTitle;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Object getRawMarker(MapType mapType) {
@@ -112,16 +128,34 @@ public class MapMarker {
         return rawMarkers.remove(mapType);
     }
 
+    public Object getTag() {
+        return tag;
+    }
+
+    public void setTag(Object tag) {
+        this.tag = tag;
+    }
+
+    public boolean isInfoWindowVisible() {
+        return infoWindowVisible;
+    }
+
+    public void setInfoWindowVisible(boolean infoWindowVisible) {
+        this.infoWindowVisible = infoWindowVisible;
+    }
+
     @Override
     public String toString() {
         return "MapMarker{" +
-                "mapPoint=" + mapPoint +
+                "rawMarkers=" + rawMarkers +
+                ", mapPoint=" + mapPoint +
+                ", icon=" + icon +
                 ", anchorX=" + anchorX +
                 ", anchorY=" + anchorY +
-                ", icon=" + icon +
                 ", title='" + title + '\'' +
-                ", subTitle='" + subTitle + '\'' +
-                ", rawMarkers=" + rawMarkers +
+                ", content='" + content + '\'' +
+                ", tag=" + tag +
+                ", infoWindowVisible=" + infoWindowVisible +
                 '}';
     }
 
@@ -134,22 +168,23 @@ public class MapMarker {
 
         if (Float.compare(mapMarker.anchorX, anchorX) != 0) return false;
         if (Float.compare(mapMarker.anchorY, anchorY) != 0) return false;
-        if (mapPoint != null ? !mapPoint.equals(mapMarker.mapPoint) : mapMarker.mapPoint != null)
-            return false;
-        if (icon != null ? !icon.equals(mapMarker.icon) : mapMarker.icon != null) return false;
+        if (infoWindowVisible != mapMarker.infoWindowVisible) return false;
+        if (!mapPoint.equals(mapMarker.mapPoint)) return false;
+        if (!icon.equals(mapMarker.icon)) return false;
         if (title != null ? !title.equals(mapMarker.title) : mapMarker.title != null) return false;
-        return subTitle != null ? subTitle.equals(mapMarker.subTitle) : mapMarker.subTitle == null;
+        return content != null ? content.equals(mapMarker.content) : mapMarker.content == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = mapPoint != null ? mapPoint.hashCode() : 0;
+        int result = mapPoint.hashCode();
+        result = 31 * result + icon.hashCode();
         result = 31 * result + (anchorX != +0.0f ? Float.floatToIntBits(anchorX) : 0);
         result = 31 * result + (anchorY != +0.0f ? Float.floatToIntBits(anchorY) : 0);
-        result = 31 * result + (icon != null ? icon.hashCode() : 0);
         result = 31 * result + (title != null ? title.hashCode() : 0);
-        result = 31 * result + (subTitle != null ? subTitle.hashCode() : 0);
+        result = 31 * result + (content != null ? content.hashCode() : 0);
+        result = 31 * result + (infoWindowVisible ? 1 : 0);
         return result;
     }
 }

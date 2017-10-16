@@ -26,26 +26,20 @@ public class MapHelper {
     }
 
     public static MapMarker createMarker(Address address, Context context, int resId) {
-        MapMarker mapMarker = new MapMarker();
+        MapMarker mapMarker = new MapMarker(address.getMapPoint(), BitmapUtil.fromResource(context, resId));
         mapMarker.setAnchorX(0.5f);
         mapMarker.setAnchorY(0.5f);
-        mapMarker.setIcon(BitmapUtil.fromResource(context, resId));
         mapMarker.setTitle(address.getName());
-        mapMarker.setSubTitle(address.getFormattedAddress());
-        mapMarker.setMapPoint(address.getMapPoint());
-
+        mapMarker.setContent(address.getFormattedAddress());
         return mapMarker;
     }
 
     public static MapMarker createMarker(Poi poi, Context context, int resId) {
-        MapMarker mapMarker = new MapMarker();
+        MapMarker mapMarker = new MapMarker(poi.getMapPoint(), BitmapUtil.fromResource(context, resId));
         mapMarker.setAnchorX(0.5f);
         mapMarker.setAnchorY(0.5f);
-        mapMarker.setIcon(BitmapUtil.fromResource(context, resId));
         mapMarker.setTitle(poi.getName());
-        mapMarker.setSubTitle(poi.getAddress());
-        mapMarker.setMapPoint(poi.getMapPoint());
-
+        mapMarker.setContent(poi.getAddress());
         return mapMarker;
     }
 

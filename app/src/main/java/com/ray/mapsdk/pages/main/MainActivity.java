@@ -9,8 +9,8 @@ import android.support.v7.widget.RecyclerView;
 
 import com.ray.mapsdk.R;
 import com.ray.mapsdk.base.OnItemClickListener;
-import com.ray.mapsdk.pages.basemap.MapActivity;
 import com.ray.mapsdk.pages.gesture.GestureControlActivity;
+import com.ray.mapsdk.pages.poi.PoiListActivity;
 import com.ray.mapsdk.pages.zoom.CameraActivity;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
     private List<Page> mPages = Arrays.asList(
-            new Page("poi query", MapActivity.class),
+            new Page("poi query", PoiListActivity.class),
             new Page("camera", CameraActivity.class),
             new Page("gesture control", GestureControlActivity.class)
     );

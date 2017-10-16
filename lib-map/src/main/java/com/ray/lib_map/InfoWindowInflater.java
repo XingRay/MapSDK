@@ -14,6 +14,6 @@ import com.ray.lib_map.entity.MapMarker;
  * Description : xxx
  */
 
-public interface MarkerInflater {
-    View inflateMarker(MapMarker marker);
+public interface InfoWindowInflater {
+    View inflate(MapMarker marker);
 }

@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Button;
 
 import com.ray.mapsdk.R;
 import com.ray.mapsdk.base.OnItemClickListener;
@@ -25,20 +25,18 @@ import butterknife.ButterKnife;
  * Description : xxx
  */
 
-public class PageListAdapter extends RecyclerView.Adapter<PageListAdapter.PageListViewHolder> {
+class PageListAdapter extends RecyclerView.Adapter<PageListAdapter.PageListViewHolder> {
 
-    private final Context mContext;
     private final LayoutInflater mInflater;
     private final List<Page> mPages;
     private OnItemClickListener mOnItemClickListener;
 
-    public PageListAdapter(Context context) {
-        mContext = context;
-        mInflater = LayoutInflater.from(mContext);
+    PageListAdapter(Context context) {
+        mInflater = LayoutInflater.from(context);
         mPages = new ArrayList<>();
     }
 
-    public void set(List<Page> pages) {
+    void set(List<Page> pages) {
         mPages.clear();
         if (pages != null) {
             mPages.addAll(pages);
@@ -55,8 +53,8 @@ public class PageListAdapter extends RecyclerView.Adapter<PageListAdapter.PageLi
     @Override
     public void onBindViewHolder(final PageListViewHolder holder, int position) {
         Page page = mPages.get(position);
-        holder.tvName.setText(page.getName());
-        holder.tvName.setOnClickListener(new View.OnClickListener() {
+        holder.btName.setText(page.getName());
+        holder.btName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mOnItemClickListener != null) {
@@ -71,13 +69,13 @@ public class PageListAdapter extends RecyclerView.Adapter<PageListAdapter.PageLi
         return mPages.size();
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
+    void setOnItemClickListener(OnItemClickListener listener) {
         mOnItemClickListener = listener;
     }
 
     static class PageListViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.tv_name)
-        TextView tvName;
+        @BindView(R.id.bt_name)
+        Button btName;
 
         PageListViewHolder(View itemView) {
             super(itemView);

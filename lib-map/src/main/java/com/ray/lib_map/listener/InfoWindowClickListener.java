@@ -1,6 +1,6 @@
 package com.ray.lib_map.listener;
 
-import com.ray.lib_map.entity.MapPoint;
+import com.ray.lib_map.entity.MapMarker;
 
 /**
  * Author      : leixing
@@ -14,9 +14,6 @@ import com.ray.lib_map.entity.MapPoint;
 public interface InfoWindowClickListener {
     /**
      * 信息窗口被点击时回调
-     *
-     * @param infoWindow 被点击的信息窗口
-     * @param mapPoint   点击的位置
      */
-    void onInfoWindowClick(Object infoWindow, MapPoint mapPoint);
+    void onInfoWindowClick(MapMarker marker);
 }

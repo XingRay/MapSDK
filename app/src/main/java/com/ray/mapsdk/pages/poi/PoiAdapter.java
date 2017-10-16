@@ -1,4 +1,4 @@
-package com.ray.mapsdk.pages.basemap;
+package com.ray.mapsdk.pages.poi;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

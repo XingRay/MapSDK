@@ -137,7 +137,17 @@ public interface MapDelegate {
 
     void removeMarker(MapMarker mapMarker);
 
+    List<MapMarker> getMarkers();
+
+    void clearMarkers();
+
     void setMarkerVisible(MapMarker mapMarker, boolean visible);
+
+    void setInfoWindowInflater(InfoWindowInflater inflater);
+
+    void hideInfoWindow();
+
+    void showInfoWindow(MapMarker mapMarker);
 
     // ========== overlay ========= //
     void addOverlay(MapOverlay overlay);

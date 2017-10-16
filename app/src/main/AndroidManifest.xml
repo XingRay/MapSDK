@@ -55,7 +55,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".pages.basemap.MapActivity"/>
+        <activity android:name=".pages.poi.PoiListActivity"/>
 
         <activity
             android:name=".pages.zoom.CameraActivity"

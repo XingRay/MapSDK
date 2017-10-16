@@ -1,4 +1,4 @@
-package com.ray.mapsdk.pages.basemap;
+package com.ray.mapsdk.pages.poi;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,9 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ray.lib_map.InfoWindowInflater;
 import com.ray.lib_map.MapView;
 import com.ray.lib_map.data.DataCallback;
 import com.ray.lib_map.data.MapDataSource;
@@ -19,10 +22,13 @@ import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Poi;
 import com.ray.lib_map.entity.PoiSearchSuggestion;
+import com.ray.lib_map.extern.CoordinateType;
 import com.ray.lib_map.extern.MapDataRepository;
 import com.ray.lib_map.extern.MapHelper;
 import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.listener.InfoWindowClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
+import com.ray.lib_map.listener.MarkerClickListener;
 import com.ray.mapsdk.R;
 import com.ray.mapsdk.base.OnItemClickListener;
 import com.ray.mapsdk.helper.ThreadPools;
@@ -46,8 +52,8 @@ import butterknife.OnClick;
  * Description : xxx
  */
 
-public class MapActivity extends AppCompatActivity {
-    private static final String TAG = "MapActivity";
+public class PoiListActivity extends AppCompatActivity {
+    private static final String TAG = "poi_activity";
 
     @BindView(R.id.mv_map)
     MapView mvMap;
@@ -59,6 +65,8 @@ public class MapActivity extends AppCompatActivity {
     private MapDataRepository mMapDataRepository;
     private PoiAdapter mAdapter;
     private Activity mActivity;
+    private MapMarker mMapMarker;
+    private LayoutInflater mInflater;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,6 +81,7 @@ public class MapActivity extends AppCompatActivity {
         mActivity = this;
         mMapDataRepository = new MapDataRepository(mContext);
         mAdapter = new PoiAdapter(this);
+        mInflater = LayoutInflater.from(this);
     }
 
     private void initView() {
@@ -98,6 +107,48 @@ public class MapActivity extends AppCompatActivity {
             @Override
             public void onMapLoaded() {
                 location();
+            }
+        });
+
+        mvMap.setMarkerClickListener(new MarkerClickListener() {
+            @Override
+            public boolean onMarkClick(MapMarker marker) {
+                MapPoint mapPoint = marker.getMapPoint();
+                String toast = "(" + mapPoint.getLatitude() + ", " + mapPoint.getLongitude() + ")";
+                Toast.makeText(mActivity, toast, Toast.LENGTH_SHORT).show();
+                if (mMapMarker != null) {
+                    mvMap.hideInfoWindow(mMapMarker);
+                }
+                mMapMarker = marker;
+                mvMap.showInfoWindow(mMapMarker);
+                return true;
+            }
+        });
+
+        mvMap.setInfoWindowInflater(new InfoWindowInflater() {
+            @Override
+            public View inflate(MapMarker marker) {
+                View view = mInflater.inflate(R.layout.view_info_window, null);
+                TextView tvTitle = view.findViewById(R.id.tv_title);
+                TextView tvContent = view.findViewById(R.id.tv_content);
+                TextView tvCoordinate = view.findViewById(R.id.tv_coordinate);
+
+                tvTitle.setText(marker.getTitle());
+                tvContent.setText(marker.getContent());
+
+                MapPoint mapPoint = marker.getMapPoint().as(CoordinateType.WGS84);
+                tvCoordinate.setText("(" + mapPoint.getLatitude() + ", " + mapPoint.getLongitude() + ")");
+
+                return view;
+            }
+        });
+
+        mvMap.setInfoWindowClickListener(new InfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(MapMarker marker) {
+                MapPoint mapPoint = marker.getMapPoint().as(CoordinateType.WGS84);
+                String toast = "(" + mapPoint.getLatitude() + ", " + mapPoint.getLongitude() + ")";
+                Toast.makeText(mActivity, toast, Toast.LENGTH_SHORT).show();
             }
         });
     }

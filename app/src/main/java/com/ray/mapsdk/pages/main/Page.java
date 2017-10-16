@@ -12,11 +12,12 @@ import android.content.Intent;
  * Description : xxx
  */
 
-public class Page {
+@SuppressWarnings("unused")
+class Page {
     private String name;
     private Class<? extends Activity> cls;
 
-    public Page(String name, Class<? extends Activity> cls) {
+    Page(String name, Class<? extends Activity> cls) {
         this.name = name;
         this.cls = cls;
     }
@@ -46,11 +47,11 @@ public class Page {
     }
 
 
-    public void start(Activity activity) {
+    void start(Activity activity) {
         start(activity, 100);
     }
 
-    public void start(Activity activity, int requestCode) {
+    private void start(Activity activity, int requestCode) {
         Intent intent = new Intent();
         intent.setClass(activity, cls);
         activity.startActivityForResult(intent, requestCode);
