@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.ray.lib_map.MapView;
+import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.extern.MapType;
 import com.ray.mapsdk.R;
@@ -138,20 +139,6 @@ public class CameraActivity extends AppCompatActivity {
         mvMap.setZoom(Float.parseFloat(etZoom.getText().toString().trim()));
     }
 
-    private void getAll() {
-        getPosition();
-        getZoom();
-        getRotate();
-        getOverlook();
-    }
-
-    private void setAll() {
-        setPosition();
-        setZoom();
-        setOverlook();
-        setRotate();
-    }
-
     private void setPosition() {
         double latitude = Double.parseDouble(etLatitude.getText().toString().trim());
         double longitude = Double.parseDouble(etLongitude.getText().toString().trim());
@@ -164,4 +151,32 @@ public class CameraActivity extends AppCompatActivity {
         etLatitude.setText(String.valueOf(position.getLatitude()));
         etLongitude.setText(String.valueOf(position.getLongitude()));
     }
+
+    private void getAll() {
+        CameraPosition cameraPosition = mvMap.saveCameraPosition();
+        MapPoint position = cameraPosition.getPosition();
+        etLongitude.setText(String.valueOf(position.getLongitude()));
+        etLatitude.setText(String.valueOf(position.getLatitude()));
+        etZoom.setText(String.valueOf(cameraPosition.getZoom()));
+        etRotate.setText(String.valueOf(cameraPosition.getRotate()));
+        etOverlook.setText(String.valueOf(cameraPosition.getOverlook()));
+    }
+
+    private void setAll() {
+        double latitude = Double.parseDouble(etLatitude.getText().toString().trim());
+        double longitude = Double.parseDouble(etLongitude.getText().toString().trim());
+        MapPoint mapPoint = new MapPoint(latitude, longitude, MapType.GAODE.getCoordinateType());
+        float zoom = Float.parseFloat(etZoom.getText().toString().trim());
+        float overlook = Float.parseFloat(etOverlook.getText().toString().trim());
+        float rotate = Float.parseFloat(etRotate.getText().toString().trim());
+
+        CameraPosition cameraPosition = new CameraPosition();
+        cameraPosition.setPosition(mapPoint);
+        cameraPosition.setZoom(zoom);
+        cameraPosition.setOverlook(overlook);
+        cameraPosition.setRotate(rotate);
+        mvMap.restoreCameraPosition(cameraPosition);
+    }
+
+
 }

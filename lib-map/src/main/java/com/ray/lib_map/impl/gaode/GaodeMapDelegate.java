@@ -13,6 +13,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.ray.lib_map.MapDelegate;
+import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
@@ -249,6 +250,30 @@ public class GaodeMapDelegate implements MapDelegate {
     @Override
     public void setRotate(float rotate) {
         getMap().animateCamera(CameraUpdateFactory.changeBearing(rotate));
+    }
+
+    @Override
+    public CameraPosition saveCameraPosition() {
+        com.amap.api.maps.model.CameraPosition cameraPosition = getMap().getCameraPosition();
+
+        CameraPosition position = new CameraPosition();
+        position.setPosition(new MapPoint(cameraPosition.target.latitude, cameraPosition.target.longitude, MapType.GAODE.getCoordinateType()));
+        position.setRotate(cameraPosition.bearing);
+        position.setZoom(ZoomStandardization.toStandardZoom(cameraPosition.zoom, MapType.GAODE));
+        position.setOverlook(cameraPosition.tilt);
+
+        return position;
+    }
+
+    @Override
+    public void restoreCameraPosition(CameraPosition position) {
+        MapPoint mapPoint = position.getPosition().copy(MapType.GAODE.getCoordinateType());
+        LatLng latLng = new LatLng(mapPoint.getLatitude(), mapPoint.getLongitude());
+        float gaodeZoom = ZoomStandardization.fromStandardZoom(position.getZoom(), MapType.GAODE);
+
+        com.amap.api.maps.model.CameraPosition cameraPosition
+                = new com.amap.api.maps.model.CameraPosition(latLng, gaodeZoom, position.getOverlook(), position.getRotate());
+        getMap().moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     private MapPoint getMapPoint(com.amap.api.maps.model.CameraPosition cameraPosition) {

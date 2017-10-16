@@ -143,24 +143,12 @@ public class MapView extends View {
         addMarkersInCurrentMap();
     }
 
-    private CameraPosition saveCameraPosition() {
-        MapDelegate mapDelegate = mMapDelegate;
-
-        CameraPosition cameraPosition = new CameraPosition();
-        cameraPosition.setZoom(mapDelegate.getZoom());
-        cameraPosition.setOverlook(mapDelegate.getOverlook());
-        cameraPosition.setPosition(mapDelegate.getPosition());
-        cameraPosition.setRotate(mapDelegate.getRotate());
-        return cameraPosition;
+    public CameraPosition saveCameraPosition() {
+        return mMapDelegate.saveCameraPosition();
     }
 
-    private void restoreCameraPosition(CameraPosition cameraPosition) {
-        MapDelegate mapDelegate = mMapDelegate;
-
-        mapDelegate.setZoom(cameraPosition.getZoom());
-        mapDelegate.setPosition(cameraPosition.getPosition());
-        mapDelegate.setRotate(cameraPosition.getRotate());
-        mapDelegate.setOverlook(cameraPosition.getOverlook());
+    public void restoreCameraPosition(CameraPosition cameraPosition) {
+        mMapDelegate.restoreCameraPosition(cameraPosition);
     }
 
     private GestureSetting saveGestureSetting() {

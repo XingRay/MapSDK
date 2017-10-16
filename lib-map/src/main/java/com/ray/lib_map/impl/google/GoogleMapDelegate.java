@@ -10,6 +10,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.ray.lib_map.MapDelegate;
+import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
@@ -214,6 +215,16 @@ public class GoogleMapDelegate implements MapDelegate {
 
     @Override
     public void setPosition(MapPoint mapPoint) {
+
+    }
+
+    @Override
+    public CameraPosition saveCameraPosition() {
+        return null;
+    }
+
+    @Override
+    public void restoreCameraPosition(CameraPosition position) {
 
     }
 

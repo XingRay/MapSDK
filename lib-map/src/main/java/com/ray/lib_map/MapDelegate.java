@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
 
+import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
@@ -97,6 +98,10 @@ public interface MapDelegate {
     MapPoint getPosition();
 
     void setPosition(MapPoint mapPoint);
+
+    CameraPosition saveCameraPosition();
+
+    void restoreCameraPosition(CameraPosition position);
 
     // === zoom === //
 

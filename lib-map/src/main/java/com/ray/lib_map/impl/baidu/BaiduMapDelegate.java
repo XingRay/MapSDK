@@ -9,6 +9,7 @@ import com.baidu.mapapi.CoordType;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
@@ -16,6 +17,7 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.model.LatLng;
 import com.ray.lib_map.MapDelegate;
+import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
@@ -93,10 +95,13 @@ public class BaiduMapDelegate implements MapDelegate {
     @Override
     public void onSwitchOut() {
         onPause();
+        onDestroy();
+        mMapView = null;
     }
 
     @Override
     public void onSwitchIn(Bundle savedInstanceState) {
+        mMapView = new MapView(mContext);
         onCreate(savedInstanceState);
         onResume();
     }
@@ -215,6 +220,39 @@ public class BaiduMapDelegate implements MapDelegate {
     @Override
     public void setRotate(float rotate) {
         com.baidu.mapapi.map.MapStatus status = new com.baidu.mapapi.map.MapStatus.Builder(getMap().getMapStatus()).rotate(rotate).build();
+        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
+        getMap().animateMapStatus(update);
+    }
+
+    @Override
+    public CameraPosition saveCameraPosition() {
+        MapStatus mapStatus = getMap().getMapStatus();
+
+        CameraPosition position = new CameraPosition();
+        position.setPosition(new MapPoint(mapStatus.target.latitude, mapStatus.target.longitude, MapType.BAIDU.getCoordinateType()));
+        position.setRotate(mapStatus.rotate);
+        position.setZoom(ZoomStandardization.toStandardZoom(mapStatus.zoom, MapType.BAIDU));
+        position.setOverlook(mapStatus.overlook == 0 ? 0 : -mapStatus.overlook);
+
+        return position;
+    }
+
+    @Override
+    public void restoreCameraPosition(CameraPosition position) {
+        MapPoint mapPoint = position.getPosition().copy(MapType.BAIDU.getCoordinateType());
+        float overlook = position.getOverlook();
+        float baiduZoom = ZoomStandardization.fromStandardZoom(position.getZoom(), MapType.BAIDU);
+        float baiduOverlook = overlook == 0 ? 0 : -overlook;
+        LatLng latLng = new LatLng(mapPoint.getLatitude(), mapPoint.getLongitude());
+
+        com.baidu.mapapi.map.MapStatus status = new com.baidu.mapapi.map.MapStatus
+                .Builder(getMap().getMapStatus())
+                .target(latLng)
+                .rotate(position.getRotate())
+                .zoom(baiduZoom)
+                .overlook(baiduOverlook)
+                .build();
+
         MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
         getMap().animateMapStatus(update);
     }
