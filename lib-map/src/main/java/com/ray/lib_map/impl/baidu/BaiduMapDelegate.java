@@ -150,8 +150,15 @@ public class BaiduMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setMapLoadListener(MapLoadListener listener) {
-
+    public void setMapLoadListener(final MapLoadListener listener) {
+        getMap().setOnMapLoadedCallback(new BaiduMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                if (listener != null) {
+                    listener.onMapLoaded();
+                }
+            }
+        });
     }
 
     @Override

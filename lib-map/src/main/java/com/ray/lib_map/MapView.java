@@ -50,6 +50,7 @@ public class MapView extends View {
     private InfoWindowInflater mInfoWindowInflater;
     private InfoWindowClickListener mInfoWindowClickListener;
     private CameraMoveListener mCameraMoveListener;
+    private MapLoadListener mMapLoadListener;
 
     public MapView(@NonNull Context context) {
         this(context, null);
@@ -135,6 +136,7 @@ public class MapView extends View {
         mMapDelegate.onSwitchIn(savedInstanceState);
         mCurrentMapView = ViewUtil.replaceView(mCurrentMapView, mMapDelegate.getMapView());
 
+        mMapDelegate.setMapLoadListener(mMapLoadListener);
         mMapDelegate.setMarkerClickListener(mMarkerClickListener);
         mMapDelegate.setInfoWindowInflater(mInfoWindowInflater);
         mMapDelegate.setInfoWindowClickListener(mInfoWindowClickListener);
@@ -178,6 +180,7 @@ public class MapView extends View {
     }
 
     public void setMapLoadListener(MapLoadListener listener) {
+        mMapLoadListener = listener;
         mMapDelegate.setMapLoadListener(listener);
     }
 

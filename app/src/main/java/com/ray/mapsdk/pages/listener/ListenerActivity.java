@@ -12,6 +12,7 @@ import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.listener.CameraMoveListener;
+import com.ray.lib_map.listener.MapLoadListener;
 import com.ray.mapsdk.R;
 
 import butterknife.BindView;
@@ -76,6 +77,14 @@ public class ListenerActivity extends Activity {
             public void onCameraMoved(CameraPosition position) {
                 showCameraPosition(position);
                 Toast.makeText(mActivity, "camera moved", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mvMap.setMapLoadListener(new MapLoadListener() {
+            @Override
+            public void onMapLoaded() {
+                Toast.makeText(mActivity, "mapLoaded", Toast.LENGTH_SHORT).show();
+                getAll();
             }
         });
     }
