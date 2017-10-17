@@ -16,16 +16,18 @@ import com.ray.lib_map.InfoWindowInflater;
 import com.ray.lib_map.MapDelegate;
 import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.Circle;
-import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
+import com.ray.lib_map.entity.PolyLine;
 import com.ray.lib_map.entity.Polygon;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.extern.ZoomStandardization;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
+import com.ray.lib_map.listener.MapClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
+import com.ray.lib_map.listener.MapLongClickListener;
 import com.ray.lib_map.listener.MapScreenCaptureListener;
 import com.ray.lib_map.listener.MarkerClickListener;
 
@@ -159,6 +161,18 @@ public class GaodeMapDelegate implements MapDelegate {
                     if (mapMarker != null) {
                         listener.onInfoWindowClick(mapMarker);
                     }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void setMapLongClickListener(final MapLongClickListener listener) {
+        getMap().setOnMapLongClickListener(new AMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                if (listener != null) {
+                    listener.onMapLongClick(GaodeDataConverter.toMapPoint(latLng));
                 }
             }
         });
@@ -300,6 +314,18 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
+    public void setMapClickListener(final MapClickListener listener) {
+        getMap().setOnMapClickListener(new AMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (listener != null) {
+                    listener.onMapClick(GaodeDataConverter.toMapPoint(latLng));
+                }
+            }
+        });
+    }
+
+    @Override
     public void setInfoWindowInflater(final InfoWindowInflater inflater) {
         getMap().setInfoWindowAdapter(new AMap.InfoWindowAdapter() {
             @Override
@@ -412,11 +438,6 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void moveTo(MapPoint point, boolean isSmooth, float zoom) {
-
-    }
-
-    @Override
     public void moveByBounds(List<MapPoint> points, int padding) {
 
     }
@@ -490,12 +511,12 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void addPolyline(MapLine polyline) {
+    public void addPolyline(PolyLine polyline) {
 
     }
 
     @Override
-    public void removePolyline(MapLine p) {
+    public void removePolyline(PolyLine p) {
 
     }
 

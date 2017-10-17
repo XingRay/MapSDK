@@ -10,6 +10,7 @@ import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.InfoWindow;
+import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
@@ -22,16 +23,18 @@ import com.ray.lib_map.InfoWindowInflater;
 import com.ray.lib_map.MapDelegate;
 import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.Circle;
-import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
+import com.ray.lib_map.entity.PolyLine;
 import com.ray.lib_map.entity.Polygon;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.extern.ZoomStandardization;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
+import com.ray.lib_map.listener.MapClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
+import com.ray.lib_map.listener.MapLongClickListener;
 import com.ray.lib_map.listener.MapScreenCaptureListener;
 import com.ray.lib_map.listener.MarkerClickListener;
 
@@ -185,6 +188,38 @@ public class BaiduMapDelegate implements MapDelegate {
             public void onMapStatusChangeFinish(MapStatus mapStatus) {
                 if (listener != null) {
                     listener.onCameraMoved(BaiduDataConverter.toCameraPosition(mapStatus));
+                }
+            }
+        });
+    }
+
+    @Override
+    public void setMapClickListener(final MapClickListener listener) {
+        getMap().setOnMapClickListener(new BaiduMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (listener != null) {
+                    listener.onMapClick(BaiduDataConverter.toMapPoint(latLng));
+                }
+            }
+
+            @Override
+            public boolean onMapPoiClick(MapPoi mapPoi) {
+                if (listener != null) {
+                    listener.onMapClick(BaiduDataConverter.toMapPoint(mapPoi.getPosition()));
+                }
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public void setMapLongClickListener(final MapLongClickListener listener) {
+        getMap().setOnMapLongClickListener(new BaiduMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                if (listener != null) {
+                    listener.onMapLongClick(BaiduDataConverter.toMapPoint(latLng));
                 }
             }
         });
@@ -366,11 +401,6 @@ public class BaiduMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void moveTo(MapPoint point, boolean isSmooth, float zoom) {
-
-    }
-
-    @Override
     public void moveByBounds(List<MapPoint> points, int padding) {
 
     }
@@ -539,12 +569,12 @@ public class BaiduMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void addPolyline(MapLine mapLine) {
+    public void addPolyline(PolyLine polyLine) {
 
     }
 
     @Override
-    public void removePolyline(MapLine p) {
+    public void removePolyline(PolyLine p) {
 
     }
 

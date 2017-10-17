@@ -13,16 +13,18 @@ import android.view.View;
 import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.GestureSetting;
-import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
+import com.ray.lib_map.entity.PolyLine;
 import com.ray.lib_map.entity.Polygon;
 import com.ray.lib_map.extern.MapDelegateFactory;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
+import com.ray.lib_map.listener.MapClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
+import com.ray.lib_map.listener.MapLongClickListener;
 import com.ray.lib_map.listener.MapScreenCaptureListener;
 import com.ray.lib_map.listener.MarkerClickListener;
 import com.ray.lib_map.util.ViewUtil;
@@ -51,6 +53,8 @@ public class MapView extends View {
     private InfoWindowClickListener mInfoWindowClickListener;
     private CameraMoveListener mCameraMoveListener;
     private MapLoadListener mMapLoadListener;
+    private MapClickListener mMapClickListener;
+    private MapLongClickListener mMapLongClickListener;
 
     public MapView(@NonNull Context context) {
         this(context, null);
@@ -141,6 +145,8 @@ public class MapView extends View {
         mMapDelegate.setInfoWindowInflater(mInfoWindowInflater);
         mMapDelegate.setInfoWindowClickListener(mInfoWindowClickListener);
         mMapDelegate.setCameraMoveListener(mCameraMoveListener);
+        mMapDelegate.setMapClickListener(mMapClickListener);
+        mMapDelegate.setMapLongClickListener(mMapLongClickListener);
 
         setCameraPosition(position);
         setGestureSetting(setting);
@@ -409,21 +415,21 @@ public class MapView extends View {
         mMapDelegate.removePolygon(polygon);
     }
 
-    public void addPolyline(MapLine mapLine) {
-        mMapDelegate.addPolyline(mapLine);
+    public void addPolyline(PolyLine polyLine) {
+        mMapDelegate.addPolyline(polyLine);
     }
 
-    public void addPolylines(List<MapLine> mapLines) {
-        if (mapLines == null) {
+    public void addPolylines(List<PolyLine> polyLines) {
+        if (polyLines == null) {
             return;
         }
-        for (MapLine mapLine : mapLines) {
-            mMapDelegate.addPolyline(mapLine);
+        for (PolyLine polyLine : polyLines) {
+            mMapDelegate.addPolyline(polyLine);
         }
     }
 
-    public void removePolyline(MapLine mapLine) {
-        mMapDelegate.removePolyline(mapLine);
+    public void removePolyline(PolyLine polyLine) {
+        mMapDelegate.removePolyline(polyLine);
     }
 
     public void addCircle(Circle circle) {
@@ -467,5 +473,16 @@ public class MapView extends View {
         cameraPosition.setPosition(mapPoint);
         cameraPosition.setZoom(zoom);
         setCameraPosition(cameraPosition);
+    }
+
+    public void setMapClickListener(MapClickListener listener) {
+        mMapClickListener = listener;
+        mMapDelegate.setMapClickListener(listener);
+
+    }
+
+    public void setMapLongClickListener(MapLongClickListener listener) {
+        mMapLongClickListener = listener;
+        mMapDelegate.setMapLongClickListener(listener);
     }
 }

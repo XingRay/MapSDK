@@ -12,7 +12,9 @@ import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.listener.CameraMoveListener;
+import com.ray.lib_map.listener.MapClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
+import com.ray.lib_map.listener.MapLongClickListener;
 import com.ray.mapsdk.R;
 
 import butterknife.BindView;
@@ -85,6 +87,22 @@ public class ListenerActivity extends Activity {
             public void onMapLoaded() {
                 Toast.makeText(mActivity, "mapLoaded", Toast.LENGTH_SHORT).show();
                 getAll();
+            }
+        });
+
+        mvMap.setMapClickListener(new MapClickListener() {
+            @Override
+            public void onMapClick(MapPoint mapPoint) {
+                String toast = "click (" + mapPoint.getLatitude() + ", " + mapPoint.getLongitude() + ")";
+                Toast.makeText(mActivity, toast, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mvMap.setMapLongClickListener(new MapLongClickListener() {
+            @Override
+            public void onMapLongClick(MapPoint mapPoint) {
+                String toast = "long click (" + mapPoint.getLatitude() + ", " + mapPoint.getLongitude() + ")";
+                Toast.makeText(mActivity, toast, Toast.LENGTH_SHORT).show();
             }
         });
     }

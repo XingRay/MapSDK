@@ -172,4 +172,8 @@ public class GaodeDataConverter {
 
         return new com.amap.api.maps.model.CameraPosition(latLng, gaodeZoom, position.getOverlook(), position.getRotate());
     }
+
+    public static MapPoint toMapPoint(LatLng latLng) {
+        return new MapPoint(latLng.latitude, latLng.longitude, MapType.GAODE.getCoordinateType());
+    }
 }

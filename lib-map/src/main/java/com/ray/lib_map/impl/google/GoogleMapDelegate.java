@@ -13,14 +13,16 @@ import com.ray.lib_map.InfoWindowInflater;
 import com.ray.lib_map.MapDelegate;
 import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.Circle;
-import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
+import com.ray.lib_map.entity.PolyLine;
 import com.ray.lib_map.entity.Polygon;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
+import com.ray.lib_map.listener.MapClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
+import com.ray.lib_map.listener.MapLongClickListener;
 import com.ray.lib_map.listener.MapScreenCaptureListener;
 import com.ray.lib_map.listener.MarkerClickListener;
 
@@ -142,6 +144,16 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
+    public void setMapClickListener(MapClickListener listener) {
+
+    }
+
+    @Override
+    public void setMapLongClickListener(MapLongClickListener listener) {
+
+    }
+
+    @Override
     public boolean isZoomGestureEnable() {
         return false;
     }
@@ -238,11 +250,6 @@ public class GoogleMapDelegate implements MapDelegate {
 
     @Override
     public void screenShotAndSave(String saveFilePath) {
-
-    }
-
-    @Override
-    public void moveTo(MapPoint point, boolean isSmooth, float zoom) {
 
     }
 
@@ -357,12 +364,12 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void addPolyline(MapLine mapLine) {
+    public void addPolyline(PolyLine polyLine) {
 
     }
 
     @Override
-    public void removePolyline(MapLine p) {
+    public void removePolyline(PolyLine p) {
 
     }
 

@@ -6,8 +6,8 @@ package com.ray.lib_map.entity;
  * Email       : leixing@hecom.cn
  * Version     : 0.0.1
  * <p>
- * Description : xxx
+ * Description : polyline
  */
 
-public class MapLine {
+public class PolyLine {
 }

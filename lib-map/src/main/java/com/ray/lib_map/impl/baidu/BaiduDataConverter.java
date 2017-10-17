@@ -1,6 +1,7 @@
 package com.ray.lib_map.impl.baidu;
 
 import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.model.LatLng;
 import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.extern.MapType;
@@ -38,5 +39,9 @@ class BaiduDataConverter {
 
     static float fromStandardOverlook(float overlook) {
         return overlook == 0 ? 0 : -overlook;
+    }
+
+    static MapPoint toMapPoint(LatLng latLng) {
+        return new MapPoint(latLng.latitude, latLng.longitude, MapType.BAIDU.getCoordinateType());
     }
 }

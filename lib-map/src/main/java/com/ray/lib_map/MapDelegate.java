@@ -6,14 +6,16 @@ import android.view.View;
 
 import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.Circle;
-import com.ray.lib_map.entity.MapLine;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
+import com.ray.lib_map.entity.PolyLine;
 import com.ray.lib_map.entity.Polygon;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
+import com.ray.lib_map.listener.MapClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
+import com.ray.lib_map.listener.MapLongClickListener;
 import com.ray.lib_map.listener.MapScreenCaptureListener;
 import com.ray.lib_map.listener.MarkerClickListener;
 
@@ -59,6 +61,10 @@ public interface MapDelegate {
     void setInfoWindowClickListener(InfoWindowClickListener listener);
 
     void setMapScreenCaptureListener(MapScreenCaptureListener listener);
+
+    void setMapClickListener(MapClickListener listener);
+
+    void setMapLongClickListener(MapLongClickListener listener);
 
     // ===  gesture === //
 
@@ -114,8 +120,6 @@ public interface MapDelegate {
 
     void screenShotAndSave(String saveFilePath);
 
-    void moveTo(MapPoint point, boolean isSmooth, float zoom);
-
     void moveByBounds(List<MapPoint> points, int padding);
 
     void moveByPolygon(Polygon polygon, int padding);
@@ -160,9 +164,9 @@ public interface MapDelegate {
     List<MapOverlay> getOverlays();
 
     // == polyline == //
-    void addPolyline(MapLine mapLine);
+    void addPolyline(PolyLine polyLine);
 
-    void removePolyline(MapLine p);
+    void removePolyline(PolyLine p);
 
     // == circle == //
     void addCircle(Circle circle);
