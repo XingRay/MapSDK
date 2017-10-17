@@ -11,7 +11,6 @@ import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
-import com.ray.lib_map.listener.AnimationListener;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
@@ -55,8 +54,6 @@ public interface MapDelegate {
 
     void setCameraMoveListener(CameraMoveListener listener);
 
-    void setAnimationListener(AnimationListener listener);
-
     void setMarkerClickListener(MarkerClickListener listener);
 
     void setInfoWindowClickListener(InfoWindowClickListener listener);
@@ -99,9 +96,9 @@ public interface MapDelegate {
 
     void setPosition(MapPoint mapPoint);
 
-    CameraPosition saveCameraPosition();
+    CameraPosition getCameraPosition();
 
-    void restoreCameraPosition(CameraPosition position);
+    void setCameraPosition(CameraPosition position);
 
     // === zoom === //
 
@@ -116,8 +113,6 @@ public interface MapDelegate {
     // ========== basic function =========//
 
     void screenShotAndSave(String saveFilePath);
-
-    void animateTo(MapPoint mapPoint, float zoom, AnimationListener listener);
 
     void moveTo(MapPoint point, boolean isSmooth, float zoom);
 

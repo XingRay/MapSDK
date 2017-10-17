@@ -1,5 +1,6 @@
 package com.ray.mapsdk.pages.poi;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -65,7 +66,6 @@ public class PoiListActivity extends AppCompatActivity {
     private MapDataRepository mMapDataRepository;
     private PoiAdapter mAdapter;
     private Activity mActivity;
-    private MapMarker mMapMarker;
     private LayoutInflater mInflater;
 
     @Override
@@ -96,7 +96,7 @@ public class PoiListActivity extends AppCompatActivity {
                 mAdapter.select(position);
                 Poi poi = mAdapter.getSelectedPoi();
                 if (poi != null) {
-                    mvMap.animateTo(poi.getMapPoint(), null);
+                    mvMap.moveCameraTo(poi.getMapPoint());
                 }
             }
         });
@@ -116,11 +116,7 @@ public class PoiListActivity extends AppCompatActivity {
                 MapPoint mapPoint = marker.getMapPoint();
                 String toast = "(" + mapPoint.getLatitude() + ", " + mapPoint.getLongitude() + ")";
                 Toast.makeText(mActivity, toast, Toast.LENGTH_SHORT).show();
-                if (mMapMarker != null) {
-                    mvMap.hideInfoWindow(mMapMarker);
-                }
-                mMapMarker = marker;
-                mvMap.showInfoWindow(mMapMarker);
+                mvMap.showInfoWindow(marker);
                 return true;
             }
         });
@@ -128,6 +124,7 @@ public class PoiListActivity extends AppCompatActivity {
         mvMap.setInfoWindowInflater(new InfoWindowInflater() {
             @Override
             public View inflate(MapMarker marker) {
+                @SuppressLint("InflateParams")
                 View view = mInflater.inflate(R.layout.view_info_window, null);
                 TextView tvTitle = view.findViewById(R.id.tv_title);
                 TextView tvContent = view.findViewById(R.id.tv_content);
@@ -198,7 +195,7 @@ public class PoiListActivity extends AppCompatActivity {
                             public void run() {
                                 MapPoint mapPoint = address.getMapPoint();
                                 mvMap.addMarker(MapHelper.createMarker(address, mContext, R.mipmap.icon_location));
-                                mvMap.animateTo(mapPoint, null);
+                                mvMap.moveCameraTo(mapPoint);
                                 queryPoi(mapPoint);
                             }
                         });

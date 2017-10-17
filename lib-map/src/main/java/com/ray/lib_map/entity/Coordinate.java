@@ -15,17 +15,6 @@ import java.io.Serializable;
  */
 
 public class Coordinate implements Parcelable, Serializable {
-    public static final Parcelable.Creator<Coordinate> CREATOR = new Parcelable.Creator<Coordinate>() {
-        @Override
-        public Coordinate createFromParcel(Parcel source) {
-            return new Coordinate(source);
-        }
-
-        @Override
-        public Coordinate[] newArray(int size) {
-            return new Coordinate[size];
-        }
-    };
     /**
      * 纬度
      */
@@ -93,4 +82,16 @@ public class Coordinate implements Parcelable, Serializable {
         dest.writeDouble(this.latitude);
         dest.writeDouble(this.longitude);
     }
+
+    public static final Parcelable.Creator<Coordinate> CREATOR = new Parcelable.Creator<Coordinate>() {
+        @Override
+        public Coordinate createFromParcel(Parcel source) {
+            return new Coordinate(source);
+        }
+
+        @Override
+        public Coordinate[] newArray(int size) {
+            return new Coordinate[size];
+        }
+    };
 }

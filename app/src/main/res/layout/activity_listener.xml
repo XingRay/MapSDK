@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText,NestedWeights,LabelFor,ButtonStyle">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/bt_gaode_map"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:text="高德地图"/>
+
+        <Button
+            android:id="@+id/bt_baidu_map"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:text="百度地图"
+            tools:ignore=""/>
+
+        <Button
+            android:id="@+id/bt_google_map"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:text="Google地图"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="100dp"
+        android:layout_height="1dp"
+        android:background="#333"/>
+
+    <com.ray.lib_map.MapView
+        android:id="@+id/mv_map"
+        android:layout_width="match_parent"
+        android:layout_height="260dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="zoom"
+            android:textSize="16sp"/>
+
+        <EditText
+            android:id="@+id/et_zoom"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"/>
+
+        <Button
+            android:id="@+id/bt_set_zoom"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="set"/>
+
+        <Button
+            android:id="@+id/bt_animate_zoom"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="animate"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="rotate"
+            android:textSize="16sp"/>
+
+        <EditText
+            android:id="@+id/et_rotate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"/>
+
+        <Button
+            android:id="@+id/bt_set_rotate"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="set"/>
+
+        <Button
+            android:id="@+id/bt_animate_rotate"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="animate"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="overlook"
+            android:textSize="16sp"/>
+
+        <EditText
+            android:id="@+id/et_overlook"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"/>
+
+        <Button
+            android:id="@+id/bt_set_overlook"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="set"/>
+
+        <Button
+            android:id="@+id/bt_animate_overlook"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="animate"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="latitude"
+            android:textSize="16sp"/>
+
+        <EditText
+            android:id="@+id/et_latitude"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"
+            />
+
+        <Button
+            android:id="@+id/bt_set_latitude"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="set"/>
+
+        <Button
+            android:id="@+id/bt_animate_latitude"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="animate"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="longitude"
+            android:textSize="16sp"/>
+
+        <EditText
+            android:id="@+id/et_longitude"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="number"/>
+
+        <Button
+            android:id="@+id/bt_set_longitude"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="set"/>
+
+        <Button
+            android:id="@+id/bt_animate_longitude"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:text="animate"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/bt_get_all"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:text="get"/>
+
+        <Button
+            android:id="@+id/bt_set_all"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:text="set"/>
+
+        <Button
+            android:id="@+id/bt_animate_all"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:text="animate"/>
+    </LinearLayout>
+
+</LinearLayout>

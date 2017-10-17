@@ -13,17 +13,6 @@ import android.os.Parcelable;
  */
 
 public class Poi implements Parcelable {
-    public static final Creator<Poi> CREATOR = new Creator<Poi>() {
-        @Override
-        public Poi createFromParcel(Parcel source) {
-            return new Poi(source);
-        }
-
-        @Override
-        public Poi[] newArray(int size) {
-            return new Poi[size];
-        }
-    };
     /**
      * 省份名称
      */
@@ -191,6 +180,7 @@ public class Poi implements Parcelable {
                 '}';
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -213,7 +203,6 @@ public class Poi implements Parcelable {
         if (name != null ? !name.equals(poi.name) : poi.name != null) return false;
         if (address != null ? !address.equals(poi.address) : poi.address != null) return false;
         return locationType != null ? locationType.equals(poi.locationType) : poi.locationType == null;
-
     }
 
     @Override
@@ -259,4 +248,16 @@ public class Poi implements Parcelable {
     public double getLongitude() {
         return getMapPoint().getLongitude();
     }
+
+    public static final Creator<Poi> CREATOR = new Creator<Poi>() {
+        @Override
+        public Poi createFromParcel(Parcel source) {
+            return new Poi(source);
+        }
+
+        @Override
+        public Poi[] newArray(int size) {
+            return new Poi[size];
+        }
+    };
 }

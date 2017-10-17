@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import com.ray.lib_map.extern.CoordinateConverter;
 import com.ray.lib_map.extern.CoordinateType;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,19 +19,7 @@ import java.util.Map;
  */
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class MapPoint implements Parcelable, Serializable {
-
-    public static final Parcelable.Creator<MapPoint> CREATOR = new Parcelable.Creator<MapPoint>() {
-        @Override
-        public MapPoint createFromParcel(Parcel source) {
-            return new MapPoint(source);
-        }
-
-        @Override
-        public MapPoint[] newArray(int size) {
-            return new MapPoint[size];
-        }
-    };
+public class MapPoint implements Parcelable {
     private final Map<CoordinateType, Coordinate> coordinates;
     private CoordinateType type;
     private Coordinate coordinate;
@@ -140,4 +127,16 @@ public class MapPoint implements Parcelable, Serializable {
             dest.writeParcelable(entry.getValue(), flags);
         }
     }
+
+    public static final Parcelable.Creator<MapPoint> CREATOR = new Parcelable.Creator<MapPoint>() {
+        @Override
+        public MapPoint createFromParcel(Parcel source) {
+            return new MapPoint(source);
+        }
+
+        @Override
+        public MapPoint[] newArray(int size) {
+            return new MapPoint[size];
+        }
+    };
 }

@@ -1,6 +1,7 @@
 package com.ray.lib_map.listener;
 
-import com.ray.lib_map.entity.MapPoint;
+
+import com.ray.lib_map.entity.CameraPosition;
 
 /**
  * Author      : leixing
@@ -15,14 +16,14 @@ public interface CameraMoveListener {
     /**
      * 当用户滑动镜头时回调
      *
-     * @param point 滑动过程中镜头中心的坐标点
+     * @param position 滑动过程中镜头中心的坐标点
      */
-    void onCameraMoving(MapPoint point);
+    void onCameraMoving(CameraPosition position);
 
     /**
      * 当用户滑动镜头结束时回调
      *
-     * @param point 滑动结束时镜头中心的坐标点
+     * @param position 滑动结束时镜头中心的坐标点
      */
-    void onCameraMoved(MapPoint point);
+    void onCameraMoved(CameraPosition position);
 }

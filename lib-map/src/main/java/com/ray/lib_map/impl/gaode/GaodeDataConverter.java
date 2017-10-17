@@ -3,15 +3,18 @@ package com.ray.lib_map.impl.gaode;
 import android.text.TextUtils;
 
 import com.amap.api.location.AMapLocation;
+import com.amap.api.maps.model.LatLng;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.ray.lib_map.entity.Address;
+import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Poi;
 import com.ray.lib_map.entity.PoiSearchSuggestion;
 import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.ZoomStandardization;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,5 +152,24 @@ public class GaodeDataConverter {
         address.setFormattedAddress(regeocodeAddress.getFormatAddress());
 
         return address;
+    }
+
+    public static CameraPosition toCameraPosition(com.amap.api.maps.model.CameraPosition cameraPosition) {
+        CameraPosition position = new CameraPosition();
+
+        position.setPosition(new MapPoint(cameraPosition.target.latitude, cameraPosition.target.longitude, MapType.GAODE.getCoordinateType()));
+        position.setZoom(ZoomStandardization.toStandardZoom(cameraPosition.zoom, MapType.GAODE));
+        position.setRotate(cameraPosition.bearing);
+        position.setOverlook(cameraPosition.tilt);
+
+        return position;
+    }
+
+    public static com.amap.api.maps.model.CameraPosition fromCameraPosition(CameraPosition position) {
+        MapPoint mapPoint = position.getPosition().copy(MapType.GAODE.getCoordinateType());
+        LatLng latLng = new LatLng(mapPoint.getLatitude(), mapPoint.getLongitude());
+        float gaodeZoom = ZoomStandardization.fromStandardZoom(position.getZoom(), MapType.GAODE);
+
+        return new com.amap.api.maps.model.CameraPosition(latLng, gaodeZoom, position.getOverlook(), position.getRotate());
     }
 }

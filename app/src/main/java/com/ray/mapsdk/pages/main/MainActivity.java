@@ -9,15 +9,11 @@ import android.support.v7.widget.RecyclerView;
 
 import com.ray.mapsdk.R;
 import com.ray.mapsdk.base.OnItemClickListener;
-import com.ray.mapsdk.pages.gesture.GestureControlActivity;
-import com.ray.mapsdk.pages.poi.PoiListActivity;
-import com.ray.mapsdk.pages.zoom.CameraActivity;
-
-import java.util.Arrays;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.ray.mapsdk.pages.PageList.PAGES;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,12 +22,6 @@ public class MainActivity extends AppCompatActivity {
     private Context mContext;
     private PageListAdapter mAdapter;
 
-    @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
-    private List<Page> mPages = Arrays.asList(
-            new Page("poi query", PoiListActivity.class),
-            new Page("camera", CameraActivity.class),
-            new Page("gesture control", GestureControlActivity.class)
-    );
     private Activity mActivity;
 
     @Override
@@ -57,12 +47,12 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                mPages.get(position).start(mActivity);
+                PAGES.get(position).start(mActivity);
             }
         });
     }
 
     private void loadData() {
-        mAdapter.set(mPages);
+        mAdapter.set(PAGES);
     }
 }

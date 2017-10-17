@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:ignore="NestedWeights">
+    tools:ignore="NestedWeights,LabelFor,HardcodedText,ButtonStyle">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,7 +41,7 @@
     </LinearLayout>
 
     <View
-        android:layout_width="100px"
+        android:layout_width="100dp"
         android:layout_height="1dp"
         android:background="#333"/>
 
@@ -204,7 +204,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:inputType="number"/>
+            android:inputType="number"
+            />
 
         <Button
             android:id="@+id/bt_set_longitude"

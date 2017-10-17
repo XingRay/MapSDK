@@ -15,17 +15,6 @@ import java.io.Serializable;
  */
 
 public class Address implements Parcelable, Serializable {
-    public static final Parcelable.Creator<Address> CREATOR = new Parcelable.Creator<Address>() {
-        @Override
-        public Address createFromParcel(Parcel source) {
-            return new Address(source);
-        }
-
-        @Override
-        public Address[] newArray(int size) {
-            return new Address[size];
-        }
-    };
     /**
      * 地图点
      */
@@ -62,7 +51,7 @@ public class Address implements Parcelable, Serializable {
     public Address() {
     }
 
-    protected Address(Parcel in) {
+    private Address(Parcel in) {
         this.mapPoint = in.readParcelable(MapPoint.class.getClassLoader());
         this.province = in.readString();
         this.city = in.readString();
@@ -151,6 +140,7 @@ public class Address implements Parcelable, Serializable {
                 '}';
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -202,4 +192,16 @@ public class Address implements Parcelable, Serializable {
         dest.writeString(this.name);
         dest.writeString(this.formattedAddress);
     }
+
+    public static final Parcelable.Creator<Address> CREATOR = new Parcelable.Creator<Address>() {
+        @Override
+        public Address createFromParcel(Parcel source) {
+            return new Address(source);
+        }
+
+        @Override
+        public Address[] newArray(int size) {
+            return new Address[size];
+        }
+    };
 }

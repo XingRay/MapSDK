@@ -9,6 +9,7 @@ import android.widget.Button;
 
 import com.ray.mapsdk.R;
 import com.ray.mapsdk.base.OnItemClickListener;
+import com.ray.mapsdk.pages.Page;
 
 import java.util.ArrayList;
 import java.util.List;

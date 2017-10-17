@@ -25,6 +25,7 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -49,7 +50,10 @@
 
         <activity android:name=".pages.main.MainActivity">
             <intent-filter>
+                <data android:scheme="about"/>
+
                 <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.VIEW"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
@@ -58,10 +62,14 @@
         <activity android:name=".pages.poi.PoiListActivity"/>
 
         <activity
-            android:name=".pages.zoom.CameraActivity"
+            android:name=".pages.camera.CameraActivity"
             android:windowSoftInputMode="adjustPan"/>
 
         <activity android:name=".pages.gesture.GestureControlActivity"/>
+
+        <activity
+            android:name=".pages.listener.ListenerActivity"
+            android:windowSoftInputMode="adjustPan"/>
     </application>
 
 </manifest>

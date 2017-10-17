@@ -23,7 +23,6 @@ import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.extern.ZoomStandardization;
-import com.ray.lib_map.listener.AnimationListener;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
@@ -137,21 +136,17 @@ public class GaodeMapDelegate implements MapDelegate {
             @Override
             public void onCameraChange(com.amap.api.maps.model.CameraPosition cameraPosition) {
                 if (listener != null) {
-                    listener.onCameraMoving(getMapPoint(cameraPosition));
+                    listener.onCameraMoving(GaodeDataConverter.toCameraPosition(cameraPosition));
                 }
             }
 
             @Override
             public void onCameraChangeFinish(com.amap.api.maps.model.CameraPosition cameraPosition) {
                 if (listener != null) {
-                    listener.onCameraMoved(getMapPoint(cameraPosition));
+                    listener.onCameraMoved(GaodeDataConverter.toCameraPosition(cameraPosition));
                 }
             }
         });
-    }
-
-    @Override
-    public void setAnimationListener(AnimationListener listener) {
     }
 
     @Override
@@ -278,38 +273,13 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     @Override
-    public CameraPosition saveCameraPosition() {
-        com.amap.api.maps.model.CameraPosition cameraPosition = getMap().getCameraPosition();
-
-        CameraPosition position = new CameraPosition();
-        position.setPosition(new MapPoint(cameraPosition.target.latitude, cameraPosition.target.longitude, MapType.GAODE.getCoordinateType()));
-        position.setRotate(cameraPosition.bearing);
-        position.setZoom(ZoomStandardization.toStandardZoom(cameraPosition.zoom, MapType.GAODE));
-        position.setOverlook(cameraPosition.tilt);
-
-        return position;
+    public CameraPosition getCameraPosition() {
+        return GaodeDataConverter.toCameraPosition(getMap().getCameraPosition());
     }
 
     @Override
-    public void restoreCameraPosition(CameraPosition position) {
-        MapPoint mapPoint = position.getPosition().copy(MapType.GAODE.getCoordinateType());
-        LatLng latLng = new LatLng(mapPoint.getLatitude(), mapPoint.getLongitude());
-        float gaodeZoom = ZoomStandardization.fromStandardZoom(position.getZoom(), MapType.GAODE);
-
-        com.amap.api.maps.model.CameraPosition cameraPosition
-                = new com.amap.api.maps.model.CameraPosition(latLng, gaodeZoom, position.getOverlook(), position.getRotate());
-        getMap().moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-    }
-
-    private MapPoint getMapPoint(com.amap.api.maps.model.CameraPosition cameraPosition) {
-        double latitude = cameraPosition.target.latitude;
-        double longitude = cameraPosition.target.longitude;
-        return new MapPoint(latitude, longitude, MapType.GAODE.getCoordinateType());
-    }
-
-    private MapPoint getMapPoint(Marker marker) {
-        LatLng position = marker.getPosition();
-        return new MapPoint(position.latitude, position.longitude, MapType.GAODE.getCoordinateType());
+    public void setCameraPosition(CameraPosition position) {
+        getMap().moveCamera(CameraUpdateFactory.newCameraPosition(GaodeDataConverter.fromCameraPosition(position)));
     }
 
     @Override
@@ -439,26 +409,6 @@ public class GaodeMapDelegate implements MapDelegate {
     @Override
     public void screenShotAndSave(String saveFilePath) {
 
-    }
-
-    @Override
-    public void animateTo(MapPoint mapPoint, float zoom, final AnimationListener listener) {
-        LatLng latLng = new LatLng(mapPoint.getLatitude(), mapPoint.getLongitude());
-        getMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom), new AMap.CancelableCallback() {
-            @Override
-            public void onFinish() {
-                if (listener != null) {
-                    listener.onFinished();
-                }
-            }
-
-            @Override
-            public void onCancel() {
-                if (listener != null) {
-                    listener.onCanceled();
-                }
-            }
-        });
     }
 
     @Override

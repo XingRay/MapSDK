@@ -1,4 +1,4 @@
-package com.ray.mapsdk.pages.main;
+package com.ray.mapsdk.pages;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,7 +13,7 @@ import android.content.Intent;
  */
 
 @SuppressWarnings("unused")
-class Page {
+public class Page {
     private String name;
     private Class<? extends Activity> cls;
 
@@ -47,11 +47,12 @@ class Page {
     }
 
 
-    void start(Activity activity) {
+    public void start(Activity activity) {
         start(activity, 100);
     }
 
-    private void start(Activity activity, int requestCode) {
+    @SuppressWarnings("WeakerAccess")
+    public void start(Activity activity, int requestCode) {
         Intent intent = new Intent();
         intent.setClass(activity, cls);
         activity.startActivityForResult(intent, requestCode);

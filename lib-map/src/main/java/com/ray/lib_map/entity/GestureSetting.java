@@ -16,17 +16,6 @@ import java.io.Serializable;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class GestureSetting implements Parcelable, Serializable {
-    public static final Creator<GestureSetting> CREATOR = new Creator<GestureSetting>() {
-        @Override
-        public GestureSetting createFromParcel(Parcel source) {
-            return new GestureSetting(source);
-        }
-
-        @Override
-        public GestureSetting[] newArray(int size) {
-            return new GestureSetting[size];
-        }
-    };
     private boolean zoomGestureEnable;
     private boolean scrollGestureEnable;
     private boolean rotateGestureEnable;
@@ -84,6 +73,7 @@ public class GestureSetting implements Parcelable, Serializable {
                 '}';
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -119,4 +109,16 @@ public class GestureSetting implements Parcelable, Serializable {
         dest.writeByte(this.rotateGestureEnable ? (byte) 1 : (byte) 0);
         dest.writeByte(this.overlookGestureEnable ? (byte) 1 : (byte) 0);
     }
+
+    public static final Creator<GestureSetting> CREATOR = new Creator<GestureSetting>() {
+        @Override
+        public GestureSetting createFromParcel(Parcel source) {
+            return new GestureSetting(source);
+        }
+
+        @Override
+        public GestureSetting[] newArray(int size) {
+            return new GestureSetting[size];
+        }
+    };
 }

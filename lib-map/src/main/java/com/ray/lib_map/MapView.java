@@ -20,7 +20,6 @@ import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
 import com.ray.lib_map.extern.MapDelegateFactory;
 import com.ray.lib_map.extern.MapType;
-import com.ray.lib_map.listener.AnimationListener;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
@@ -50,6 +49,7 @@ public class MapView extends View {
     private MarkerClickListener mMarkerClickListener;
     private InfoWindowInflater mInfoWindowInflater;
     private InfoWindowClickListener mInfoWindowClickListener;
+    private CameraMoveListener mCameraMoveListener;
 
     public MapView(@NonNull Context context) {
         this(context, null);
@@ -138,6 +138,7 @@ public class MapView extends View {
         mMapDelegate.setMarkerClickListener(mMarkerClickListener);
         mMapDelegate.setInfoWindowInflater(mInfoWindowInflater);
         mMapDelegate.setInfoWindowClickListener(mInfoWindowClickListener);
+        mMapDelegate.setCameraMoveListener(mCameraMoveListener);
 
         setCameraPosition(position);
         setGestureSetting(setting);
@@ -145,11 +146,11 @@ public class MapView extends View {
     }
 
     public CameraPosition getCameraPosition() {
-        return mMapDelegate.saveCameraPosition();
+        return mMapDelegate.getCameraPosition();
     }
 
     public void setCameraPosition(CameraPosition cameraPosition) {
-        mMapDelegate.restoreCameraPosition(cameraPosition);
+        mMapDelegate.setCameraPosition(cameraPosition);
     }
 
     public GestureSetting getGestureSetting() {
@@ -181,11 +182,8 @@ public class MapView extends View {
     }
 
     public void setCameraMoveListener(CameraMoveListener listener) {
+        mCameraMoveListener = listener;
         mMapDelegate.setCameraMoveListener(listener);
-    }
-
-    public void setAnimationListener(AnimationListener listener) {
-        mMapDelegate.setAnimationListener(listener);
     }
 
     public void setMapScreenCaptureListener(MapScreenCaptureListener listener) {
@@ -331,18 +329,6 @@ public class MapView extends View {
         mMapDelegate.zoomIn();
     }
 
-    public void animateTo(MapPoint mapPoint, AnimationListener listener) {
-        animateTo(mapPoint, 19, listener);
-    }
-
-    public void animateTo(MapPoint mapPoint, float zoom, AnimationListener listener) {
-        mMapDelegate.animateTo(mapPoint, zoom, listener);
-    }
-
-    public void moveTo(MapPoint point, boolean isSmooth, float zoom) {
-        mMapDelegate.moveTo(point, isSmooth, zoom);
-    }
-
     public void moveByBounds(List<MapPoint> points, int padding) {
         mMapDelegate.moveByBounds(points, padding);
     }
@@ -467,5 +453,16 @@ public class MapView extends View {
 
     public void showInfoWindow(MapMarker mapMarker) {
         mMapDelegate.showInfoWindow(mapMarker);
+    }
+
+    public void moveCameraTo(MapPoint mapPoint) {
+        setCameraPosition(new CameraPosition(mapPoint));
+    }
+
+    public void moveCameraTo(MapPoint mapPoint, float zoom) {
+        CameraPosition cameraPosition = new CameraPosition();
+        cameraPosition.setPosition(mapPoint);
+        cameraPosition.setZoom(zoom);
+        setCameraPosition(cameraPosition);
     }
 }

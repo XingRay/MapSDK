@@ -15,17 +15,6 @@ import java.io.Serializable;
  */
 
 public class CameraPosition implements Parcelable, Serializable {
-    public static final Parcelable.Creator<CameraPosition> CREATOR = new Parcelable.Creator<CameraPosition>() {
-        @Override
-        public CameraPosition createFromParcel(Parcel source) {
-            return new CameraPosition(source);
-        }
-
-        @Override
-        public CameraPosition[] newArray(int size) {
-            return new CameraPosition[size];
-        }
-    };
     /**
      * center point of camera
      */
@@ -42,6 +31,11 @@ public class CameraPosition implements Parcelable, Serializable {
      * overlook angle, 0-45
      */
     private float overlook;
+
+    public CameraPosition(MapPoint position) {
+        this.position = position;
+        this.zoom = 19;
+    }
 
     public CameraPosition() {
     }
@@ -131,4 +125,16 @@ public class CameraPosition implements Parcelable, Serializable {
         dest.writeFloat(this.rotate);
         dest.writeFloat(this.overlook);
     }
+
+    public static final Parcelable.Creator<CameraPosition> CREATOR = new Parcelable.Creator<CameraPosition>() {
+        @Override
+        public CameraPosition createFromParcel(Parcel source) {
+            return new CameraPosition(source);
+        }
+
+        @Override
+        public CameraPosition[] newArray(int size) {
+            return new CameraPosition[size];
+        }
+    };
 }

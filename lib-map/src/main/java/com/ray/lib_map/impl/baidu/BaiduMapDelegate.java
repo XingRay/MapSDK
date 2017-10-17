@@ -29,7 +29,6 @@ import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.extern.ZoomStandardization;
-import com.ray.lib_map.listener.AnimationListener;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
@@ -45,7 +44,7 @@ import java.util.List;
  * Email       : leixing@hecom.cn
  * Version     : 0.0.1
  * <p>
- * Description : xxx
+ * Description : 百度地图实现类
  */
 
 public class BaiduMapDelegate implements MapDelegate {
@@ -156,13 +155,32 @@ public class BaiduMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setCameraMoveListener(CameraMoveListener listener) {
+    public void setCameraMoveListener(final CameraMoveListener listener) {
+        getMap().setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus) {
 
-    }
+            }
 
-    @Override
-    public void setAnimationListener(AnimationListener listener) {
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus, int i) {
 
+            }
+
+            @Override
+            public void onMapStatusChange(MapStatus mapStatus) {
+                if (listener != null) {
+                    listener.onCameraMoving(BaiduDataConverter.toCameraPosition(mapStatus));
+                }
+            }
+
+            @Override
+            public void onMapStatusChangeFinish(MapStatus mapStatus) {
+                if (listener != null) {
+                    listener.onCameraMoved(BaiduDataConverter.toCameraPosition(mapStatus));
+                }
+            }
+        });
     }
 
     @Override
@@ -228,13 +246,12 @@ public class BaiduMapDelegate implements MapDelegate {
 
     @Override
     public float getOverlook() {
-        float baiduOverlook = getMap().getMapStatus().overlook;
-        return baiduOverlook == 0 ? 0 : -baiduOverlook;
+        return BaiduDataConverter.toStandardOverlook(getMap().getMapStatus().overlook);
     }
 
     @Override
     public void setOverlook(float overlook) {
-        float baiduOverlook = overlook == 0 ? 0 : -overlook;
+        float baiduOverlook = BaiduDataConverter.fromStandardOverlook(overlook);
         com.baidu.mapapi.map.MapStatus status = new com.baidu.mapapi.map.MapStatus.Builder(getMap().getMapStatus()).overlook(baiduOverlook).build();
         MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
         getMap().animateMapStatus(update);
@@ -253,24 +270,23 @@ public class BaiduMapDelegate implements MapDelegate {
     }
 
     @Override
-    public CameraPosition saveCameraPosition() {
+    public CameraPosition getCameraPosition() {
         MapStatus mapStatus = getMap().getMapStatus();
 
         CameraPosition position = new CameraPosition();
         position.setPosition(new MapPoint(mapStatus.target.latitude, mapStatus.target.longitude, MapType.BAIDU.getCoordinateType()));
         position.setRotate(mapStatus.rotate);
         position.setZoom(ZoomStandardization.toStandardZoom(mapStatus.zoom, MapType.BAIDU));
-        position.setOverlook(mapStatus.overlook == 0 ? 0 : -mapStatus.overlook);
+        position.setOverlook(BaiduDataConverter.toStandardOverlook(mapStatus.overlook));
 
         return position;
     }
 
     @Override
-    public void restoreCameraPosition(CameraPosition position) {
+    public void setCameraPosition(CameraPosition position) {
         MapPoint mapPoint = position.getPosition().copy(MapType.BAIDU.getCoordinateType());
-        float overlook = position.getOverlook();
+        float overlook = BaiduDataConverter.fromStandardOverlook(position.getOverlook());
         float baiduZoom = ZoomStandardization.fromStandardZoom(position.getZoom(), MapType.BAIDU);
-        float baiduOverlook = overlook == 0 ? 0 : -overlook;
         LatLng latLng = new LatLng(mapPoint.getLatitude(), mapPoint.getLongitude());
 
         com.baidu.mapapi.map.MapStatus status = new com.baidu.mapapi.map.MapStatus
@@ -278,7 +294,7 @@ public class BaiduMapDelegate implements MapDelegate {
                 .target(latLng)
                 .rotate(position.getRotate())
                 .zoom(baiduZoom)
-                .overlook(baiduOverlook)
+                .overlook(overlook)
                 .build();
 
         MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
@@ -340,16 +356,6 @@ public class BaiduMapDelegate implements MapDelegate {
     @Override
     public void screenShotAndSave(String saveFilePath) {
 
-    }
-
-    @Override
-    public void animateTo(MapPoint mapPoint, float zoom, AnimationListener listener) {
-        float baiduZoom = ZoomStandardization.fromStandardZoom(zoom, MapType.BAIDU);
-        MapPoint point = mapPoint.copy(MapType.BAIDU.getCoordinateType());
-        LatLng latLng = new LatLng(point.getLatitude(), point.getLongitude());
-        com.baidu.mapapi.map.MapStatus status = new com.baidu.mapapi.map.MapStatus.Builder(getMap().getMapStatus()).zoom(baiduZoom).target(latLng).build();
-        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
-        getMap().animateMapStatus(update);
     }
 
     @Override

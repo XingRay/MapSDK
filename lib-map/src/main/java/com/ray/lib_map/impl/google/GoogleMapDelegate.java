@@ -18,7 +18,6 @@ import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
-import com.ray.lib_map.listener.AnimationListener;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
@@ -128,11 +127,6 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void setAnimationListener(AnimationListener listener) {
-
-    }
-
-    @Override
     public void setMarkerClickListener(MarkerClickListener listener) {
 
     }
@@ -218,12 +212,12 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
-    public CameraPosition saveCameraPosition() {
+    public CameraPosition getCameraPosition() {
         return null;
     }
 
     @Override
-    public void restoreCameraPosition(CameraPosition position) {
+    public void setCameraPosition(CameraPosition position) {
 
     }
 
@@ -244,11 +238,6 @@ public class GoogleMapDelegate implements MapDelegate {
 
     @Override
     public void screenShotAndSave(String saveFilePath) {
-
-    }
-
-    @Override
-    public void animateTo(MapPoint mapPoint, float zoom, AnimationListener listener) {
 
     }
 
@@ -393,7 +382,7 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void hideInfoWindow(MapMarker mapMarker) {
+    public void hideInfoWindow() {
 
     }
 
