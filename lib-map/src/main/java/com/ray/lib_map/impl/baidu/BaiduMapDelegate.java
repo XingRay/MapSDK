@@ -18,6 +18,7 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.Overlay;
+import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.ray.lib_map.InfoWindowInflater;
 import com.ray.lib_map.MapDelegate;
@@ -27,7 +28,11 @@ import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
-import com.ray.lib_map.entity.polyline.PolyLine;
+import com.ray.lib_map.entity.polyline.BitmapTexture;
+import com.ray.lib_map.entity.polyline.ColorTexture;
+import com.ray.lib_map.entity.polyline.Polyline;
+import com.ray.lib_map.entity.polyline.PolylineHelper;
+import com.ray.lib_map.entity.polyline.PolylineTexture;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.extern.ZoomStandardization;
 import com.ray.lib_map.listener.CameraMoveListener;
@@ -39,6 +44,7 @@ import com.ray.lib_map.listener.MapScreenCaptureListener;
 import com.ray.lib_map.listener.MarkerClickListener;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -55,6 +61,7 @@ public class BaiduMapDelegate implements MapDelegate {
     private static boolean sHasInited;
     private final Context mContext;
     private final List<MapMarker> mMapMarkers;
+    private final List<Polyline> mPolylines;
     private MapView mMapView;
     private InfoWindowInflater mInfoWindowInflater;
     private InfoWindowClickListener mInfoWindowClickListener;
@@ -63,8 +70,7 @@ public class BaiduMapDelegate implements MapDelegate {
     public BaiduMapDelegate(Context context) {
         if (!sHasInited) {
             SDKInitializer.initialize(context.getApplicationContext());
-            CoordType coordType = getCoordinateType();
-            SDKInitializer.setCoordType(coordType);
+            SDKInitializer.setCoordType(getCoordinateType());
             sHasInited = true;
         }
 
@@ -72,6 +78,7 @@ public class BaiduMapDelegate implements MapDelegate {
         mMapView = new MapView(mContext);
 
         mMapMarkers = new ArrayList<>();
+        mPolylines = new ArrayList<>();
     }
 
     private CoordType getCoordinateType() {
@@ -569,13 +576,79 @@ public class BaiduMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void addPolyline(PolyLine polyLine) {
+    public void addPolyline(Polyline polyline) {
+        List<LatLng> latLngList = BaiduDataConverter.fromMapPoints(polyline.getPoints());
+        int pointSize = latLngList.size();
+        if (pointSize < 2) {
+            return;
+        }
 
+        List<PolylineTexture> textures = polyline.getTextures();
+        PolylineHelper.sortByIndex(textures);
+
+        for (int i = 0, size = textures.size(); i < size; i++) {
+            PolylineTexture texture = textures.get(i);
+            if (texture.getIndex() > pointSize - 2) {
+                continue;
+            }
+            //start index  include
+            int start = texture.getIndex();
+            //end index  exclude
+            int end = (i == size - 1) ? pointSize : textures.get(i + 1).getIndex() + 1;
+
+            List<LatLng> subList = latLngList.subList(start, end);
+
+            com.baidu.mapapi.map.Polyline gaodePolyline = null;
+            if (texture instanceof ColorTexture) {
+                gaodePolyline = addColorPolyline(subList, (ColorTexture) texture);
+            } else if (texture instanceof BitmapTexture) {
+                gaodePolyline = addBitmapPolyline(subList, (BitmapTexture) texture);
+            }
+
+            if (gaodePolyline != null) {
+                polyline.addRawPolyline(MapType.BAIDU, gaodePolyline);
+            }
+        }
+
+        mPolylines.add(polyline);
+    }
+
+    private com.baidu.mapapi.map.Polyline addColorPolyline(List<LatLng> points, ColorTexture texture) {
+        PolylineOptions polylineOptions = new PolylineOptions()
+                .color(texture.getColor())
+                .width(texture.getWidth())
+                .points(points);
+        return (com.baidu.mapapi.map.Polyline) getMap().addOverlay(polylineOptions);
+    }
+
+    private com.baidu.mapapi.map.Polyline addBitmapPolyline(List<LatLng> points, BitmapTexture texture) {
+        PolylineOptions polylineOptions = new PolylineOptions()
+                .customTexture(BitmapDescriptorFactory.fromBitmap(texture.getBitmap()))
+                .width(texture.getWidth())
+                .points(points);
+        return (com.baidu.mapapi.map.Polyline) getMap().addOverlay(polylineOptions);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void removePolyline(Polyline polyline) {
+        List<com.baidu.mapapi.map.Polyline> rawPolylines = (List<com.baidu.mapapi.map.Polyline>) polyline.getRawPolylines(MapType.BAIDU);
+        if (rawPolylines == null) {
+            return;
+        }
+
+        Iterator<com.baidu.mapapi.map.Polyline> iterator = rawPolylines.iterator();
+        while (iterator.hasNext()) {
+            iterator.next().remove();
+            iterator.remove();
+        }
+
+        mPolylines.remove(polyline);
     }
 
     @Override
-    public void removePolyline(PolyLine p) {
-
+    public List<Polyline> getPolylines() {
+        return mPolylines;
     }
 
     @Override

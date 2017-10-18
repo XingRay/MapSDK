@@ -2,7 +2,6 @@ package com.ray.lib_map.entity.polyline;
 
 import android.graphics.Bitmap;
 
-import com.amap.api.maps.model.Polyline;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.extern.MapType;
 
@@ -21,65 +20,60 @@ import java.util.Map;
  * Description : polyline
  */
 
-@SuppressWarnings("WeakerAccess")
-public class PolyLine {
+@SuppressWarnings({"WeakerAccess", "unused"})
+public class Polyline {
     private static final ColorTexture DEFAULT_TEXTURE = new ColorTexture(0xff000000);
 
     private List<MapPoint> points;
-    private List<PolyLineTexture> textures;
-    private Map<MapType, List<?>> rawPolyLineMap;
+    private List<PolylineTexture> textures;
+    private Map<MapType, List<?>> rawPolylineMap;
 
-    /**
-     * current texture
-     */
-    private PolyLineTexture mCurrentTexture;
-
-    public PolyLine() {
+    public Polyline() {
         points = new ArrayList<>(2);
         textures = new ArrayList<>(1);
     }
 
-    public void addRawPolyLine(MapType mapType, Object rawPolyLine) {
-        if (rawPolyLineMap == null) {
-            rawPolyLineMap = new HashMap<>();
+    public void addRawPolyline(MapType mapType, Object rawPolyline) {
+        if (rawPolylineMap == null) {
+            rawPolylineMap = new HashMap<>();
         }
 
         switch (mapType) {
             case GAODE:
-                Polyline gaodePolyLine = (Polyline) rawPolyLine;
-                addRawPloyLine(mapType, gaodePolyLine);
+                com.amap.api.maps.model.Polyline gaodePolyline = (com.amap.api.maps.model.Polyline) rawPolyline;
+                addRawPloyLine(mapType, gaodePolyline);
                 break;
             case BAIDU:
-                com.baidu.mapapi.map.Polyline baiduPolyLine = (com.baidu.mapapi.map.Polyline) rawPolyLine;
-                addRawPloyLine(mapType, baiduPolyLine);
+                com.baidu.mapapi.map.Polyline baiduPolyline = (com.baidu.mapapi.map.Polyline) rawPolyline;
+                addRawPloyLine(mapType, baiduPolyline);
                 break;
             case GOOGLE:
-                com.google.android.gms.maps.model.Polyline googlePoltLine = (com.google.android.gms.maps.model.Polyline) rawPolyLine;
+                com.google.android.gms.maps.model.Polyline googlePoltLine = (com.google.android.gms.maps.model.Polyline) rawPolyline;
                 addRawPloyLine(mapType, googlePoltLine);
         }
 
     }
 
     @SuppressWarnings("unchecked")
-    private <T> void addRawPloyLine(MapType mapType, T rawPolyLines) {
-        List<T> polylines = (List<T>) rawPolyLineMap.get(mapType);
+    private <T> void addRawPloyLine(MapType mapType, T rawPolylines) {
+        List<T> polylines = (List<T>) rawPolylineMap.get(mapType);
         if (polylines == null) {
             polylines = new ArrayList<>();
-            rawPolyLineMap.put(mapType, polylines);
+            rawPolylineMap.put(mapType, polylines);
         }
-        polylines.add(rawPolyLines);
+        polylines.add(rawPolylines);
     }
 
 
-    public List<?> getRawPolyLines(MapType mapType) {
-        if (rawPolyLineMap == null) {
+    public List<?> getRawPolylines(MapType mapType) {
+        if (rawPolylineMap == null) {
             return null;
         }
-        return rawPolyLineMap.get(mapType);
+        return rawPolylineMap.get(mapType);
     }
 
 
-    public PolyLine points(List<MapPoint> points) {
+    public Polyline points(List<MapPoint> points) {
         if (points == null || points.size() < 2) {
             throw new IllegalArgumentException();
         }
@@ -88,11 +82,11 @@ public class PolyLine {
         return this;
     }
 
-    public PolyLine points(MapPoint[] points) {
+    public Polyline points(MapPoint[] points) {
         return points(Arrays.asList(points));
     }
 
-    public PolyLine addPoint(MapPoint point) {
+    public Polyline addPoint(MapPoint point) {
         if (point == null) {
             throw new IllegalArgumentException();
         }
@@ -100,14 +94,14 @@ public class PolyLine {
         return this;
     }
 
-    public PolyLine addPoints(List<MapPoint> points) {
+    public Polyline addPoints(List<MapPoint> points) {
         if (points != null) {
             this.points.addAll(points);
         }
         return this;
     }
 
-    public PolyLine addPoints(MapPoint[] points) {
+    public Polyline addPoints(MapPoint[] points) {
         return addPoints(Arrays.asList(points));
     }
 
@@ -117,7 +111,7 @@ public class PolyLine {
      * @param texture 新的纹理
      * @return polyline
      */
-    public PolyLine texture(PolyLineTexture texture) {
+    public Polyline texture(PolylineTexture texture) {
         if (texture == null) {
             throw new IllegalArgumentException();
         }
@@ -132,7 +126,7 @@ public class PolyLine {
      * @param textures 新的纹理组
      * @return polyline
      */
-    public PolyLine textures(List<PolyLineTexture> textures) {
+    public Polyline textures(List<PolylineTexture> textures) {
         if (textures == null || textures.size() < 1) {
             throw new IllegalArgumentException();
         }
@@ -141,11 +135,11 @@ public class PolyLine {
         return this;
     }
 
-    public PolyLine textures(PolyLineTexture[] textures) {
+    public Polyline textures(PolylineTexture[] textures) {
         return textures(Arrays.asList(textures));
     }
 
-    public PolyLine addTexture(PolyLineTexture texture) {
+    public Polyline addTexture(PolylineTexture texture) {
         if (texture == null) {
             throw new IllegalArgumentException();
         }
@@ -153,14 +147,14 @@ public class PolyLine {
         return this;
     }
 
-    public PolyLine addTextures(List<PolyLineTexture> textures) {
+    public Polyline addTextures(List<PolylineTexture> textures) {
         if (textures != null) {
             this.textures.addAll(textures);
         }
         return this;
     }
 
-    public PolyLine addTextures(PolyLineTexture[] textures) {
+    public Polyline addTextures(PolylineTexture[] textures) {
         return addTextures(Arrays.asList(textures));
     }
 
@@ -168,55 +162,59 @@ public class PolyLine {
         return this.points;
     }
 
-    public List<PolyLineTexture> getTextures() {
+    public List<PolylineTexture> getTextures() {
         return this.textures;
     }
 
-    public PolyLine color(int color) {
+    public Polyline color(int color) {
         if (this.textures.isEmpty()) {
             addTexture(new ColorTexture(color));
             return this;
         }
 
-        PolyLineHelper.sortByIndex(this.textures);
-        PolyLineTexture lastTexture = this.textures.get(this.textures.size() - 1);
+        PolylineHelper.sortByIndex(this.textures);
+        PolylineTexture lastTexture = this.textures.get(this.textures.size() - 1);
 
         int index = this.points.isEmpty() ? 0 : (this.points.size() - 1);
-        PolyLineHelper.removeByIndex(this.textures, index);
+        PolylineHelper.removeByIndex(this.textures, index);
 
         addTexture(new ColorTexture(lastTexture, color).index(index));
         return this;
     }
 
-    public PolyLine bitmap(Bitmap bitmap) {
+    public Polyline bitmap(Bitmap bitmap) {
         if (this.textures.isEmpty()) {
             addTexture(new BitmapTexture(bitmap));
             return this;
         }
 
-        PolyLineHelper.sortByIndex(this.textures);
-        PolyLineTexture lastTexture = this.textures.get(this.textures.size() - 1);
+        PolylineHelper.sortByIndex(this.textures);
+        PolylineTexture lastTexture = this.textures.get(this.textures.size() - 1);
 
         int index = this.points.isEmpty() ? 0 : (this.points.size() - 1);
-        PolyLineHelper.removeByIndex(this.textures, index);
+        PolylineHelper.removeByIndex(this.textures, index);
 
         addTexture(new BitmapTexture(lastTexture, bitmap).index(index));
         return this;
     }
 
-    public PolyLine width(int width) {
+    public Polyline width(int width) {
         if (this.textures.isEmpty()) {
             addTexture(DEFAULT_TEXTURE.width(width));
             return this;
         }
 
-        PolyLineHelper.sortByIndex(this.textures);
-        PolyLineTexture lastTexture = this.textures.get(this.textures.size() - 1);
+        PolylineHelper.sortByIndex(this.textures);
+        PolylineTexture lastTexture = this.textures.get(this.textures.size() - 1);
 
         int index = this.points.isEmpty() ? 0 : (this.points.size() - 1);
-        PolyLineHelper.removeByIndex(this.textures, index);
+        PolylineHelper.removeByIndex(this.textures, index);
 
         addTexture(lastTexture.copy().width(width).index(index));
         return this;
+    }
+
+    public void clearRawPolyline() {
+        rawPolylineMap.clear();
     }
 }

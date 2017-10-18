@@ -8,7 +8,7 @@ import android.widget.EditText;
 
 import com.ray.lib_map.MapView;
 import com.ray.lib_map.entity.MapPoint;
-import com.ray.lib_map.entity.polyline.PolyLine;
+import com.ray.lib_map.entity.polyline.Polyline;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.listener.MapClickListener;
 import com.ray.mapsdk.R;
@@ -26,7 +26,7 @@ import butterknife.OnClick;
  * Description : xxx
  */
 
-public class PolyLineActivity extends Activity {
+public class PolylineActivity extends Activity {
     @BindView(R.id.mv_map)
     MapView mvMap;
     @BindView(R.id.et_color)
@@ -36,7 +36,9 @@ public class PolyLineActivity extends Activity {
     @BindView(R.id.et_style)
     EditText etStyle;
     private boolean mIsDrawingLine;
-    private PolyLine mPolyLine;
+    private Polyline mPolyline;
+    private int mColor;
+    private int mWidth;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,8 +51,8 @@ public class PolyLineActivity extends Activity {
 
     private void initVariables() {
         mIsDrawingLine = false;
-
-        mPolyLine = new PolyLine().color(0xffff0000).width(10);
+        mColor = 0xffff0000;
+        mWidth = 10;
     }
 
     private void initView() {
@@ -66,9 +68,10 @@ public class PolyLineActivity extends Activity {
                 if (!mIsDrawingLine) {
                     return;
                 }
-                mPolyLine.addPoint(mapPoint);
-                if (mPolyLine.getPoints().size() >= 2) {
-                    mvMap.addPolyline(mPolyLine);
+                mPolyline.addPoint(mapPoint);
+                if (mPolyline.getPoints().size() >= 2) {
+                    mvMap.removePolyline(mPolyline);
+                    mvMap.addPolyline(mPolyline);
                 }
 
             }
@@ -116,11 +119,13 @@ public class PolyLineActivity extends Activity {
     }
 
     private void setColor() {
-        mPolyLine.color(0xff6495ED);
+        mColor = 0xff6495ED;
+        mPolyline.color(mColor);
     }
 
     private void setWidth() {
-        mPolyLine.width(Integer.parseInt(etWidth.getText().toString().trim()));
+        mWidth = Integer.parseInt(etWidth.getText().toString().trim());
+        mPolyline.width(mWidth);
     }
 
     private void setStyle() {
@@ -129,11 +134,12 @@ public class PolyLineActivity extends Activity {
 
     private void startDrawLine() {
         mIsDrawingLine = true;
+        mPolyline = new Polyline().color(mColor).width(mWidth);
     }
 
     private void endDrawLine() {
         mIsDrawingLine = false;
-        mvMap.removePolyline(mPolyLine);
+        mvMap.removePolyline(mPolyline);
     }
 
     private void removeLastLine() {

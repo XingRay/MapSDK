@@ -17,7 +17,7 @@ import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
-import com.ray.lib_map.entity.polyline.PolyLine;
+import com.ray.lib_map.entity.polyline.Polyline;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
 import com.ray.lib_map.listener.MapClickListener;
@@ -364,13 +364,18 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     @Override
-    public void addPolyline(PolyLine polyLine) {
+    public void addPolyline(Polyline polyline) {
 
     }
 
     @Override
-    public void removePolyline(PolyLine p) {
+    public void removePolyline(Polyline polyline) {
 
+    }
+
+    @Override
+    public List<Polyline> getPolylines() {
+        return null;
     }
 
     @Override

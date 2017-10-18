@@ -62,8 +62,12 @@ public class MapMarker {
      */
     private boolean infoWindowVisible;
 
-    public MapMarker(MapPoint mapPoint, Bitmap icon) {
+    public MapMarker() {
         rawMarkers = new HashMap<>();
+    }
+
+    public MapMarker(MapPoint mapPoint, Bitmap icon) {
+        this();
         this.mapPoint = mapPoint;
         this.icon = icon;
     }
@@ -159,6 +163,7 @@ public class MapMarker {
                 '}';
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -186,5 +191,9 @@ public class MapMarker {
         result = 31 * result + (content != null ? content.hashCode() : 0);
         result = 31 * result + (infoWindowVisible ? 1 : 0);
         return result;
+    }
+
+    public void clearRawMarker() {
+        rawMarkers.clear();
     }
 }

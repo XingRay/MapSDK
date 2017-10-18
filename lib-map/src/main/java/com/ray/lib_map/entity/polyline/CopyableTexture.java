@@ -10,5 +10,5 @@ package com.ray.lib_map.entity.polyline;
  */
 
 interface CopyableTexture {
-    PolyLineTexture copy();
+    PolylineTexture copy();
 }

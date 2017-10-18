@@ -15,19 +15,19 @@ import java.util.List;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class PolyLineHelper {
-    private PolyLineHelper() {
+public class PolylineHelper {
+    private PolylineHelper() {
         throw new UnsupportedOperationException();
     }
 
-    public static void sortByIndex(List<PolyLineTexture> textures) {
+    public static void sortByIndex(List<PolylineTexture> textures) {
         if (textures == null) {
             return;
         }
 
-        Collections.sort(textures, new Comparator<PolyLineTexture>() {
+        Collections.sort(textures, new Comparator<PolylineTexture>() {
             @Override
-            public int compare(PolyLineTexture o1, PolyLineTexture o2) {
+            public int compare(PolylineTexture o1, PolylineTexture o2) {
                 if (o1 == null) {
                     if (o2 == null) {
                         return 0;
@@ -48,15 +48,15 @@ public class PolyLineHelper {
         });
     }
 
-    public static boolean removeByIndex(List<PolyLineTexture> textures, int index) {
+    public static boolean removeByIndex(List<PolylineTexture> textures, int index) {
         boolean removed = false;
         if (textures == null) {
             return false;
         }
 
-        Iterator<PolyLineTexture> iterator = textures.iterator();
+        Iterator<PolylineTexture> iterator = textures.iterator();
         while (iterator.hasNext()) {
-            PolyLineTexture texture = iterator.next();
+            PolylineTexture texture = iterator.next();
             if (texture.getIndex() >= index) {
                 iterator.remove();
                 removed = true;

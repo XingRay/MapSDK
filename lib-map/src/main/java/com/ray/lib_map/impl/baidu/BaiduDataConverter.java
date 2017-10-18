@@ -7,6 +7,9 @@ import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.extern.ZoomStandardization;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Author      : leixing
  * Date        : 2017-10-17
@@ -16,6 +19,7 @@ import com.ray.lib_map.extern.ZoomStandardization;
  * Description : xxx
  */
 
+@SuppressWarnings("WeakerAccess")
 class BaiduDataConverter {
     private BaiduDataConverter() {
         throw new UnsupportedOperationException();
@@ -43,5 +47,23 @@ class BaiduDataConverter {
 
     static MapPoint toMapPoint(LatLng latLng) {
         return new MapPoint(latLng.latitude, latLng.longitude, MapType.BAIDU.getCoordinateType());
+    }
+
+    public static List<LatLng> fromMapPoints(List<MapPoint> points) {
+        List<LatLng> latLngs = new ArrayList<>();
+        if (points == null) {
+            return latLngs;
+        }
+
+        for (MapPoint mapPoint : points) {
+            latLngs.add(fromMapPoint(mapPoint));
+        }
+
+        return latLngs;
+    }
+
+    private static LatLng fromMapPoint(MapPoint mapPoint) {
+        MapPoint baiduPoint = mapPoint.copy(MapType.BAIDU.getCoordinateType());
+        return new LatLng(baiduPoint.getLatitude(), baiduPoint.getLongitude());
     }
 }

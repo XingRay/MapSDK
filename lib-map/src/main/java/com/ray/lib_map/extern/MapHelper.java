@@ -1,7 +1,9 @@
 package com.ray.lib_map.extern;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
+import com.ray.lib_map.ScaleLevel;
 import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapPoint;
@@ -20,7 +22,7 @@ import java.util.List;
  * Description : xxx
  */
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class MapHelper {
     private MapHelper() {
         throw new UnsupportedOperationException();
@@ -56,5 +58,55 @@ public class MapHelper {
         mapMarker.setTitle(title);
         mapMarker.setContent(content);
         return mapMarker;
+    }
+
+    public static MapMarker buildLocationMarker(MapPoint mapPoint, Bitmap bitmap) {
+        MapMarker mapMarker = new MapMarker(mapPoint, bitmap);
+        mapMarker.setAnchorX(0.5f);
+        mapMarker.setAnchorY(0.5f);
+        return mapMarker;
+    }
+
+    public static float convertScaleLevelToMapZoom(ScaleLevel scaleLevel) {
+        switch (scaleLevel) {
+            case COUNTRY:
+                return 4.5f;
+            case PROVINCE:
+                return 6;
+            case CITY:
+                return 11;
+            case DISTRICT:
+                return 13.5f;
+            case STREET:
+                return 14.5f;
+            default:
+                return 13.5f;
+        }
+    }
+
+    public static ScaleLevel convertMapZoomToScaleLevel(float scaleLevel) {
+        if (scaleLevel <= 4.5f) {
+            return ScaleLevel.COUNTRY;
+        } else if (scaleLevel <= 6) {
+            return ScaleLevel.PROVINCE;
+        } else if (scaleLevel <= 11) {
+            return ScaleLevel.CITY;
+        } else if (scaleLevel <= 13.5) {
+            return ScaleLevel.DISTRICT;
+        } else if (scaleLevel <= 20) {
+            return ScaleLevel.STREET;
+        }
+        return ScaleLevel.DISTRICT;
+    }
+
+    public static List<MapPoint> converMapMarkersToMapPoints(List<MapMarker> markers) {
+        ArrayList<MapPoint> mapPoints = new ArrayList<>();
+        for (MapMarker marker : markers) {
+            MapPoint mapPoint = marker.getMapPoint();
+            if (mapPoint != null) {
+                mapPoints.add(mapPoint);
+            }
+        }
+        return mapPoints;
     }
 }

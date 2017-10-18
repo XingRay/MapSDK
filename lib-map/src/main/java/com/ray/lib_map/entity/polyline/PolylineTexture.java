@@ -10,7 +10,7 @@ package com.ray.lib_map.entity.polyline;
  */
 
 @SuppressWarnings("WeakerAccess")
-public abstract class PolyLineTexture implements CopyableTexture {
+public abstract class PolylineTexture implements CopyableTexture {
     /**
      * start valid index
      */
@@ -20,17 +20,17 @@ public abstract class PolyLineTexture implements CopyableTexture {
 
     private IndexMatcher matcher;
 
-    public PolyLineTexture() {
+    public PolylineTexture() {
         width = 5;
     }
 
-    public PolyLineTexture(PolyLineTexture texture) {
+    public PolylineTexture(PolylineTexture texture) {
         index = texture.getIndex();
         width = texture.getWidth();
         matcher = texture.getMatcher();
     }
 
-    public PolyLineTexture index(int index) {
+    public PolylineTexture index(int index) {
         if (index < 0) {
             throw new IllegalArgumentException();
         }
@@ -38,12 +38,12 @@ public abstract class PolyLineTexture implements CopyableTexture {
         return this;
     }
 
-    public PolyLineTexture width(int width) {
+    public PolylineTexture width(int width) {
         this.width = width;
         return this;
     }
 
-    public PolyLineTexture matcher(IndexMatcher matcher) {
+    public PolylineTexture matcher(IndexMatcher matcher) {
         this.matcher = matcher;
         return this;
     }

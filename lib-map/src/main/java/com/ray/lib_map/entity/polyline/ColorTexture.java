@@ -10,14 +10,14 @@ package com.ray.lib_map.entity.polyline;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class ColorTexture extends PolyLineTexture {
+public class ColorTexture extends PolylineTexture {
     private int color;
 
     public ColorTexture(int color) {
         this.color = color;
     }
 
-    public ColorTexture(PolyLineTexture texture, int color) {
+    public ColorTexture(PolylineTexture texture, int color) {
         super(texture);
         this.color = color;
     }
@@ -31,7 +31,7 @@ public class ColorTexture extends PolyLineTexture {
     }
 
     @Override
-    public PolyLineTexture copy() {
+    public PolylineTexture copy() {
         return new ColorTexture(this, color);
     }
 }

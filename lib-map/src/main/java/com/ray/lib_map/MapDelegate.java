@@ -10,7 +10,7 @@ import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
-import com.ray.lib_map.entity.polyline.PolyLine;
+import com.ray.lib_map.entity.polyline.Polyline;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
 import com.ray.lib_map.listener.MapClickListener;
@@ -164,9 +164,11 @@ public interface MapDelegate {
     List<MapOverlay> getOverlays();
 
     // == polyline == //
-    void addPolyline(PolyLine polyLine);
+    void addPolyline(Polyline polyline);
 
-    void removePolyline(PolyLine p);
+    void removePolyline(Polyline polyline);
+
+    List<Polyline> getPolylines();
 
     // == circle == //
     void addCircle(Circle circle);

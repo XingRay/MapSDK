@@ -12,14 +12,14 @@ import android.graphics.Bitmap;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class BitmapTexture extends PolyLineTexture {
+public class BitmapTexture extends PolylineTexture {
     private Bitmap bitmap;
 
     public BitmapTexture(Bitmap bitmap) {
         this.bitmap = bitmap;
     }
 
-    public BitmapTexture(PolyLineTexture texture, Bitmap bitmap) {
+    public BitmapTexture(PolylineTexture texture, Bitmap bitmap) {
         super(texture);
         this.bitmap = bitmap;
     }
@@ -33,7 +33,7 @@ public class BitmapTexture extends PolyLineTexture {
     }
 
     @Override
-    public PolyLineTexture copy() {
+    public PolylineTexture copy() {
         return new BitmapTexture(this, bitmap);
     }
 }

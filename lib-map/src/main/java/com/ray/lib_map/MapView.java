@@ -17,7 +17,7 @@ import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Polygon;
-import com.ray.lib_map.entity.polyline.PolyLine;
+import com.ray.lib_map.entity.polyline.Polyline;
 import com.ray.lib_map.extern.MapDelegateFactory;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.listener.CameraMoveListener;
@@ -129,7 +129,10 @@ public class MapView extends View {
 
         CameraPosition position = getCameraPosition();
         GestureSetting setting = getGestureSetting();
-        List<MapMarker> mapMarkers = getMarkers();
+        List<MapMarker> mapMarkers = mMapDelegate.getMarkers();
+        clearRawMarker(mapMarkers, mapType);
+        List<Polyline> polylines = mMapDelegate.getPolylines();
+        clearRawPolylines(polylines, mapType);
 
         // 地图切换 注意：不同的地图类型切换时执行的生命周期方法不一样
         mMapDelegate.onSwitchOut();
@@ -151,6 +154,25 @@ public class MapView extends View {
         setCameraPosition(position);
         setGestureSetting(setting);
         setMarkers(mapMarkers);
+        addPolylines(polylines);
+    }
+
+    private void clearRawPolylines(List<Polyline> polylines, MapType mapType) {
+        if (polylines == null) {
+            return;
+        }
+        for (Polyline polyline : polylines) {
+            polyline.clearRawPolyline();
+        }
+    }
+
+    private void clearRawMarker(List<MapMarker> mapMarkers, MapType mapType) {
+        if (mapMarkers == null) {
+            return;
+        }
+        for (MapMarker mapMarker : mapMarkers) {
+            mapMarker.clearRawMarker();
+        }
     }
 
     public CameraPosition getCameraPosition() {
@@ -276,10 +298,6 @@ public class MapView extends View {
     public void setMarkerClickListener(MarkerClickListener listener) {
         mMarkerClickListener = listener;
         mMapDelegate.setMarkerClickListener(listener);
-    }
-
-    public List<MapMarker> getMarkers() {
-        return mMapDelegate.getMarkers();
     }
 
     public void setMarkers(List<MapMarker> mapMarkers) {
@@ -415,21 +433,21 @@ public class MapView extends View {
         mMapDelegate.removePolygon(polygon);
     }
 
-    public void addPolyline(PolyLine polyLine) {
-        mMapDelegate.addPolyline(polyLine);
+    public void addPolyline(Polyline polyline) {
+        mMapDelegate.addPolyline(polyline);
     }
 
-    public void addPolylines(List<PolyLine> polyLines) {
-        if (polyLines == null) {
+    public void addPolylines(List<Polyline> polylines) {
+        if (polylines == null) {
             return;
         }
-        for (PolyLine polyLine : polyLines) {
-            mMapDelegate.addPolyline(polyLine);
+        for (Polyline polyline : polylines) {
+            mMapDelegate.addPolyline(polyline);
         }
     }
 
-    public void removePolyline(PolyLine polyLine) {
-        mMapDelegate.removePolyline(polyLine);
+    public void removePolyline(Polyline polyline) {
+        mMapDelegate.removePolyline(polyline);
     }
 
     public void addCircle(Circle circle) {

@@ -72,7 +72,7 @@
             android:windowSoftInputMode="adjustPan"/>
 
         <activity
-            android:name=".pages.polyline.PolyLineActivity"
+            android:name=".pages.polyline.PolylineActivity"
             android:windowSoftInputMode="adjustPan"/>
     </application>
 
