@@ -4,6 +4,7 @@ import com.ray.mapsdk.pages.camera.CameraActivity;
 import com.ray.mapsdk.pages.gesture.GestureControlActivity;
 import com.ray.mapsdk.pages.listener.ListenerActivity;
 import com.ray.mapsdk.pages.poi.PoiListActivity;
+import com.ray.mapsdk.pages.polyline.PolyLineActivity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +23,7 @@ public class PageList {
             new Page("poi query", PoiListActivity.class),
             new Page("camera", CameraActivity.class),
             new Page("gesture control", GestureControlActivity.class),
-            new Page("listener", ListenerActivity.class)
+            new Page("listener", ListenerActivity.class),
+            new Page("polyline", PolyLineActivity.class)
     );
 }

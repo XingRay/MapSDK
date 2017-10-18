@@ -176,4 +176,20 @@ public class GaodeDataConverter {
     public static MapPoint toMapPoint(LatLng latLng) {
         return new MapPoint(latLng.latitude, latLng.longitude, MapType.GAODE.getCoordinateType());
     }
+
+    public static LatLng fromMapPoint(MapPoint point) {
+        MapPoint gaodePoint = point.copy(MapType.GAODE.getCoordinateType());
+        return new LatLng(gaodePoint.getLatitude(), gaodePoint.getLongitude());
+    }
+
+    public static List<LatLng> fromMapPoints(List<MapPoint> points) {
+        List<LatLng> latLngs = new ArrayList<>();
+        if (points == null) {
+            return latLngs;
+        }
+        for (MapPoint point : points) {
+            latLngs.add(fromMapPoint(point));
+        }
+        return latLngs;
+    }
 }

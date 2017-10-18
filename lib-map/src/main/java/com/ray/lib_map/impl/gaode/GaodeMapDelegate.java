@@ -12,6 +12,8 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.Polyline;
+import com.amap.api.maps.model.PolylineOptions;
 import com.ray.lib_map.InfoWindowInflater;
 import com.ray.lib_map.MapDelegate;
 import com.ray.lib_map.entity.CameraPosition;
@@ -19,8 +21,12 @@ import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
-import com.ray.lib_map.entity.PolyLine;
 import com.ray.lib_map.entity.Polygon;
+import com.ray.lib_map.entity.polyline.BitmapTexture;
+import com.ray.lib_map.entity.polyline.ColorTexture;
+import com.ray.lib_map.entity.polyline.PolyLine;
+import com.ray.lib_map.entity.polyline.PolyLineHelper;
+import com.ray.lib_map.entity.polyline.PolyLineTexture;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.extern.ZoomStandardization;
 import com.ray.lib_map.listener.CameraMoveListener;
@@ -512,12 +518,67 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void addPolyline(PolyLine polyline) {
+        List<LatLng> latLngs = GaodeDataConverter.fromMapPoints(polyline.getPoints());
+        int pointSize = latLngs.size();
+        if (pointSize < 2) {
+            return;
+        }
 
+        List<PolyLineTexture> textures = polyline.getTextures();
+        PolyLineHelper.sortByIndex(textures);
+
+        for (int i = 0, size = textures.size(); i < size; i++) {
+            PolyLineTexture texture = textures.get(i);
+            if (texture.getIndex() > pointSize - 2) {
+                continue;
+            }
+            //start index  include
+            int start = texture.getIndex();
+            //end index  exclude
+            int end = (i == size - 1) ? pointSize : textures.get(i + 1).getIndex();
+
+            List<LatLng> subList = latLngs.subList(start, end);
+
+            Polyline gaodePolyLine = null;
+            if (texture instanceof ColorTexture) {
+                gaodePolyLine = addColorPolyLine(subList, (ColorTexture) texture);
+            } else if (texture instanceof BitmapTexture) {
+                gaodePolyLine = addBitmapPolyLine(subList, (BitmapTexture) texture);
+            }
+
+            if (gaodePolyLine != null) {
+                polyline.addRawPolyLine(MapType.GAODE, gaodePolyLine);
+            }
+        }
     }
 
-    @Override
-    public void removePolyline(PolyLine p) {
+    private Polyline addColorPolyLine(List<LatLng> points, ColorTexture texture) {
+        PolylineOptions polylineOptions = new PolylineOptions()
+                .addAll(points)
+                .color(texture.getColor())
+                .width(texture.getWidth());
+        return getMap().addPolyline(polylineOptions);
+    }
 
+    private Polyline addBitmapPolyLine(List<LatLng> points, BitmapTexture texture) {
+        PolylineOptions polylineOptions = new PolylineOptions()
+                .setCustomTexture(BitmapDescriptorFactory.fromBitmap(texture.getBitmap()))
+                .width(texture.getWidth())
+                .addAll(points);
+        return getMap().addPolyline(polylineOptions);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void removePolyline(PolyLine polyLine) {
+        List<Polyline> rawPolyLines = (List<Polyline>) polyLine.getRawPolyLines(MapType.GAODE);
+        if (rawPolyLines == null) {
+            return;
+        }
+
+        for (Polyline rawPolyline : rawPolyLines) {
+            rawPolyline.remove();
+        }
     }
 
     @Override

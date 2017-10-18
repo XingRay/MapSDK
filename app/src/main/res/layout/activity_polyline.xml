@@ -46,4 +46,121 @@
         android:layout_width="match_parent"
         android:layout_height="250dp"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="color"
+            android:textSize="20sp"/>
+
+        <EditText
+            android:id="@+id/et_color"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="number"/>
+
+        <Button
+            android:id="@+id/bt_color"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:text="set"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="width"
+            android:textSize="20sp"/>
+
+        <EditText
+            android:id="@+id/et_width"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="number"/>
+
+        <Button
+            android:id="@+id/bt_width"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:text="set"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="style"
+            android:textSize="20sp"/>
+
+        <EditText
+            android:id="@+id/et_style"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="number"/>
+
+        <Button
+            android:id="@+id/bt_style"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:text="set"/>
+    </LinearLayout>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/bt_start"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="start"/>
+
+        <Button
+            android:id="@+id/bt_end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="end"/>
+
+        <Button
+            android:id="@+id/bt_remove"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="remove"/>
+
+        <Button
+            android:id="@+id/bt_reset"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="reset"/>
+    </LinearLayout>
+
 </LinearLayout>

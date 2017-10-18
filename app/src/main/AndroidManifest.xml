@@ -70,6 +70,10 @@
         <activity
             android:name=".pages.listener.ListenerActivity"
             android:windowSoftInputMode="adjustPan"/>
+
+        <activity
+            android:name=".pages.polyline.PolyLineActivity"
+            android:windowSoftInputMode="adjustPan"/>
     </application>
 
 </manifest>
