@@ -21,6 +21,7 @@ public abstract class PolylineTexture implements CopyableTexture {
     // TODO: 2017-10-19 暂不使用
     private IndexMatcher matcher;
 
+    // TODO: 2017-10-19 替换成style枚举
     private boolean dotted;
 
     public PolylineTexture() {
