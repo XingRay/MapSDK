@@ -18,7 +18,10 @@ public abstract class PolylineTexture implements CopyableTexture {
 
     private int width;
 
+    // TODO: 2017-10-19 暂不使用
     private IndexMatcher matcher;
+
+    private boolean dotted;
 
     public PolylineTexture() {
         width = 5;
@@ -28,6 +31,7 @@ public abstract class PolylineTexture implements CopyableTexture {
         index = texture.getIndex();
         width = texture.getWidth();
         matcher = texture.getMatcher();
+        dotted = texture.isDotted();
     }
 
     public PolylineTexture index(int index) {
@@ -48,6 +52,11 @@ public abstract class PolylineTexture implements CopyableTexture {
         return this;
     }
 
+    public PolylineTexture dotted(boolean dotted) {
+        this.dotted = dotted;
+        return this;
+    }
+
     public int getIndex() {
         return index;
     }
@@ -58,5 +67,9 @@ public abstract class PolylineTexture implements CopyableTexture {
 
     public IndexMatcher getMatcher() {
         return matcher;
+    }
+
+    public boolean isDotted() {
+        return dotted;
     }
 }

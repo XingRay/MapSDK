@@ -214,6 +214,22 @@ public class Polyline {
         return this;
     }
 
+    public Polyline dotted(boolean dotted) {
+        if (this.textures.isEmpty()) {
+            addTexture(DEFAULT_TEXTURE.dotted(dotted));
+            return this;
+        }
+
+        PolylineHelper.sortByIndex(this.textures);
+        PolylineTexture lastTexture = this.textures.get(this.textures.size() - 1);
+
+        int index = this.points.isEmpty() ? 0 : (this.points.size() - 1);
+        PolylineHelper.removeByIndex(this.textures, index);
+
+        addTexture(lastTexture.copy().dotted(dotted).index(index));
+        return this;
+    }
+
     public void clearRawPolyline() {
         rawPolylineMap.clear();
     }

@@ -502,9 +502,15 @@ public class BaiduMapDelegate implements MapDelegate {
 
     @Override
     public void removeMarker(MapMarker mapMarker) {
-        Overlay overlay = (Overlay) mapMarker.getRawMarker(MapType.BAIDU);
-        overlay.remove();
+        removeRawMarker(mapMarker);
         mMapMarkers.remove(mapMarker);
+    }
+
+    private void removeRawMarker(MapMarker mapMarker) {
+        Overlay overlay = (Overlay) mapMarker.getRawMarker(MapType.BAIDU);
+        if (overlay != null) {
+            overlay.remove();
+        }
     }
 
     @Override
@@ -515,8 +521,7 @@ public class BaiduMapDelegate implements MapDelegate {
     @Override
     public void clearMarkers() {
         for (MapMarker mapMarker : mMapMarkers) {
-            Overlay overlay = (Overlay) mapMarker.getRawMarker(MapType.BAIDU);
-            overlay.remove();
+            removeRawMarker(mapMarker);
         }
         mMapMarkers.clear();
     }
@@ -596,37 +601,35 @@ public class BaiduMapDelegate implements MapDelegate {
             //end index  exclude
             int end = (i == size - 1) ? pointSize : textures.get(i + 1).getIndex() + 1;
 
-            List<LatLng> subList = latLngList.subList(start, end);
+            List<LatLng> points = latLngList.subList(start, end);
 
-            com.baidu.mapapi.map.Polyline gaodePolyline = null;
+            PolylineOptions polylineOptions = new PolylineOptions();
+            applyBaseOptions(polylineOptions, points, texture);
             if (texture instanceof ColorTexture) {
-                gaodePolyline = addColorPolyline(subList, (ColorTexture) texture);
+                applyColorPolylineOptions(polylineOptions, (ColorTexture) texture);
             } else if (texture instanceof BitmapTexture) {
-                gaodePolyline = addBitmapPolyline(subList, (BitmapTexture) texture);
+                applyBitmapPolylineOptions(polylineOptions, (BitmapTexture) texture);
             }
 
-            if (gaodePolyline != null) {
-                polyline.addRawPolyline(MapType.BAIDU, gaodePolyline);
-            }
+            polyline.addRawPolyline(MapType.BAIDU, getMap().addOverlay(polylineOptions));
         }
 
         mPolylines.add(polyline);
     }
 
-    private com.baidu.mapapi.map.Polyline addColorPolyline(List<LatLng> points, ColorTexture texture) {
-        PolylineOptions polylineOptions = new PolylineOptions()
-                .color(texture.getColor())
+    private void applyBaseOptions(PolylineOptions polylineOptions, List<LatLng> points, PolylineTexture texture) {
+        polylineOptions
+                .points(points)
                 .width(texture.getWidth())
-                .points(points);
-        return (com.baidu.mapapi.map.Polyline) getMap().addOverlay(polylineOptions);
+                .dottedLine(texture.isDotted());
     }
 
-    private com.baidu.mapapi.map.Polyline addBitmapPolyline(List<LatLng> points, BitmapTexture texture) {
-        PolylineOptions polylineOptions = new PolylineOptions()
-                .customTexture(BitmapDescriptorFactory.fromBitmap(texture.getBitmap()))
-                .width(texture.getWidth())
-                .points(points);
-        return (com.baidu.mapapi.map.Polyline) getMap().addOverlay(polylineOptions);
+    private void applyColorPolylineOptions(PolylineOptions polylineOptions, ColorTexture texture) {
+        polylineOptions.color(texture.getColor());
+    }
+
+    private void applyBitmapPolylineOptions(PolylineOptions polylineOptions, BitmapTexture texture) {
+        polylineOptions.customTexture(BitmapDescriptorFactory.fromBitmap(texture.getBitmap()));
     }
 
     @SuppressWarnings("unchecked")

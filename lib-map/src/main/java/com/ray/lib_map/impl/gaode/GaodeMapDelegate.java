@@ -385,10 +385,15 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void removeMarker(MapMarker marker) {
-        Marker rawMarker = (Marker) marker.getRawMarker(MapType.GAODE);
-        rawMarker.remove();
-
+        removeRawMarker(marker);
         mMapMarkers.remove(marker);
+    }
+
+    private void removeRawMarker(MapMarker marker) {
+        Marker rawMarker = (Marker) marker.getRawMarker(MapType.GAODE);
+        if (rawMarker != null) {
+            rawMarker.remove();
+        }
     }
 
     @Override
@@ -399,8 +404,7 @@ public class GaodeMapDelegate implements MapDelegate {
     @Override
     public void clearMarkers() {
         for (MapMarker mapMarker : mMapMarkers) {
-            Marker rawMarker = (Marker) mapMarker.getRawMarker(MapType.GAODE);
-            rawMarker.remove();
+            removeRawMarker(mapMarker);
         }
 
         mMapMarkers.clear();
@@ -429,7 +433,6 @@ public class GaodeMapDelegate implements MapDelegate {
     @Override
     public void showInfoWindow(MapMarker mapMarker) {
         mapMarker.setInfoWindowVisible(true);
-
         setInfoWindow(mapMarker);
     }
 
@@ -539,37 +542,36 @@ public class GaodeMapDelegate implements MapDelegate {
             //end index  exclude
             int end = (i == size - 1) ? pointSize : textures.get(i + 1).getIndex() + 1;
 
-            List<LatLng> subList = latLngs.subList(start, end);
+            List<LatLng> points = latLngs.subList(start, end);
 
-            com.amap.api.maps.model.Polyline gaodePolyline = null;
+            PolylineOptions polylineOptions = new PolylineOptions();
+            applyBaseOptions(polylineOptions, points, texture);
             if (texture instanceof ColorTexture) {
-                gaodePolyline = addColorPolyline(subList, (ColorTexture) texture);
+                applyColorPolylineOptions(polylineOptions, (ColorTexture) texture);
             } else if (texture instanceof BitmapTexture) {
-                gaodePolyline = addBitmapPolyline(subList, (BitmapTexture) texture);
+                applyBitmapPolylineOptions(polylineOptions, (BitmapTexture) texture);
             }
 
-            if (gaodePolyline != null) {
-                polyline.addRawPolyline(MapType.GAODE, gaodePolyline);
-            }
+            polyline.addRawPolyline(MapType.GAODE, getMap().addPolyline(polylineOptions));
+
         }
 
         mPolylines.add(polyline);
     }
 
-    private com.amap.api.maps.model.Polyline addColorPolyline(List<LatLng> points, ColorTexture texture) {
-        PolylineOptions polylineOptions = new PolylineOptions()
+    private void applyBaseOptions(PolylineOptions polylineOptions, List<LatLng> points, PolylineTexture texture) {
+        polylineOptions
                 .addAll(points)
-                .color(texture.getColor())
-                .width(texture.getWidth());
-        return getMap().addPolyline(polylineOptions);
+                .width(texture.getWidth())
+                .setDottedLine(texture.isDotted());
     }
 
-    private com.amap.api.maps.model.Polyline addBitmapPolyline(List<LatLng> points, BitmapTexture texture) {
-        PolylineOptions polylineOptions = new PolylineOptions()
-                .setCustomTexture(BitmapDescriptorFactory.fromBitmap(texture.getBitmap()))
-                .width(texture.getWidth())
-                .addAll(points);
-        return getMap().addPolyline(polylineOptions);
+    private void applyColorPolylineOptions(PolylineOptions polylineOptions, ColorTexture texture) {
+        polylineOptions.color(texture.getColor());
+    }
+
+    private void applyBitmapPolylineOptions(PolylineOptions polylineOptions, BitmapTexture texture) {
+        polylineOptions.setCustomTexture(BitmapDescriptorFactory.fromBitmap(texture.getBitmap()));
     }
 
     @SuppressWarnings("unchecked")

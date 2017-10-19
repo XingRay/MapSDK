@@ -370,7 +370,6 @@ public class GoogleMapDelegate implements MapDelegate {
 
     @Override
     public void removePolyline(Polyline polyline) {
-
     }
 
     @Override

@@ -301,7 +301,6 @@ public class MapView extends View {
     }
 
     public void setMarkers(List<MapMarker> mapMarkers) {
-        clearMarkers();
         if (mapMarkers != null) {
             for (MapMarker mapMarker : mapMarkers) {
                 addMarker(mapMarker);
