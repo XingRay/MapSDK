@@ -14,6 +14,7 @@ import java.io.Serializable;
  * Description : 地址
  */
 
+@SuppressWarnings("unused")
 public class Address implements Parcelable, Serializable {
     /**
      * 地图点
@@ -51,7 +52,7 @@ public class Address implements Parcelable, Serializable {
     public Address() {
     }
 
-    private Address(Parcel in) {
+    protected Address(Parcel in) {
         this.mapPoint = in.readParcelable(MapPoint.class.getClassLoader());
         this.province = in.readString();
         this.city = in.readString();
