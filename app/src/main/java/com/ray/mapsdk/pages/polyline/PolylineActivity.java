@@ -134,7 +134,7 @@ public class PolylineActivity extends Activity {
 
     private void startDrawLine() {
         mIsDrawingLine = true;
-        mPolyline = new Polyline().color(mColor).width(mWidth);
+        mPolyline = new Polyline().color(mColor).width(mWidth).dotted(true);
     }
 
     private void endDrawLine() {
