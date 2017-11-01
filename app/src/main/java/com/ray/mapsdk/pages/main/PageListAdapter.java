@@ -8,8 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.ray.mapsdk.R;
-import com.ray.mapsdk.base.OnItemClickListener;
-import com.ray.mapsdk.pages.Page;
+import com.ray.mapsdk.extern.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;

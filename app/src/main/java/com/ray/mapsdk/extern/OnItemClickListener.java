@@ -1,4 +1,4 @@
-package com.ray.mapsdk.base;
+package com.ray.mapsdk.extern;
 
 /**
  * Author      : leixing

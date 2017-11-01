@@ -28,7 +28,7 @@ public class MapDelegateFactory {
         mMapDelegates = new HashMap<>();
     }
 
-    public MapDelegate getMapDelegate(MapType mapType) {
+    public MapDelegate createMapDelegate(MapType mapType) {
         if (mapType == null) {
             throw new IllegalArgumentException("mapType can not be null");
         }

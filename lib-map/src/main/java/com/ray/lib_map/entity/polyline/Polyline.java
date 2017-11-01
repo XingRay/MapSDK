@@ -26,6 +26,8 @@ public class Polyline {
 
     private List<MapPoint> points;
     private List<PolylineTexture> textures;
+    private int zIndex;
+
     private Map<MapType, List<?>> rawPolylineMap;
 
     public Polyline() {
@@ -48,8 +50,8 @@ public class Polyline {
                 addRawPloyLine(mapType, baiduPolyline);
                 break;
             case GOOGLE:
-                com.google.android.gms.maps.model.Polyline googlePoltLine = (com.google.android.gms.maps.model.Polyline) rawPolyline;
-                addRawPloyLine(mapType, googlePoltLine);
+                com.google.android.gms.maps.model.Polyline googlePolyline = (com.google.android.gms.maps.model.Polyline) rawPolyline;
+                addRawPloyLine(mapType, googlePolyline);
         }
 
     }
@@ -86,6 +88,7 @@ public class Polyline {
         return points(Arrays.asList(points));
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public Polyline addPoint(MapPoint point) {
         if (point == null) {
             throw new IllegalArgumentException();
@@ -139,6 +142,7 @@ public class Polyline {
         return textures(Arrays.asList(textures));
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public Polyline addTexture(PolylineTexture texture) {
         if (texture == null) {
             throw new IllegalArgumentException();
@@ -214,6 +218,7 @@ public class Polyline {
         return this;
     }
 
+    @SuppressWarnings("SameParameterValue")
     public Polyline dotted(boolean dotted) {
         if (this.textures.isEmpty()) {
             addTexture(DEFAULT_TEXTURE.dotted(dotted));
@@ -232,5 +237,14 @@ public class Polyline {
 
     public void clearRawPolyline() {
         rawPolylineMap.clear();
+    }
+
+    public Polyline zIndex(int zIndex) {
+        this.zIndex = zIndex;
+        return this;
+    }
+
+    public int getZIndex() {
+        return this.zIndex;
     }
 }

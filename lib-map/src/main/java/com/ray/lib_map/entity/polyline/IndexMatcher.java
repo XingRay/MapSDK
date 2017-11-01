@@ -8,7 +8,7 @@ package com.ray.lib_map.entity.polyline;
  * <p>
  * Description : index matcher
  */
-
+// TODO: 2017-10-19 not used yet
 interface IndexMatcher {
     boolean match(int index);
 }

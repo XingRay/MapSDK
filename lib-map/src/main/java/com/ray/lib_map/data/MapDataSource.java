@@ -16,7 +16,7 @@ import java.util.List;
  * <p>
  * Description : 地图数据源
  */
-
+@SuppressWarnings("unused")
 public interface MapDataSource {
     /**
      * 逆地理编码
@@ -27,7 +27,7 @@ public interface MapDataSource {
      * 如：
      * (latitude, longitude) -> "xx省xx市xx区(县)"
      */
-    void reverseGeoCode(double latitude, double longitude, float radius, DataCallback<Address> callback);
+    void reverseGeoCode(MapPoint mapPoint, float radius, DataCallback<Address> callback);
 
     /**
      * 地理编码，又称为地址匹配，

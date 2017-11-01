@@ -34,7 +34,7 @@ public class CameraPosition implements Parcelable, Serializable {
 
     public CameraPosition(MapPoint position) {
         this.position = position;
-        this.zoom = 19;
+        this.zoom = 18;
     }
 
     public CameraPosition() {

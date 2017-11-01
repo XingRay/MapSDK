@@ -5,11 +5,9 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.ray.lib_map.entity.CameraPosition;
-import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.MapMarker;
-import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
-import com.ray.lib_map.entity.Polygon;
+import com.ray.lib_map.entity.graph.Graph;
 import com.ray.lib_map.entity.polyline.Polyline;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
@@ -17,6 +15,7 @@ import com.ray.lib_map.listener.MapClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
 import com.ray.lib_map.listener.MapLongClickListener;
 import com.ray.lib_map.listener.MapScreenCaptureListener;
+import com.ray.lib_map.listener.MapSwitchListener;
 import com.ray.lib_map.listener.MarkerClickListener;
 
 import java.util.List;
@@ -32,15 +31,18 @@ import java.util.List;
 
 public interface MapDelegate {
 
+    // ========= basic ===========//
+
     View getMapView();
 
     void clearMap();
 
     void onSwitchOut();
 
-    void onSwitchIn(Bundle savedInstanceState);
+    void onSwitchIn(Bundle savedInstanceState, MapSwitchListener listener);
 
     // ========== lifecycle ========== //
+
     void onCreate(Bundle savedInstanceState);
 
     void onResume();
@@ -52,6 +54,7 @@ public interface MapDelegate {
     void onSaveInstanceState(Bundle savedInstanceState);
 
     // ========== listener ========== //
+
     void setMapLoadListener(MapLoadListener listener);
 
     void setCameraMoveListener(CameraMoveListener listener);
@@ -60,13 +63,11 @@ public interface MapDelegate {
 
     void setInfoWindowClickListener(InfoWindowClickListener listener);
 
-    void setMapScreenCaptureListener(MapScreenCaptureListener listener);
-
     void setMapClickListener(MapClickListener listener);
 
     void setMapLongClickListener(MapLongClickListener listener);
 
-    // ===  gesture === //
+    // ===========  gesture ============ //
 
     boolean isZoomGestureEnable();
 
@@ -84,29 +85,15 @@ public interface MapDelegate {
 
     void setOverlookGestureEnable(boolean enable);
 
-    // == map status == //
-
-    float getZoom();
-
-    void setZoom(float zoom);
-
-    float getOverlook();
-
-    void setOverlook(float overlook);
-
-    float getRotate();
-
-    void setRotate(float rotate);
+    // ======= camera ======== //
 
     MapPoint getPosition();
 
     void setPosition(MapPoint mapPoint);
 
-    CameraPosition getCameraPosition();
+    float getZoom();
 
-    void setCameraPosition(CameraPosition position);
-
-    // === zoom === //
+    void setZoom(float zoom);
 
     void zoomOut();
 
@@ -116,21 +103,21 @@ public interface MapDelegate {
 
     float getMinZoom();
 
-    // ========== basic function =========//
+    float getOverlook();
 
-    void screenShotAndSave(String saveFilePath);
+    void setOverlook(float overlook);
 
-    void moveByBounds(List<MapPoint> points, int padding);
+    float getRotate();
 
-    void moveByPolygon(Polygon polygon, int padding);
+    void setRotate(float rotate);
 
-    void moveByCircle(Circle circle, int padding);
+    CameraPosition getCameraPosition();
 
-    MapPoint graphicPointToMapPoint(Point point);
+    void setCameraPosition(CameraPosition position);
 
-    Point mapPointToGraphicPoint(MapPoint point);
+    void adjustCamera(List<MapPoint> mapPoints, int padding);
 
-    // ========== marker ========== //
+    // ========== marker and infoWindow ========== //
 
     void addMarker(MapMarker mapMarker);
 
@@ -140,6 +127,8 @@ public interface MapDelegate {
 
     void clearMarkers();
 
+    void updateMarker(MapMarker mapMarker);
+
     void setMarkerVisible(MapMarker mapMarker, boolean visible);
 
     void setInfoWindowInflater(InfoWindowInflater inflater);
@@ -148,21 +137,6 @@ public interface MapDelegate {
 
     void showInfoWindow(MapMarker mapMarker);
 
-    // ========== overlay ========= //
-    void addOverlay(MapOverlay overlay);
-
-    void removeOverlay(MapOverlay overlay);
-
-    void clearOverlay();
-
-    void moveOverlay(MapOverlay overlay, MapPoint toPoint);
-
-    void updateOverlay(MapOverlay overlay, float xOffset, float yOffset);
-
-    MapOverlay getOverlay(MapPoint mapPoint);
-
-    List<MapOverlay> getOverlays();
-
     // == polyline == //
     void addPolyline(Polyline polyline);
 
@@ -170,13 +144,25 @@ public interface MapDelegate {
 
     List<Polyline> getPolylines();
 
-    // == circle == //
-    void addCircle(Circle circle);
+    void clearPolylines();
 
-    void removeCircle(Circle circle);
+    // ========== graph ========== //
 
-    // ========== polygon ========== //
-    Polygon addPolygon(Polygon polygon);
+    void addGraph(Graph graph);
 
-    void removePolygon(Polygon p);
+    void removeGraph(Graph p);
+
+    List<Graph> getGraphs();
+
+    void clearGraphs();
+
+    // ========== basic function =========//
+
+    void screenShotAndSave(String saveFilePath, MapScreenCaptureListener listener);
+
+    MapPoint graphicPointToMapPoint(Point point);
+
+    Point mapPointToGraphicPoint(MapPoint point);
+
+    void setZoomControlsEnabled(boolean enable);
 }

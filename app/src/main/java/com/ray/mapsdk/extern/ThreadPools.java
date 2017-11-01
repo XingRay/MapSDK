@@ -1,6 +1,7 @@
-package com.ray.mapsdk.helper;
+package com.ray.mapsdk.extern;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -13,7 +14,7 @@ public class ThreadPools {
     static {
         mIOPool = Executors.newFixedThreadPool(2, new ThreadFactory() {
             @Override
-            public Thread newThread(Runnable r) {
+            public Thread newThread(@NonNull Runnable r) {
                 return new Thread(r, "IO-POOL");
             }
         });
@@ -22,7 +23,7 @@ public class ThreadPools {
 
         serialPool = Executors.newFixedThreadPool(1, new ThreadFactory() {
             @Override
-            public Thread newThread(Runnable r) {
+            public Thread newThread(@NonNull Runnable r) {
                 return new Thread(r, "SERIAL-POOL");
             }
         });
@@ -35,7 +36,7 @@ public class ThreadPools {
     /**
      * IO读写线程池,最多二个同时执行
      *
-     * @return
+     * @return Executor
      */
     public static Executor ioPool() {
         return mIOPool;
@@ -45,7 +46,7 @@ public class ThreadPools {
      * 繁重 任务线程池，适用于像ImageLoader转换图像这种时间不长但又很占CPU的任务
      * 排队执行的ThreadPool,核心线程为CORE_POOL_SIZE+1个
      *
-     * @return
+     * @return Executor
      */
     public static Executor cpuPool() {
         return AsyncTask.THREAD_POOL_EXECUTOR;
@@ -55,7 +56,7 @@ public class ThreadPools {
     /**
      * 全局cachePool,适用于AsyncHttpClient等不限制任务数的请求
      *
-     * @return
+     * @return ExecutorService
      */
     public static ExecutorService getDefault() {
         return mGlobalCachePool;
@@ -64,7 +65,7 @@ public class ThreadPools {
     /**
      * 串行线程池
      *
-     * @return
+     * @return ExecutorService
      */
     public static ExecutorService serialPool() {
         return serialPool;

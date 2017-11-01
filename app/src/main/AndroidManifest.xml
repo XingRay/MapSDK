@@ -50,8 +50,6 @@
 
         <activity android:name=".pages.main.MainActivity">
             <intent-filter>
-                <data android:scheme="about"/>
-
                 <action android:name="android.intent.action.MAIN"/>
                 <action android:name="android.intent.action.VIEW"/>
 

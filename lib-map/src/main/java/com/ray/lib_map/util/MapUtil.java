@@ -1,7 +1,11 @@
 package com.ray.lib_map.util;
 
 import com.ray.lib_map.entity.MapPoint;
+import com.ray.lib_map.entity.graph.Circle;
 import com.ray.lib_map.extern.CoordinateType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Author      : leixing
@@ -13,6 +17,7 @@ import com.ray.lib_map.extern.CoordinateType;
  */
 
 public class MapUtil {
+    private static final int EARTH_RADIUS = 6371000;
     private static double GAUSS_SPHERE = 6378137.0;
 
     public static double getDistance(MapPoint point1, MapPoint point2) {
@@ -33,6 +38,8 @@ public class MapUtil {
      * @param latitude2  纬度
      * @return 两点距离 单位 米
      */
+    // TODO: 2017-10-24 考虑超过边界的情况
+    // TODO: 2017-10-24 通过弧度计算距离
     private static double distance(double longitude1, double latitude1, double longitude2, double latitude2) {
         double radLat1 = rad(latitude1);
         double radLat2 = rad(latitude2);
@@ -45,5 +52,27 @@ public class MapUtil {
 
     private static double rad(double d) {
         return d * Math.PI / 180.0;
+    }
+
+    public static List<MapPoint> getBounds(Circle circle) {
+        List<MapPoint> mapPoints = new ArrayList<>();
+
+        MapPoint center = circle.getCenter();
+        double radius = circle.getRadius();
+        CoordinateType coordinateType = center.getType();
+
+        double deltaAngle = getDeltaAngleInEarth(radius);
+
+        // TODO: 2017-10-24 考虑超过边界的情况
+        mapPoints.add(new MapPoint(center.getLatitude() + deltaAngle, center.getLongitude() - deltaAngle, coordinateType));
+        mapPoints.add(new MapPoint(center.getLatitude() + deltaAngle, center.getLongitude() + deltaAngle, coordinateType));
+        mapPoints.add(new MapPoint(center.getLatitude() - deltaAngle, center.getLongitude() - deltaAngle, coordinateType));
+        mapPoints.add(new MapPoint(center.getLatitude() - deltaAngle, center.getLongitude() + deltaAngle, coordinateType));
+
+        return mapPoints;
+    }
+
+    private static double getDeltaAngleInEarth(double radius) {
+        return 360 * radius / (2 * Math.PI * EARTH_RADIUS);
     }
 }

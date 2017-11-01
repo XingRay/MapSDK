@@ -19,6 +19,7 @@ import java.io.InputStream;
  * Description : xxx
  */
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class BitmapUtil {
     private static final String TAG = "BitmapUtil";
 
@@ -38,42 +39,10 @@ public class BitmapUtil {
     }
 
     public static Bitmap fromView(View view) {
-        Bitmap bitmap;
-        if (view == null) {
-            Log.e(TAG, "view is null");
-            return null;
-        }
-
-        view.clearFocus();
-        view.setPressed(false);
-
-        // save config
-        boolean willNotCacheDrawing = view.willNotCacheDrawing();
-        int color = view.getDrawingCacheBackgroundColor();
-        float alpha = view.getAlpha();
-
-        //reset config
-        view.setWillNotCacheDrawing(false);
-        view.setDrawingCacheBackgroundColor(0);
-        view.setAlpha(1.0f);
-
-        view.destroyDrawingCache();
+        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
         view.buildDrawingCache();
-        Bitmap cacheBitmap = view.getDrawingCache();
-        if (cacheBitmap == null) {
-            Log.e(TAG, "failed get view cache bitmap, view = " + view);
-            return null;
-        }
-
-        bitmap = Bitmap.createBitmap(cacheBitmap);
-        view.destroyDrawingCache();
-
-        //restore config
-        view.setAlpha(alpha);
-        view.setWillNotCacheDrawing(willNotCacheDrawing);
-        view.setDrawingCacheBackgroundColor(color);
-
-        return bitmap;
+        return view.getDrawingCache();
     }
 
     public static Bitmap fromPath(String path) {
@@ -88,7 +57,7 @@ public class BitmapUtil {
     }
 
     public static Bitmap fromFile(Context context, String path) {
-        Bitmap bitmap = null;
+        Bitmap bitmap;
         FileInputStream fileInputStream = null;
         try {
             fileInputStream = context.openFileInput(path);

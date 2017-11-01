@@ -1,4 +1,4 @@
-package com.ray.lib_map.extern;
+package com.ray.lib_map.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,7 +8,6 @@ import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Poi;
-import com.ray.lib_map.util.BitmapUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,18 +52,13 @@ public class MapHelper {
 
     public static MapMarker createMarker(Context context, MapPoint mapPoint, int resId, String title, String content) {
         MapMarker mapMarker = new MapMarker(mapPoint, BitmapUtil.fromResource(context, resId));
-        mapMarker.setAnchorX(0.5f);
-        mapMarker.setAnchorY(0.5f);
         mapMarker.setTitle(title);
         mapMarker.setContent(content);
         return mapMarker;
     }
 
     public static MapMarker buildLocationMarker(MapPoint mapPoint, Bitmap bitmap) {
-        MapMarker mapMarker = new MapMarker(mapPoint, bitmap);
-        mapMarker.setAnchorX(0.5f);
-        mapMarker.setAnchorY(0.5f);
-        return mapMarker;
+        return new MapMarker(mapPoint, bitmap);
     }
 
     public static float convertScaleLevelToMapZoom(ScaleLevel scaleLevel) {
@@ -99,7 +93,7 @@ public class MapHelper {
         return ScaleLevel.DISTRICT;
     }
 
-    public static List<MapPoint> converMapMarkersToMapPoints(List<MapMarker> markers) {
+    public static List<MapPoint> convertMapMarkersToMapPoints(List<MapMarker> markers) {
         ArrayList<MapPoint> mapPoints = new ArrayList<>();
         for (MapMarker marker : markers) {
             MapPoint mapPoint = marker.getMapPoint();

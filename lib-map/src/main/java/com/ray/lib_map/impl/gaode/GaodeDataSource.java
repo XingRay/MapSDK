@@ -38,33 +38,35 @@ import java.util.List;
  * Description : 高德地图数据源，处理高德地图的数据获取请求
  */
 
-public class GaodeMapDataSource implements MapDataSource {
+public class GaodeDataSource implements MapDataSource {
     private static final int LOCATION_INTERVAL = 180 * 1000;
     private static final String SEARCH_TYPE = "";//"汽车服务|汽车销售|汽车维修|摩托车服务|餐饮服务|购物服务|生活服务|体育休闲服务|医疗保健服务|住宿服务|风景名胜|商务住宅|政府机构及社会团体|科教文化服务|交通设施服务|金融保险服务|公司企业|道路附属设施|地名地址信息|公共设施";
     private final Context mContext;
-    private AMapLocationClient mLocationClient;
 
-    public GaodeMapDataSource(Context context) {
+    public GaodeDataSource(Context context) {
         mContext = context;
     }
 
-    private AMapLocationClient getLocationClient() {
-        if (mLocationClient == null) {
-            mLocationClient = new AMapLocationClient(mContext);
-            //初始化定位参数
-            AMapLocationClientOption mLocationOption = new AMapLocationClientOption();
-            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-            mLocationOption.setInterval(LOCATION_INTERVAL);
-            mLocationClient.setLocationOption(mLocationOption);
-        }
+    private AMapLocationClient createOnceLocationClient() {
+        AMapLocationClient client = new AMapLocationClient(mContext);
+        AMapLocationClientOption option = new AMapLocationClientOption();
+        option.setOnceLocation(true);
+        option.setOnceLocationLatest(true);
+        option.setNeedAddress(true);
+        option.setMockEnable(false);
+        option.setLocationCacheEnable(true);
+        option.setHttpTimeOut(LOCATION_INTERVAL);
+        option.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        client.setLocationOption(option);
 
-        return mLocationClient;
+        return client;
     }
 
     @Override
-    public void reverseGeoCode(double latitude, double longitude, float radius, DataCallback<Address> callback) {
+    public void reverseGeoCode(MapPoint mapPoint, float radius, DataCallback<Address> callback) {
         GeocodeSearch geoCoderSearch = new GeocodeSearch(mContext);
-        LatLonPoint point = new LatLonPoint(latitude, longitude);
+        MapPoint gaodePoint = mapPoint.copy(MapType.GAODE.getCoordinateType());
+        LatLonPoint point = new LatLonPoint(gaodePoint.getLatitude(), gaodePoint.getLongitude());
         RegeocodeQuery query = new RegeocodeQuery(point, radius, GeocodeSearch.AMAP);
         RegeocodeAddress regeocodeAddress;
         try {
@@ -79,7 +81,7 @@ public class GaodeMapDataSource implements MapDataSource {
             return;
         }
 
-        Address address = GaodeDataConverter.toAddress(regeocodeAddress, latitude, longitude);
+        Address address = GaodeDataConverter.toAddress(regeocodeAddress, mapPoint);
         callback.onSuccess(address);
     }
 
@@ -195,26 +197,27 @@ public class GaodeMapDataSource implements MapDataSource {
 
     @Override
     public void locate(DataCallback<Address> callback) {
-        final AMapLocationClient locationClient = getLocationClient();
+        final AMapLocationClient client = createOnceLocationClient();
         final AMapLocation[] location = new AMapLocation[1];
-        locationClient.setLocationListener(new AMapLocationListener() {
+        client.setLocationListener(new AMapLocationListener() {
             @Override
             public void onLocationChanged(AMapLocation aMapLocation) {
                 location[0] = aMapLocation;
-                synchronized (locationClient) {
-                    locationClient.notify();
+                synchronized (client) {
+                    client.notify();
                 }
             }
         });
-        locationClient.startLocation();
+        client.startLocation();
         try {
-            synchronized (locationClient) {
-                locationClient.wait();
+            synchronized (client) {
+                client.wait();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        locationClient.stopLocation();
+        client.stopLocation();
+        client.onDestroy();
 
         AMapLocation aMapLocation = location[0];
         if (aMapLocation == null) {

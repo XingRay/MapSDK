@@ -11,12 +11,15 @@ package com.ray.lib_map.data;
 
 public interface FailureCallback {
     int ERROR_CODE_NO_RESULT = -1;
+    int ERROR_CODE_PERMISSION_DENY = -2;
+    int ERROR_CODE_MAP_LOAD_TIMEOUT = -3;
+    int ERROR_CODE_CONNECT_FAILED = -4;
 
     /**
      * 失败回调，传入错误码和错误描述
      *
-     * @param errorCode
-     * @param desc
+     * @param errorCode 错误码
+     * @param desc 错误描述
      */
     void onFailure(int errorCode, String desc);
 }

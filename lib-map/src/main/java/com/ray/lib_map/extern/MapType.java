@@ -18,12 +18,12 @@ public enum MapType {
     /**
      * 百度地图
      */
-    BAIDU(CoordinateType.GCJ02),
+    BAIDU(CoordinateType.BD09),
 
     /**
      * google地图
      */
-    GOOGLE(CoordinateType.WGS84);
+    GOOGLE(CoordinateType.GCJ02);
 
     private final CoordinateType coordinateType;
 

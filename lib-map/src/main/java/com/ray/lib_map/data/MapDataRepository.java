@@ -1,14 +1,13 @@
-package com.ray.lib_map.extern;
+package com.ray.lib_map.data;
 
 import android.content.Context;
 
-import com.ray.lib_map.data.DataCallback;
-import com.ray.lib_map.data.MapDataSource;
 import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapPoint;
-import com.ray.lib_map.impl.gaode.GaodeMapDataSource;
-
-import static com.ray.lib_map.extern.MapType.GAODE;
+import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.impl.baidu.BaiduDataSource;
+import com.ray.lib_map.impl.gaode.GaodeDataSource;
+import com.ray.lib_map.impl.google.GoogleDataSource;
 
 
 /**
@@ -27,12 +26,12 @@ public class MapDataRepository implements MapDataSource {
     private MapDataSource mMapDataSource;
 
     public MapDataRepository(Context context) {
-        this(context, GAODE);
+        this(context, MapType.GAODE);
     }
 
     public MapDataRepository(Context context, MapType mapType) {
         mContext = context;
-        setMapType(mapType);
+        switchMapType(mapType);
     }
 
     /**
@@ -40,7 +39,7 @@ public class MapDataRepository implements MapDataSource {
      *
      * @param mapType 地图类型
      */
-    public void setMapType(MapType mapType) {
+    public void switchMapType(MapType mapType) {
         if (mapType == null) {
             throw new IllegalArgumentException("mapType can not be null");
         }
@@ -56,15 +55,18 @@ public class MapDataRepository implements MapDataSource {
     private MapDataSource getMapDataSource(MapType mapType) {
         switch (mapType) {
             case GAODE:
-                return new GaodeMapDataSource(mContext);
-            default:
-                return new GaodeMapDataSource(mContext);
+                return new GaodeDataSource(mContext);
+            case BAIDU:
+                return new BaiduDataSource(mContext);
+            case GOOGLE:
+                return new GoogleDataSource(mContext);
         }
+        throw new IllegalStateException("unknown map type");
     }
 
     @Override
-    public void reverseGeoCode(double latitude, double longitude, float radius, DataCallback<Address> callback) {
-        mMapDataSource.reverseGeoCode(latitude, longitude, radius, callback);
+    public void reverseGeoCode(MapPoint mapPoint, float radius, DataCallback<Address> callback) {
+        mMapDataSource.reverseGeoCode(mapPoint, radius, callback);
     }
 
     @Override

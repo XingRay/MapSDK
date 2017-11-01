@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.ray.lib_map.extern.CoordinateConverter;
 import com.ray.lib_map.extern.CoordinateType;
+import com.ray.lib_map.extern.MapType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,6 +85,10 @@ public class MapPoint implements Parcelable {
 
     public MapPoint copy(CoordinateType type) {
         return copy().as(type);
+    }
+
+    public MapPoint copy(MapType mapType) {
+        return copy(mapType.getCoordinateType());
     }
 
     @Override

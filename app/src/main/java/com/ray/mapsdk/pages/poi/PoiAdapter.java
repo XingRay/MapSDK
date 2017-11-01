@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.ray.lib_map.entity.Poi;
 import com.ray.mapsdk.R;
-import com.ray.mapsdk.base.OnItemClickListener;
+import com.ray.mapsdk.extern.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,19 +30,17 @@ import butterknife.ButterKnife;
 
 public class PoiAdapter extends RecyclerView.Adapter<PoiAdapter.PoiViewHolder> {
 
-    private final Context mContext;
     private final LayoutInflater mLayoutInflater;
     private final List<PoiWrapper> mPois;
     private OnItemClickListener mOnItemClickListener;
 
 
-    public PoiAdapter(Context context) {
-        mContext = context;
-        mLayoutInflater = LayoutInflater.from(mContext);
+    PoiAdapter(Context context) {
+        mLayoutInflater = LayoutInflater.from(context);
         mPois = new ArrayList<>();
     }
 
-    public void set(List<PoiWrapper> pois) {
+    void set(List<PoiWrapper> pois) {
         mPois.clear();
         if (pois != null) {
             mPois.addAll(pois);
@@ -50,12 +48,12 @@ public class PoiAdapter extends RecyclerView.Adapter<PoiAdapter.PoiViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void clear() {
+    void clear() {
         mPois.clear();
         notifyDataSetChanged();
     }
 
-    public void select(int position) {
+    void select(int position) {
         for (int i = 0, size = mPois.size(); i < size; i++) {
             PoiWrapper poiWrapper = mPois.get(i);
             poiWrapper.setSelected(i == position);
@@ -63,7 +61,7 @@ public class PoiAdapter extends RecyclerView.Adapter<PoiAdapter.PoiViewHolder> {
         notifyDataSetChanged();
     }
 
-    public Poi getSelectedPoi() {
+    Poi getSelectedPoi() {
         for (PoiWrapper poiWrapper : mPois) {
             if (poiWrapper.isSelected()) {
                 return poiWrapper.getPoi();
@@ -86,7 +84,7 @@ public class PoiAdapter extends RecyclerView.Adapter<PoiAdapter.PoiViewHolder> {
 
         holder.tvName.setText(poi.getName());
         holder.tvAddress.setText(poi.getAddress());
-        holder.tvPosition.setText("(" + poi.getLatitude() + ", " + poi.getLongitude() + ")");
+        holder.tvPosition.setText(String.format("(%1$s, %2$s)", poi.getLatitude(), poi.getLongitude()));
         holder.ivSelect.setVisibility(selected ? View.VISIBLE : View.GONE);
 
         holder.rlItemView.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +102,7 @@ public class PoiAdapter extends RecyclerView.Adapter<PoiAdapter.PoiViewHolder> {
         return mPois.size();
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
+    void setOnItemClickListener(OnItemClickListener listener) {
         mOnItemClickListener = listener;
     }
 

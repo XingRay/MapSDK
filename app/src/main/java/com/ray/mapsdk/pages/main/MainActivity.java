@@ -8,12 +8,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.ray.mapsdk.R;
-import com.ray.mapsdk.base.OnItemClickListener;
+import com.ray.mapsdk.extern.OnItemClickListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.ray.mapsdk.pages.PageList.PAGES;
+import static com.ray.mapsdk.pages.main.PageList.PAGES;
 
 public class MainActivity extends AppCompatActivity {
 

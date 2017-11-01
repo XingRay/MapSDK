@@ -29,12 +29,51 @@ import java.util.List;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class GaodeDataConverter {
+class GaodeDataConverter {
     private GaodeDataConverter() {
         throw new UnsupportedOperationException();
     }
 
-    public static List<Poi> toPoiList(List<PoiItem> poiItems) {
+    static CameraPosition toCameraPosition(com.amap.api.maps.model.CameraPosition cameraPosition) {
+        CameraPosition position = new CameraPosition();
+
+        position.setPosition(new MapPoint(cameraPosition.target.latitude, cameraPosition.target.longitude, MapType.GAODE.getCoordinateType()));
+        position.setZoom(ZoomStandardization.toStandardZoom(cameraPosition.zoom, MapType.GAODE));
+        position.setRotate(cameraPosition.bearing);
+        position.setOverlook(cameraPosition.tilt);
+
+        return position;
+    }
+
+    static com.amap.api.maps.model.CameraPosition fromCameraPosition(CameraPosition position) {
+        MapPoint mapPoint = position.getPosition().copy(MapType.GAODE.getCoordinateType());
+        LatLng latLng = new LatLng(mapPoint.getLatitude(), mapPoint.getLongitude());
+        float gaodeZoom = ZoomStandardization.fromStandardZoom(position.getZoom(), MapType.GAODE);
+
+        return new com.amap.api.maps.model.CameraPosition(latLng, gaodeZoom, position.getOverlook(), position.getRotate());
+    }
+
+    static MapPoint toMapPoint(LatLng latLng) {
+        return new MapPoint(latLng.latitude, latLng.longitude, MapType.GAODE.getCoordinateType());
+    }
+
+    static LatLng fromMapPoint(MapPoint point) {
+        MapPoint gaodePoint = point.copy(MapType.GAODE.getCoordinateType());
+        return new LatLng(gaodePoint.getLatitude(), gaodePoint.getLongitude());
+    }
+
+    static List<LatLng> fromMapPoints(List<MapPoint> points) {
+        List<LatLng> latLngs = new ArrayList<>();
+        if (points == null) {
+            return latLngs;
+        }
+        for (MapPoint point : points) {
+            latLngs.add(fromMapPoint(point));
+        }
+        return latLngs;
+    }
+
+    static List<Poi> toPoiList(List<PoiItem> poiItems) {
         List<Poi> poiList = new ArrayList<>();
         if (poiItems == null) {
             return poiList;
@@ -50,7 +89,7 @@ public class GaodeDataConverter {
         return poiList;
     }
 
-    public static Poi toPoi(PoiItem poiItem) {
+    static Poi toPoi(PoiItem poiItem) {
         if (poiItem == null) {
             throw new NullPointerException();
         }
@@ -75,7 +114,7 @@ public class GaodeDataConverter {
         return poi;
     }
 
-    public static List<PoiSearchSuggestion> toSuggestions(List<SuggestionCity> suggestionCities) {
+    static List<PoiSearchSuggestion> toSuggestions(List<SuggestionCity> suggestionCities) {
         List<PoiSearchSuggestion> suggestions = new ArrayList<>();
         if (suggestionCities == null) {
             return suggestions;
@@ -102,7 +141,7 @@ public class GaodeDataConverter {
     }
 
 
-    public static Address toAddress(AMapLocation aMapLocation) {
+    static Address toAddress(AMapLocation aMapLocation) {
         if (aMapLocation == null) {
             return null;
         }
@@ -121,13 +160,13 @@ public class GaodeDataConverter {
         return address;
     }
 
-    public static Address toAddress(RegeocodeAddress regeocodeAddress, double latitude, double longitude) {
+    static Address toAddress(RegeocodeAddress regeocodeAddress, MapPoint mapPoint) {
         if (regeocodeAddress == null) {
             return null;
         }
         Address address = new Address();
 
-        address.setMapPoint(new MapPoint(latitude, longitude, MapType.GAODE.getCoordinateType()));
+        address.setMapPoint(mapPoint);
 
         List<PoiItem> pois = regeocodeAddress.getPois();
         if (pois != null) {
@@ -152,44 +191,5 @@ public class GaodeDataConverter {
         address.setFormattedAddress(regeocodeAddress.getFormatAddress());
 
         return address;
-    }
-
-    public static CameraPosition toCameraPosition(com.amap.api.maps.model.CameraPosition cameraPosition) {
-        CameraPosition position = new CameraPosition();
-
-        position.setPosition(new MapPoint(cameraPosition.target.latitude, cameraPosition.target.longitude, MapType.GAODE.getCoordinateType()));
-        position.setZoom(ZoomStandardization.toStandardZoom(cameraPosition.zoom, MapType.GAODE));
-        position.setRotate(cameraPosition.bearing);
-        position.setOverlook(cameraPosition.tilt);
-
-        return position;
-    }
-
-    public static com.amap.api.maps.model.CameraPosition fromCameraPosition(CameraPosition position) {
-        MapPoint mapPoint = position.getPosition().copy(MapType.GAODE.getCoordinateType());
-        LatLng latLng = new LatLng(mapPoint.getLatitude(), mapPoint.getLongitude());
-        float gaodeZoom = ZoomStandardization.fromStandardZoom(position.getZoom(), MapType.GAODE);
-
-        return new com.amap.api.maps.model.CameraPosition(latLng, gaodeZoom, position.getOverlook(), position.getRotate());
-    }
-
-    public static MapPoint toMapPoint(LatLng latLng) {
-        return new MapPoint(latLng.latitude, latLng.longitude, MapType.GAODE.getCoordinateType());
-    }
-
-    public static LatLng fromMapPoint(MapPoint point) {
-        MapPoint gaodePoint = point.copy(MapType.GAODE.getCoordinateType());
-        return new LatLng(gaodePoint.getLatitude(), gaodePoint.getLongitude());
-    }
-
-    public static List<LatLng> fromMapPoints(List<MapPoint> points) {
-        List<LatLng> latLngs = new ArrayList<>();
-        if (points == null) {
-            return latLngs;
-        }
-        for (MapPoint point : points) {
-            latLngs.add(fromMapPoint(point));
-        }
-        return latLngs;
     }
 }

@@ -11,12 +11,12 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.ray.lib_map.entity.CameraPosition;
-import com.ray.lib_map.entity.Circle;
 import com.ray.lib_map.entity.GestureSetting;
 import com.ray.lib_map.entity.MapMarker;
-import com.ray.lib_map.entity.MapOverlay;
 import com.ray.lib_map.entity.MapPoint;
-import com.ray.lib_map.entity.Polygon;
+import com.ray.lib_map.entity.graph.Circle;
+import com.ray.lib_map.entity.graph.Graph;
+import com.ray.lib_map.entity.graph.Polygon;
 import com.ray.lib_map.entity.polyline.Polyline;
 import com.ray.lib_map.extern.MapDelegateFactory;
 import com.ray.lib_map.extern.MapType;
@@ -26,7 +26,9 @@ import com.ray.lib_map.listener.MapClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
 import com.ray.lib_map.listener.MapLongClickListener;
 import com.ray.lib_map.listener.MapScreenCaptureListener;
+import com.ray.lib_map.listener.MapSwitchListener;
 import com.ray.lib_map.listener.MarkerClickListener;
+import com.ray.lib_map.util.MapUtil;
 import com.ray.lib_map.util.ViewUtil;
 
 import java.util.Collection;
@@ -52,9 +54,11 @@ public class MapView extends View {
     private InfoWindowInflater mInfoWindowInflater;
     private InfoWindowClickListener mInfoWindowClickListener;
     private CameraMoveListener mCameraMoveListener;
+    @SuppressWarnings("FieldCanBeLocal")
     private MapLoadListener mMapLoadListener;
     private MapClickListener mMapClickListener;
     private MapLongClickListener mMapLongClickListener;
+    private boolean mZoomControlsEnable = true;
 
     public MapView(@NonNull Context context) {
         this(context, null);
@@ -111,50 +115,94 @@ public class MapView extends View {
 
     public void createMap(MapType mapType) {
         mMapType = mapType;
-        mMapDelegate = mMapDelegateFactory.getMapDelegate(mMapType);
+        mMapDelegate = mMapDelegateFactory.createMapDelegate(mMapType);
         mCurrentMapView = ViewUtil.replaceView(mCurrentMapView, mMapDelegate.getMapView());
-    }
 
-    private void updateMap() {
+        setListeners();
     }
 
     public void switchMapType(MapType mapType) {
-        switchMapType(mapType, null);
+        switchMapType(mapType, null, null);
     }
 
-    public void switchMapType(MapType mapType, Bundle savedInstanceState) {
-        if (mMapType == mapType) {
+    @SuppressWarnings("SameParameterValue")
+    public void switchMapType(final MapType newMapType, Bundle savedInstanceState, final MapSwitchListener listener) {
+        if (mMapType == newMapType) {
+            if (listener != null) {
+                listener.onMapSwitch();
+            }
             return;
         }
 
-        CameraPosition position = getCameraPosition();
-        GestureSetting setting = getGestureSetting();
-        List<MapMarker> mapMarkers = mMapDelegate.getMarkers();
-        clearRawMarker(mapMarkers, mapType);
-        List<Polyline> polylines = mMapDelegate.getPolylines();
-        clearRawPolylines(polylines, mapType);
+        final CameraPosition position = getCameraPosition();
+        final GestureSetting setting = getGestureSetting();
+        final List<MapMarker> mapMarkers = mMapDelegate.getMarkers();
+        final List<Polyline> polylines = mMapDelegate.getPolylines();
+        final List<Graph> graphs = mMapDelegate.getGraphs();
 
-        // 地图切换 注意：不同的地图类型切换时执行的生命周期方法不一样
-        mMapDelegate.onSwitchOut();
-        mMapType = mapType;
-        mMapDelegate = mMapDelegateFactory.getMapDelegate(mMapType);
+        final MapDelegate newMapDelegate = mMapDelegateFactory.createMapDelegate(newMapType);
 
         //新地图控件切换进界面
-        mMapDelegate.onSwitchIn(savedInstanceState);
-        mCurrentMapView = ViewUtil.replaceView(mCurrentMapView, mMapDelegate.getMapView());
+        newMapDelegate.onSwitchIn(savedInstanceState, new MapSwitchListener() {
+            @Override
+            public void onMapSwitch() {
+                mCurrentMapView = ViewUtil.replaceView(mCurrentMapView, newMapDelegate.getMapView());
+                mMapDelegate.onSwitchOut();
+                clearRawPolylines(polylines, mMapType);
+                clearRawMarker(mapMarkers, mMapType);
 
-        mMapDelegate.setMapLoadListener(mMapLoadListener);
+                mMapType = newMapType;
+                mMapDelegate = newMapDelegate;
+
+                mMapDelegate.setZoomControlsEnabled(mZoomControlsEnable);
+                setCameraPosition(position);
+                setGestureSetting(setting);
+                setMarkers(mapMarkers);
+                setPolylines(polylines);
+                setGraphs(graphs);
+
+                setListeners();
+
+                if (listener != null) {
+                    listener.onMapSwitch();
+                }
+            }
+
+            @Override
+            public void onFailure(int errorCode, String desc) {
+                if (listener != null) {
+                    listener.onFailure(errorCode, desc);
+                }
+            }
+        });
+    }
+
+    private void setListeners() {
         mMapDelegate.setMarkerClickListener(mMarkerClickListener);
         mMapDelegate.setInfoWindowInflater(mInfoWindowInflater);
         mMapDelegate.setInfoWindowClickListener(mInfoWindowClickListener);
         mMapDelegate.setCameraMoveListener(mCameraMoveListener);
         mMapDelegate.setMapClickListener(mMapClickListener);
         mMapDelegate.setMapLongClickListener(mMapLongClickListener);
+    }
 
-        setCameraPosition(position);
-        setGestureSetting(setting);
-        setMarkers(mapMarkers);
-        addPolylines(polylines);
+    private void setGraphs(List<Graph> graphs) {
+        clearGraphs();
+        addGraphs(graphs);
+    }
+
+    private void addGraphs(List<Graph> graphs) {
+        if (graphs == null) {
+            return;
+        }
+
+        for (Graph graph : graphs) {
+            mMapDelegate.addGraph(graph);
+        }
+    }
+
+    public void clearGraphs() {
+        mMapDelegate.clearGraphs();
     }
 
     private void clearRawPolylines(List<Polyline> polylines, MapType mapType) {
@@ -215,10 +263,6 @@ public class MapView extends View {
     public void setCameraMoveListener(CameraMoveListener listener) {
         mCameraMoveListener = listener;
         mMapDelegate.setCameraMoveListener(listener);
-    }
-
-    public void setMapScreenCaptureListener(MapScreenCaptureListener listener) {
-        mMapDelegate.setMapScreenCaptureListener(listener);
     }
 
 
@@ -301,6 +345,7 @@ public class MapView extends View {
     }
 
     public void setMarkers(List<MapMarker> mapMarkers) {
+        mMapDelegate.clearMarkers();
         if (mapMarkers != null) {
             for (MapMarker mapMarker : mapMarkers) {
                 addMarker(mapMarker);
@@ -309,6 +354,9 @@ public class MapView extends View {
     }
 
     public void clearMarkers() {
+        if (mMapDelegate.getMarkers() == null) {
+            return;
+        }
         mMapDelegate.clearMarkers();
     }
 
@@ -343,8 +391,8 @@ public class MapView extends View {
         mMapDelegate.setInfoWindowInflater(inflater);
     }
 
-    public void screenShotAndSave(String saveFilePath) {
-        mMapDelegate.screenShotAndSave(saveFilePath);
+    public void screenShotAndSave(String saveFilePath, MapScreenCaptureListener listener) {
+        mMapDelegate.screenShotAndSave(saveFilePath, listener);
     }
 
     public void zoomOut() {
@@ -353,18 +401,6 @@ public class MapView extends View {
 
     public void zoomIn() {
         mMapDelegate.zoomIn();
-    }
-
-    public void moveByBounds(List<MapPoint> points, int padding) {
-        mMapDelegate.moveByBounds(points, padding);
-    }
-
-    public void moveByPolygon(Polygon polygon, int padding) {
-        mMapDelegate.moveByPolygon(polygon, padding);
-    }
-
-    public void moveByCircle(Circle circle, int padding) {
-        mMapDelegate.moveByCircle(circle, padding);
     }
 
     public MapPoint fromScreenLocation(Point point) {
@@ -383,53 +419,16 @@ public class MapView extends View {
         return mMapDelegate.getMinZoom();
     }
 
-    public void addOverlay(MapOverlay overlay) {
-        mMapDelegate.addOverlay(overlay);
-    }
-
-    public void addOverlays(List<MapOverlay> overlays) {
-        if (overlays == null) {
-            return;
-        }
-        for (MapOverlay overlay : overlays) {
-            mMapDelegate.addOverlay(overlay);
-        }
-    }
-
-    public void removeOverlay(MapOverlay overlay) {
-        mMapDelegate.removeOverlay(overlay);
-    }
-
-    public void clearOverlay() {
-        mMapDelegate.clearOverlay();
-    }
-
-    public void moveOverlay(MapOverlay overlay, MapPoint toPoint) {
-        mMapDelegate.moveOverlay(overlay, toPoint);
-    }
-
-    public void updateOverlay(MapOverlay overlay, float xOffset, float yOffset) {
-        mMapDelegate.updateOverlay(overlay, xOffset, yOffset);
-    }
-
-    public MapOverlay getOverlay(MapPoint mapPoint) {
-        return mMapDelegate.getOverlay(mapPoint);
-    }
-
-    public List<MapOverlay> getOverlays() {
-        return mMapDelegate.getOverlays();
-    }
-
     public void setMarkerVisible(MapMarker mapMarker, boolean visible) {
         mMapDelegate.setMarkerVisible(mapMarker, visible);
     }
 
-    public void addPolygon(Polygon polygon) {
-        mMapDelegate.addPolygon(polygon);
+    public void addGraph(Graph graph) {
+        mMapDelegate.addGraph(graph);
     }
 
-    public void removePolygon(Polygon polygon) {
-        mMapDelegate.removePolygon(polygon);
+    public void removeGraph(Graph graph) {
+        mMapDelegate.removeGraph(graph);
     }
 
     public void addPolyline(Polyline polyline) {
@@ -445,16 +444,13 @@ public class MapView extends View {
         }
     }
 
+    public void setPolylines(List<Polyline> polylines) {
+        mMapDelegate.clearPolylines();
+        addPolylines(polylines);
+    }
+
     public void removePolyline(Polyline polyline) {
         mMapDelegate.removePolyline(polyline);
-    }
-
-    public void addCircle(Circle circle) {
-        mMapDelegate.addCircle(circle);
-    }
-
-    public void removeCircle(Circle circle) {
-        mMapDelegate.removeCircle(circle);
     }
 
     public int getMapHeight() {
@@ -495,11 +491,51 @@ public class MapView extends View {
     public void setMapClickListener(MapClickListener listener) {
         mMapClickListener = listener;
         mMapDelegate.setMapClickListener(listener);
-
     }
 
     public void setMapLongClickListener(MapLongClickListener listener) {
         mMapLongClickListener = listener;
         mMapDelegate.setMapLongClickListener(listener);
+    }
+
+    public void updateMarker(MapMarker mapMarker) {
+        mMapDelegate.updateMarker(mapMarker);
+    }
+
+    public void focusOnInfoWindowOf(MapMarker marker) {
+
+    }
+
+    public void clearPolylines() {
+
+    }
+
+    public void removePolylines(List<Polyline> polylines) {
+
+    }
+
+    public void setAllGestureEnable(boolean enable) {
+        mMapDelegate.setOverlookGestureEnable(enable);
+        mMapDelegate.setRotateGestureEnable(enable);
+        mMapDelegate.setScrollGestureEnable(enable);
+        mMapDelegate.setZoomGestureEnable(enable);
+    }
+
+    public void adjustCamera(List<MapPoint> mapPoints, int padding) {
+        mMapDelegate.adjustCamera(mapPoints, padding);
+    }
+
+    public void adjustCamera(Polygon polygon, int padding) {
+        adjustCamera(polygon.getPoints(), padding);
+    }
+
+    public void adjustCamera(Circle circle, int padding) {
+        List<MapPoint> bounds = MapUtil.getBounds(circle);
+        adjustCamera(bounds, padding);
+    }
+
+    public void setZoomControlsEnabled(boolean enable) {
+        mZoomControlsEnable = enable;
+        mMapDelegate.setZoomControlsEnabled(enable);
     }
 }

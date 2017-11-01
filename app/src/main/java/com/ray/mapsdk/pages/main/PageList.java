@@ -1,4 +1,4 @@
-package com.ray.mapsdk.pages;
+package com.ray.mapsdk.pages.main;
 
 import com.ray.mapsdk.pages.camera.CameraActivity;
 import com.ray.mapsdk.pages.gesture.GestureControlActivity;
@@ -18,8 +18,8 @@ import java.util.List;
  * Description : xxx
  */
 
-public class PageList {
-    public static List<Page> PAGES = Arrays.asList(
+class PageList {
+    static List<Page> PAGES = Arrays.asList(
             new Page("poi query", PoiListActivity.class),
             new Page("camera", CameraActivity.class),
             new Page("gesture control", GestureControlActivity.class),

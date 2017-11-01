@@ -61,10 +61,10 @@ public class ZoomStandardization {
     }
 
     private static float googleZoomToStandardZoom(float zoom) {
-        return zoom;
+        return zoom + 1.7f;
     }
 
     private static float standardZoomToGoogleZoom(float zoom) {
-        return zoom;
+        return zoom - 1.7f;
     }
 }

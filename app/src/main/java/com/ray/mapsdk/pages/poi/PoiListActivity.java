@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.ray.lib_map.InfoWindowInflater;
 import com.ray.lib_map.MapView;
 import com.ray.lib_map.data.DataCallback;
+import com.ray.lib_map.data.MapDataRepository;
 import com.ray.lib_map.data.MapDataSource;
 import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapMarker;
@@ -24,15 +25,14 @@ import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Poi;
 import com.ray.lib_map.entity.PoiSearchSuggestion;
 import com.ray.lib_map.extern.CoordinateType;
-import com.ray.lib_map.extern.MapDataRepository;
-import com.ray.lib_map.extern.MapHelper;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.listener.InfoWindowClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
 import com.ray.lib_map.listener.MarkerClickListener;
+import com.ray.lib_map.util.MapHelper;
 import com.ray.mapsdk.R;
-import com.ray.mapsdk.base.OnItemClickListener;
-import com.ray.mapsdk.helper.ThreadPools;
+import com.ray.mapsdk.extern.OnItemClickListener;
+import com.ray.mapsdk.extern.ThreadPools;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
 import com.yanzhenjie.permission.Rationale;
@@ -134,7 +134,7 @@ public class PoiListActivity extends AppCompatActivity {
                 tvContent.setText(marker.getContent());
 
                 MapPoint mapPoint = marker.getMapPoint().as(CoordinateType.WGS84);
-                tvCoordinate.setText("(" + mapPoint.getLatitude() + ", " + mapPoint.getLongitude() + ")");
+                tvCoordinate.setText(String.format("(%1$s, %2$s)", String.valueOf(mapPoint.getLatitude()), String.valueOf(mapPoint.getLongitude())));
 
                 return view;
             }

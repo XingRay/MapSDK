@@ -18,6 +18,7 @@ import java.util.Map;
  * 地图 SDK 提供的点标记功能包含两大部分，一部分是点（俗称 Marker）、另一部分是浮于点上方的信息窗体（俗称 InfoWindow）。
  */
 
+@SuppressWarnings("unused")
 public class MapMarker {
     /**
      * sdk中的标记对象
@@ -53,6 +54,16 @@ public class MapMarker {
     private String content;
 
     /**
+     * 垂直轴
+     */
+    private int zIndex;
+
+    /**
+     * 是否可点击
+     */
+    private boolean clickable;
+
+    /**
      * tag
      */
     private Object tag;
@@ -64,6 +75,8 @@ public class MapMarker {
 
     public MapMarker() {
         rawMarkers = new HashMap<>();
+        this.anchorX = 0.5f;
+        this.anchorY = 1.0f;
     }
 
     public MapMarker(MapPoint mapPoint, Bitmap icon) {
@@ -124,8 +137,8 @@ public class MapMarker {
         return rawMarkers.get(mapType);
     }
 
-    public Object setRawMarker(MapType mapType, Object rawMarker) {
-        return rawMarkers.put(mapType, rawMarker);
+    public void setRawMarker(MapType mapType, Object rawMarker) {
+        rawMarkers.put(mapType, rawMarker);
     }
 
     public Object removeRawMarker(MapType mapType) {
@@ -140,12 +153,28 @@ public class MapMarker {
         this.tag = tag;
     }
 
+    public boolean isClickable() {
+        return clickable;
+    }
+
+    public void setClickable(boolean clickable) {
+        this.clickable = clickable;
+    }
+
     public boolean isInfoWindowVisible() {
         return infoWindowVisible;
     }
 
     public void setInfoWindowVisible(boolean infoWindowVisible) {
         this.infoWindowVisible = infoWindowVisible;
+    }
+
+    public int getZIndex() {
+        return zIndex;
+    }
+
+    public void setZIndex(int zIndex) {
+        this.zIndex = zIndex;
     }
 
     @Override
@@ -158,6 +187,8 @@ public class MapMarker {
                 ", anchorY=" + anchorY +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
+                ", zIndex=" + zIndex +
+                ", clickable=" + clickable +
                 ", tag=" + tag +
                 ", infoWindowVisible=" + infoWindowVisible +
                 '}';
@@ -173,6 +204,8 @@ public class MapMarker {
 
         if (Float.compare(mapMarker.anchorX, anchorX) != 0) return false;
         if (Float.compare(mapMarker.anchorY, anchorY) != 0) return false;
+        if (zIndex != mapMarker.zIndex) return false;
+        if (clickable != mapMarker.clickable) return false;
         if (infoWindowVisible != mapMarker.infoWindowVisible) return false;
         if (!mapPoint.equals(mapMarker.mapPoint)) return false;
         if (!icon.equals(mapMarker.icon)) return false;
@@ -189,6 +222,8 @@ public class MapMarker {
         result = 31 * result + (anchorY != +0.0f ? Float.floatToIntBits(anchorY) : 0);
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (content != null ? content.hashCode() : 0);
+        result = 31 * result + zIndex;
+        result = 31 * result + (clickable ? 1 : 0);
         result = 31 * result + (infoWindowVisible ? 1 : 0);
         return result;
     }
