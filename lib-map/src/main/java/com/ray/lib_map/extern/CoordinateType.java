@@ -2,9 +2,9 @@ package com.ray.lib_map.extern;
 
 
 /**
- * Author      : leixing
+ * @author      : leixing
  * Date        : 2017-07-13
- * Email       : leixing@hecom.cn
+ * Email       : leixing@qq.com
  * Version     : 0.0.1
  * <p>
  * Description : 坐标系的类型

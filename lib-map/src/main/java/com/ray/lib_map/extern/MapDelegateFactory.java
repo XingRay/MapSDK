@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Author      : leixing
+ * @author      : leixing
  * Date        : 2017-09-27
- * Email       : leixing@hecom.cn
+ * Email       : leixing@qq.com
  * Version     : 0.0.1
  * <p>
  * Description : xxx

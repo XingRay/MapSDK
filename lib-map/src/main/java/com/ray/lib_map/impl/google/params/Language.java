@@ -5,9 +5,9 @@ import android.content.Context;
 import java.util.Locale;
 
 /**
- * Author      : leixing
+ * @author      : leixing
  * Date        : 2017-10-23
- * Email       : leixing@hecom.cn
+ * Email       : leixing@qq.com
  * Version     : 0.0.1
  * <p>
  * Description : google PlacesAPI支持的语言

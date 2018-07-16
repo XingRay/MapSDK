@@ -6,9 +6,9 @@ import com.ray.lib_map.entity.MapPoint;
 import java.util.List;
 
 /**
- * Author      : leixing
+ * @author      : leixing
  * Date        : 2017-10-23
- * Email       : leixing@hecom.cn
+ * Email       : leixing@qq.com
  * Version     : 0.0.1
  * <p>
  * Description : 多边形

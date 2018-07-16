@@ -1,9 +1,9 @@
 package com.ray.lib_map.entity.graph;
 
 /**
- * Author      : leixing
+ * @author      : leixing
  * Date        : 2017-10-23
- * Email       : leixing@hecom.cn
+ * Email       : leixing@qq.com
  * Version     : 0.0.1
  * <p>
  * Description : 椭圆

@@ -4,9 +4,9 @@ package com.ray.lib_map.impl.google.params;
 import com.ray.lib_map.util.StringUtil;
 
 /**
- * Author      : leixing
+ * @author      : leixing
  * Date        : 2017-10-23
- * Email       : leixing@hecom.cn
+ * Email       : leixing@qq.com
  * Version     : 0.0.1
  * <p>
  * Description : 地理编码是将地址（如“1600 Amphitheatre Parkway, Mountain View, CA”）转换为地理坐标

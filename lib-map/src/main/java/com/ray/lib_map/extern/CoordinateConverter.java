@@ -5,9 +5,9 @@ import android.support.annotation.NonNull;
 import com.ray.lib_map.entity.Coordinate;
 
 /**
- * Author      : leixing
+ * @author      : leixing
  * Date        : 2017-09-28
- * Email       : leixing@hecom.cn
+ * Email       : leixing@qq.com
  * Version     : 0.0.1
  * <p>
  * Description : xxx

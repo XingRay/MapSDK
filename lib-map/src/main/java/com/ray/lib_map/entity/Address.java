@@ -6,9 +6,9 @@ import android.os.Parcelable;
 import java.io.Serializable;
 
 /**
- * Author      : leixing
+ * @author      : leixing
  * Date        : 2017-07-12
- * Email       : leixing@hecom.cn
+ * Email       : leixing@qq.com
  * Version     : 0.0.1
  * <p>
  * Description : 地址

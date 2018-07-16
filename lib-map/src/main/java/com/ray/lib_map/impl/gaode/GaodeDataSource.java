@@ -30,9 +30,9 @@ import java.util.List;
 
 
 /**
- * Author      : leixing
+ * @author      : leixing
  * Date        : 2017-07-12
- * Email       : leixing@hecom.cn
+ * Email       : leixing@qq.com
  * Version     : 0.0.1
  * <p>
  * Description : 高德地图数据源，处理高德地图的数据获取请求

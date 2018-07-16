@@ -1,9 +1,9 @@
 package com.ray.lib_map.data;
 
 /**
- * Author      : leixing
+ * @author      : leixing
  * Date        : 2016-11-25
- * Email       : leixing@hecom.cn
+ * Email       : leixing@qq.com
  * Version     : 0.0.1
  * <p>
  * Description : 数据操作回调，如请求数据，提交数据等可能返回数据的接口

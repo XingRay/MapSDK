@@ -6,9 +6,9 @@ import com.ray.lib_map.util.StringUtil;
 import java.util.List;
 
 /**
- * Author      : leixing
+ * @author      : leixing
  * Date        : 2017-10-23
- * Email       : leixing@hecom.cn
+ * Email       : leixing@qq.com
  * Version     : 0.0.1
  * <p>
  * Description : 反向地理编码是将地理坐标转换为可人工读取的地址的过程。Google Maps Geocoding API 的反向地理

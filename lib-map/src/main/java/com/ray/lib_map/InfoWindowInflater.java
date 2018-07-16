@@ -6,9 +6,9 @@ import com.ray.lib_map.entity.MapMarker;
 
 
 /**
- * Author      : leixing
+ * @author      : leixing
  * Date        : 2017-07-14
- * Email       : leixing@hecom.cn
+ * Email       : leixing@qq.com
  * Version     : 0.0.1
  * <p>
  * Description : xxx
