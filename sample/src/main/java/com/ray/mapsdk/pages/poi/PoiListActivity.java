@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.ray.lib_map.InfoWindowInflater;
 import com.ray.lib_map.MapView;
-import com.ray.lib_map.data.DataCallback;
+import com.ray.lib_map.base.callback.DataCallback;
 import com.ray.lib_map.data.MapDataRepository;
 import com.ray.lib_map.data.MapDataSource;
 import com.ray.lib_map.entity.Address;
@@ -101,7 +101,7 @@ public class PoiListActivity extends AppCompatActivity {
             }
         });
 
-        mvMap.createMap(MapType.GAODE);
+        mvMap.initMap(MapType.GAODE);
         mvMap.onCreate(null);
         mvMap.setMapLoadListener(new MapLoadListener() {
             @Override

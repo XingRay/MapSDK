@@ -1,7 +1,7 @@
 package com.ray.lib_map.extern;
 
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-10-11
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -17,30 +17,32 @@ public class ZoomStandardization {
         throw new UnsupportedOperationException();
     }
 
-    public static float toStandardZoom(float zoom, MapType mapType) {
-        switch (mapType) {
-            case GAODE:
-                return gaodeZoomToStandardZoom(zoom);
-            case BAIDU:
-                return baiduZoomToStandardZoom(zoom);
-            case GOOGLE:
-                return googleZoomToStandardZoom(zoom);
-            default:
-                throw new IllegalArgumentException("unknown map type");
-        }
+    public static float toStandardZoom(float zoom, String mapType) {
+//        switch (mapType) {
+//            case GAODE:
+//                return gaodeZoomToStandardZoom(zoom);
+//            case BAIDU:
+//                return baiduZoomToStandardZoom(zoom);
+//            case GOOGLE:
+//                return googleZoomToStandardZoom(zoom);
+//            default:
+//                throw new IllegalArgumentException("unknown map type");
+//        }
+        return zoom;
     }
 
-    public static float fromStandardZoom(float zoom, MapType mapType) {
-        switch (mapType) {
-            case GAODE:
-                return standardZoomToGaodeZoom(zoom);
-            case BAIDU:
-                return standardZoomToBaiduZoom(zoom);
-            case GOOGLE:
-                return standardZoomToGoogleZoom(zoom);
-            default:
-                throw new IllegalArgumentException("unknown map type");
-        }
+    public static float fromStandardZoom(float zoom, String mapType) {
+//        switch (mapType) {
+//            case GAODE:
+//                return standardZoomToGaodeZoom(zoom);
+//            case BAIDU:
+//                return standardZoomToBaiduZoom(zoom);
+//            case GOOGLE:
+//                return standardZoomToGoogleZoom(zoom);
+//            default:
+//                throw new IllegalArgumentException("unknown map type");
+//        }
+        return zoom;
     }
 
 

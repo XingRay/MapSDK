@@ -1,7 +1,7 @@
 package com.ray.lib_map.listener;
 
 
-import com.ray.lib_map.data.FailureCallback;
+import com.ray.lib_map.base.FailureCallback;
 
 /**
  * @author      : leixing

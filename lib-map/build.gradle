@@ -5,7 +5,7 @@ android {
     buildToolsVersion '27.0.3'
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -23,9 +23,4 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation files('lib/AMap3DMap_5.3.0_AMapNavi_5.3.0_AMapSearch_5.3.1_AMapLocation_3.6.0_20170918.jar')
-    implementation files('lib/BaiduLBS_Android.jar')
-    implementation 'com.google.android.gms:play-services-maps:15.0.1'
-    implementation 'com.google.android.gms:play-services-location:15.0.1'
-    implementation 'com.google.android.gms:play-services-places:15.0.1'
 }

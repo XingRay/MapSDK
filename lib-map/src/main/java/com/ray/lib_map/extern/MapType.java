@@ -1,7 +1,13 @@
 package com.ray.lib_map.extern;
 
+import com.ray.lib_map.MapDelegate;
+import com.ray.lib_map.coordinate.CoordinateConverter;
+
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-09-22
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -9,29 +15,46 @@ package com.ray.lib_map.extern;
  * Description : xxx
  */
 
-public enum MapType {
-    /**
-     * 高德地图
-     */
-    GAODE(CoordinateType.GCJ02),
+public class MapType {
+    private String name;
+    private Set<CoordinateConverter> coordinateConverters;
+    private String coordinateType;
+    private MapDelegate delegate;
 
-    /**
-     * 百度地图
-     */
-    BAIDU(CoordinateType.BD09),
+    public MapType(String name) {
+        this.name = name;
+        coordinateConverters = new HashSet<>();
+    }
 
-    /**
-     * google地图
-     */
-    GOOGLE(CoordinateType.GCJ02);
+    public String getName() {
+        return name;
+    }
 
-    private final CoordinateType coordinateType;
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    MapType(CoordinateType coordinateType) {
+    public Set<CoordinateConverter> getCoordinateConverters() {
+        return coordinateConverters;
+    }
+
+    public void setCoordinateConverters(Set<CoordinateConverter> coordinateConverters) {
+        this.coordinateConverters = coordinateConverters;
+    }
+
+    public String getCoordinateType() {
+        return coordinateType;
+    }
+
+    public void setCoordinateType(String coordinateType) {
         this.coordinateType = coordinateType;
     }
 
-    public CoordinateType getCoordinateType() {
-        return coordinateType;
+    public MapDelegate getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(MapDelegate delegate) {
+        this.delegate = delegate;
     }
 }

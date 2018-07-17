@@ -6,10 +6,10 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.EditText;
 
+import com.leixing.lib_map_amap.GaodeMap;
 import com.ray.lib_map.MapView;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.polyline.Polyline;
-import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.listener.MapClickListener;
 import com.ray.mapsdk.R;
 
@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-10-17
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -39,6 +39,7 @@ public class PolylineActivity extends Activity {
     private Polyline mPolyline;
     private int mColor;
     private int mWidth;
+    private GaodeMap mGaodeMap;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,13 +54,15 @@ public class PolylineActivity extends Activity {
         mIsDrawingLine = false;
         mColor = 0xffff0000;
         mWidth = 10;
+
+        mGaodeMap = new GaodeMap(getApplicationContext());
     }
 
     private void initView() {
         setContentView(R.layout.activity_polyline);
         ButterKnife.bind(this);
 
-        mvMap.createMap(MapType.GAODE);
+        mvMap.initMap(mGaodeMap.getMapType());
         mvMap.onCreate(null);
 
         mvMap.setMapClickListener(new MapClickListener() {
@@ -86,13 +89,13 @@ public class PolylineActivity extends Activity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_gaode_map:
-                mvMap.switchMapType(MapType.GAODE);
+                mvMap.switchMapType(mGaodeMap.getMapType());
                 break;
             case R.id.bt_baidu_map:
-                mvMap.switchMapType(MapType.BAIDU);
+//                mvMap.switchMapType(MapType.BAIDU);
                 break;
             case R.id.bt_google_map:
-                mvMap.switchMapType(MapType.GOOGLE);
+//                mvMap.switchMapType(MapType.GOOGLE);
                 break;
             case R.id.bt_color:
                 setColor();
@@ -115,6 +118,7 @@ public class PolylineActivity extends Activity {
             case R.id.bt_reset:
                 clearAllLines();
                 break;
+            default:
         }
     }
 

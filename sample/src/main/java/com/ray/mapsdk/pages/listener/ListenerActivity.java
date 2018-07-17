@@ -62,7 +62,7 @@ public class ListenerActivity extends Activity {
         setContentView(R.layout.activity_listener);
         ButterKnife.bind(this);
 
-        mvMap.createMap(MapType.GAODE);
+        mvMap.initMap(MapType.GAODE);
         mvMap.onCreate(null);
 
         setListeners();

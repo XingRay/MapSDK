@@ -2,7 +2,6 @@ package com.ray.lib_map.util;
 
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.graph.Circle;
-import com.ray.lib_map.extern.CoordinateType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +58,7 @@ public class MapUtil {
 
         MapPoint center = circle.getCenter();
         double radius = circle.getRadius();
-        CoordinateType coordinateType = center.getType();
+        CoordinateType coordinateType = center.getCoordinateType();
 
         double deltaAngle = getDeltaAngleInEarth(radius);
 

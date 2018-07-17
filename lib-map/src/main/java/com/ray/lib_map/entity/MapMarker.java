@@ -2,13 +2,11 @@ package com.ray.lib_map.entity;
 
 import android.graphics.Bitmap;
 
-import com.ray.lib_map.extern.MapType;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-07-13
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -23,7 +21,7 @@ public class MapMarker {
     /**
      * sdk中的标记对象
      */
-    private final Map<MapType, Object> rawMarkers;
+    private final Map<String, Object> rawMarkers;
     /**
      * 地图点的位置
      */
@@ -133,15 +131,15 @@ public class MapMarker {
         this.content = content;
     }
 
-    public Object getRawMarker(MapType mapType) {
+    public Object getRawMarker(String mapType) {
         return rawMarkers.get(mapType);
     }
 
-    public void setRawMarker(MapType mapType, Object rawMarker) {
+    public void setRawMarker(String mapType, Object rawMarker) {
         rawMarkers.put(mapType, rawMarker);
     }
 
-    public Object removeRawMarker(MapType mapType) {
+    public Object removeRawMarker(String mapType) {
         return rawMarkers.remove(mapType);
     }
 

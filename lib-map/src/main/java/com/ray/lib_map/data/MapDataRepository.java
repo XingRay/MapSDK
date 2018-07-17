@@ -2,6 +2,7 @@ package com.ray.lib_map.data;
 
 import android.content.Context;
 
+import com.ray.lib_map.base.DataCallback;
 import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.extern.MapType;
@@ -11,7 +12,7 @@ import com.ray.lib_map.impl.google.GoogleDataSource;
 
 
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-07-12
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -60,6 +61,7 @@ public class MapDataRepository implements MapDataSource {
                 return new BaiduDataSource(mContext);
             case GOOGLE:
                 return new GoogleDataSource(mContext);
+            default:
         }
         throw new IllegalStateException("unknown map type");
     }

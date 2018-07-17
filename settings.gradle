@@ -1,1 +1,1 @@
-include ':sample', ':lib-map'
+include ':sample', ':lib-map', ':lib-map-gaode', ':lib-map-baidu', ':lib-map-google'

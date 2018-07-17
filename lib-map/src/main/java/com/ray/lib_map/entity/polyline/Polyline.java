@@ -3,7 +3,6 @@ package com.ray.lib_map.entity.polyline;
 import android.graphics.Bitmap;
 
 import com.ray.lib_map.entity.MapPoint;
-import com.ray.lib_map.extern.MapType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-07-14
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -28,37 +27,23 @@ public class Polyline {
     private List<PolylineTexture> textures;
     private int zIndex;
 
-    private Map<MapType, List<?>> rawPolylineMap;
+    private Map<String, List<Object>> rawPolylineMap;
 
     public Polyline() {
         points = new ArrayList<>(2);
         textures = new ArrayList<>(1);
     }
 
-    public void addRawPolyline(MapType mapType, Object rawPolyline) {
+    public void addRawPolyline(String mapType, Object rawPolyline) {
         if (rawPolylineMap == null) {
             rawPolylineMap = new HashMap<>();
         }
-
-        switch (mapType) {
-            case GAODE:
-                com.amap.api.maps.model.Polyline gaodePolyline = (com.amap.api.maps.model.Polyline) rawPolyline;
-                addRawPloyLine(mapType, gaodePolyline);
-                break;
-            case BAIDU:
-                com.baidu.mapapi.map.Polyline baiduPolyline = (com.baidu.mapapi.map.Polyline) rawPolyline;
-                addRawPloyLine(mapType, baiduPolyline);
-                break;
-            case GOOGLE:
-                com.google.android.gms.maps.model.Polyline googlePolyline = (com.google.android.gms.maps.model.Polyline) rawPolyline;
-                addRawPloyLine(mapType, googlePolyline);
-        }
-
+        addRawPloyLine(mapType, rawPolyline);
     }
 
     @SuppressWarnings("unchecked")
-    private <T> void addRawPloyLine(MapType mapType, T rawPolylines) {
-        List<T> polylines = (List<T>) rawPolylineMap.get(mapType);
+    private void addRawPloyLine(String mapType, Object rawPolylines) {
+        List<Object> polylines = rawPolylineMap.get(mapType);
         if (polylines == null) {
             polylines = new ArrayList<>();
             rawPolylineMap.put(mapType, polylines);
@@ -67,7 +52,7 @@ public class Polyline {
     }
 
 
-    public List<?> getRawPolylines(MapType mapType) {
+    public List<?> getRawPolylines(String mapType) {
         if (rawPolylineMap == null) {
             return null;
         }

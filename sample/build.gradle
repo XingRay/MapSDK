@@ -45,9 +45,12 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation 'com.yanzhenjie:permission:1.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    implementation project(':lib-map')
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:27.1.1'
     //noinspection GradleCompatible
     implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation project(':lib-map-gaode')
+    implementation project(':lib-map-baidu')
+    implementation project(':lib-map-google')
+    implementation project(':lib-map')
 }

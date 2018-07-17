@@ -52,7 +52,7 @@ public class GestureControlActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gesture_control);
         ButterKnife.bind(this);
 
-        mvMap.createMap(MapType.GAODE);
+        mvMap.initMap(MapType.GAODE);
         mvMap.onCreate(null);
 
         swDrag.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

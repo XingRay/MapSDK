@@ -4,9 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.support.annotation.AttrRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -18,7 +15,6 @@ import com.ray.lib_map.entity.graph.Circle;
 import com.ray.lib_map.entity.graph.Graph;
 import com.ray.lib_map.entity.graph.Polygon;
 import com.ray.lib_map.entity.polyline.Polyline;
-import com.ray.lib_map.extern.MapDelegateFactory;
 import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
@@ -35,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-07-13
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -49,7 +45,6 @@ public class MapView extends View {
     private MapType mMapType;
     private MapDelegate mMapDelegate;
 
-    private MapDelegateFactory mMapDelegateFactory;
     private MarkerClickListener mMarkerClickListener;
     private InfoWindowInflater mInfoWindowInflater;
     private InfoWindowClickListener mInfoWindowClickListener;
@@ -60,21 +55,20 @@ public class MapView extends View {
     private MapLongClickListener mMapLongClickListener;
     private boolean mZoomControlsEnable = true;
 
-    public MapView(@NonNull Context context) {
+    public MapView(Context context) {
         this(context, null);
     }
 
-    public MapView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public MapView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public MapView(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
+    public MapView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setVisibility(GONE);
         setWillNotDraw(true);
 
         mCurrentMapView = this;
-        mMapDelegateFactory = new MapDelegateFactory(context);
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -113,9 +107,9 @@ public class MapView extends View {
     }
 
 
-    public void createMap(MapType mapType) {
+    public void initMap(MapType mapType) {
         mMapType = mapType;
-        mMapDelegate = mMapDelegateFactory.createMapDelegate(mMapType);
+        mMapDelegate = mMapType.getDelegate();
         mCurrentMapView = ViewUtil.replaceView(mCurrentMapView, mMapDelegate.getMapView());
 
         setListeners();
@@ -140,7 +134,7 @@ public class MapView extends View {
         final List<Polyline> polylines = mMapDelegate.getPolylines();
         final List<Graph> graphs = mMapDelegate.getGraphs();
 
-        final MapDelegate newMapDelegate = mMapDelegateFactory.createMapDelegate(newMapType);
+        final MapDelegate newMapDelegate = newMapType.getDelegate();
 
         //新地图控件切换进界面
         newMapDelegate.onSwitchIn(savedInstanceState, new MapSwitchListener() {

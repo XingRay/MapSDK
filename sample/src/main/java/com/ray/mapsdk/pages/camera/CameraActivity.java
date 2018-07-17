@@ -56,7 +56,7 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera);
         ButterKnife.bind(this);
 
-        mvMap.createMap(MapType.GAODE);
+        mvMap.initMap(MapType.GAODE);
         mvMap.onCreate(null);
     }
 
