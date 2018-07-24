@@ -1,14 +1,14 @@
 package com.ray.lib_map.data;
 
-import android.content.Context;
-
-import com.ray.lib_map.base.DataCallback;
+import com.ray.lib_map.base.Result;
+import com.ray.lib_map.base.Result2;
 import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapPoint;
-import com.ray.lib_map.extern.MapType;
-import com.ray.lib_map.impl.baidu.BaiduDataSource;
-import com.ray.lib_map.impl.gaode.GaodeDataSource;
-import com.ray.lib_map.impl.google.GoogleDataSource;
+import com.ray.lib_map.entity.Poi;
+import com.ray.lib_map.entity.PoiSearchSuggestion;
+import com.ray.lib_map.extern.MapConfig;
+
+import java.util.List;
 
 
 /**
@@ -22,72 +22,53 @@ import com.ray.lib_map.impl.google.GoogleDataSource;
 
 @SuppressWarnings("WeakerAccess")
 public class MapDataRepository implements MapDataSource {
-    private final Context mContext;
-    private MapType mMapType;
-    private MapDataSource mMapDataSource;
+    private MapConfig mMapConfig;
+    private MapDataSource mDataSource;
 
-    public MapDataRepository(Context context) {
-        this(context, MapType.GAODE);
-    }
-
-    public MapDataRepository(Context context, MapType mapType) {
-        mContext = context;
-        switchMapType(mapType);
+    public MapDataRepository(MapConfig mapConfig) {
+        switchMapType(mapConfig);
     }
 
     /**
      * 切换地图数据源的类型
      *
-     * @param mapType 地图类型
+     * @param mapConfig 地图类型
      */
-    public void switchMapType(MapType mapType) {
-        if (mapType == null) {
-            throw new IllegalArgumentException("mapType can not be null");
+    public void switchMapType(MapConfig mapConfig) {
+        if (mapConfig == null) {
+            throw new IllegalArgumentException("mapConfig can not be null");
         }
 
-        if (mMapType == mapType) {
+        if (mMapConfig == mapConfig) {
             return;
         }
 
-        mMapType = mapType;
-        mMapDataSource = getMapDataSource(mapType);
-    }
-
-    private MapDataSource getMapDataSource(MapType mapType) {
-        switch (mapType) {
-            case GAODE:
-                return new GaodeDataSource(mContext);
-            case BAIDU:
-                return new BaiduDataSource(mContext);
-            case GOOGLE:
-                return new GoogleDataSource(mContext);
-            default:
-        }
-        throw new IllegalStateException("unknown map type");
+        mMapConfig = mapConfig;
+        mDataSource = mapConfig.getDataSourceFactory().create();
     }
 
     @Override
-    public void reverseGeoCode(MapPoint mapPoint, float radius, DataCallback<Address> callback) {
-        mMapDataSource.reverseGeoCode(mapPoint, radius, callback);
+    public Result<Address> reverseGeoCode(MapPoint mapPoint, float radius) {
+        return mDataSource.reverseGeoCode(mapPoint, radius);
     }
 
     @Override
-    public void queryPoi(MapPoint mapPoint, int searchBound, int pageIndex, int pageSize, POISearchCallback callback) {
-        mMapDataSource.queryPoi(mapPoint, searchBound, pageIndex, pageSize, callback);
+    public Result<MapPoint> geoCode(String address, String city) {
+        return mDataSource.geoCode(address, city);
     }
 
     @Override
-    public void queryPoi(String keyword, String city, int pageIndex, int pageSize, POISearchCallback callback) {
-        mMapDataSource.queryPoi(keyword, city, pageIndex, pageSize, callback);
+    public Result2<List<Poi>, List<PoiSearchSuggestion>> queryPoi(MapPoint mapPoint, int searchBound, int pageIndex, int pageSize) {
+        return mDataSource.queryPoi(mapPoint, searchBound, pageIndex, pageSize);
     }
 
     @Override
-    public void geoCode(String address, String city, DataCallback<MapPoint> callback) {
-        mMapDataSource.geoCode(address, city, callback);
+    public Result2<List<Poi>, List<PoiSearchSuggestion>> queryPoi(String keyword, String city, int pageIndex, int pageSize) {
+        return mDataSource.queryPoi(keyword, city, pageIndex, pageSize);
     }
 
     @Override
-    public void locate(DataCallback<Address> callback) {
-        mMapDataSource.locate(callback);
+    public Result<Address> locate() {
+        return mDataSource.locate();
     }
 }

@@ -17,20 +17,20 @@ import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
-import com.ray.lib_map.R;
-import com.ray.lib_map.base.DataCallback;
-import com.ray.lib_map.base.FailureCallback;
+import com.ray.lib_map.base.Result;
+import com.ray.lib_map.base.Result2;
 import com.ray.lib_map.data.MapDataSource;
 import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapPoint;
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.entity.Poi;
+import com.ray.lib_map.entity.PoiSearchSuggestion;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-07-12
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -40,11 +40,34 @@ import java.util.List;
 
 public class GaodeDataSource implements MapDataSource {
     private static final int LOCATION_INTERVAL = 180 * 1000;
-    private static final String SEARCH_TYPE = "";//"汽车服务|汽车销售|汽车维修|摩托车服务|餐饮服务|购物服务|生活服务|体育休闲服务|医疗保健服务|住宿服务|风景名胜|商务住宅|政府机构及社会团体|科教文化服务|交通设施服务|金融保险服务|公司企业|道路附属设施|地名地址信息|公共设施";
-    private final Context mContext;
+    private static final String SEARCH_TYPE = "汽车服务" +
+            "|汽车销售" +
+            "|汽车维修" +
+            "|摩托车服务" +
+            "|餐饮服务" +
+            "|购物服务" +
+            "|生活服务" +
+            "|体育休闲服务" +
+            "|医疗保健服务" +
+            "|住宿服务" +
+            "|风景名胜" +
+            "|商务住宅" +
+            "|政府机构及社会团体" +
+            "|科教文化服务" +
+            "|交通设施服务" +
+            "|金融保险服务" +
+            "|公司企业" +
+            "|道路附属设施" +
+            "|地名地址信息" +
+            "|公共设施";
 
-    public GaodeDataSource(Context context) {
+    private final Context mContext;
+    private final String mCoordinateType;
+
+    @SuppressWarnings("WeakerAccess")
+    public GaodeDataSource(Context context, String coordinateType) {
         mContext = context;
+        mCoordinateType = coordinateType;
     }
 
     private AMapLocationClient createOnceLocationClient() {
@@ -63,105 +86,37 @@ public class GaodeDataSource implements MapDataSource {
     }
 
     @Override
-    public void reverseGeoCode(MapPoint mapPoint, float radius, DataCallback<Address> callback) {
+    public Result<Address> reverseGeoCode(MapPoint mapPoint, float radius) {
+        Result<Address> result = new Result<>();
+
         GeocodeSearch geoCoderSearch = new GeocodeSearch(mContext);
-        MapPoint gaodePoint = mapPoint.copy(MapType.GAODE.getCoordinateType());
+        MapPoint gaodePoint = mapPoint.copy(mCoordinateType);
         LatLonPoint point = new LatLonPoint(gaodePoint.getLatitude(), gaodePoint.getLongitude());
         RegeocodeQuery query = new RegeocodeQuery(point, radius, GeocodeSearch.AMAP);
         RegeocodeAddress regeocodeAddress;
         try {
             regeocodeAddress = geoCoderSearch.getFromLocation(query);
         } catch (AMapException e) {
-            e.printStackTrace();
-            callback.onFailure(FailureCallback.ERROR_CODE_NO_RESULT, e.getErrorMessage());
-            return;
+            return result.succeed(false)
+                    .throwable(e)
+                    .errorCode(ERROR_CODE_NO_RESULT)
+                    .errorMsg(e.getErrorMessage());
         }
         if (regeocodeAddress == null) {
-            callback.onFailure(FailureCallback.ERROR_CODE_NO_RESULT, "逆地理解析失败");
-            return;
+            return result.succeed(false)
+                    .errorCode(ERROR_CODE_NO_RESULT)
+                    .errorMsg("逆地理解析失败");
         }
 
         Address address = GaodeDataConverter.toAddress(regeocodeAddress, mapPoint);
-        callback.onSuccess(address);
+        return result.succeed(true)
+                .data(address);
     }
 
     @Override
-    public void queryPoi(MapPoint mapPoint, int searchBound, int pageIndex, int pageSize, POISearchCallback callback) {
-        PoiSearch.Query query = new PoiSearch.Query(SEARCH_TYPE, null);
-        query.setPageSize(pageSize);
-        query.setPageNum(pageIndex);
-        mapPoint = mapPoint.copy(MapType.GAODE.getCoordinateType());
-        LatLonPoint lp = new LatLonPoint(mapPoint.getLatitude(), mapPoint.getLongitude());
-        PoiSearch poiSearch = new PoiSearch(mContext, query);
-        poiSearch.setBound(new PoiSearch.SearchBound(lp, searchBound, true));
+    public Result<MapPoint> geoCode(String address, String city) {
+        Result<MapPoint> result = new Result<>();
 
-        PoiResult poiResult;
-        try {
-            poiResult = poiSearch.searchPOI();
-        } catch (AMapException e) {
-            e.printStackTrace();
-            callback.onFailure(FailureCallback.ERROR_CODE_NO_RESULT, e.getErrorMessage());
-            return;
-        }
-
-        if (poiResult == null) {
-            callback.onFailure(FailureCallback.ERROR_CODE_NO_RESULT, mContext.getResources().getString(R.string.wufahuoqushuju));
-            return;
-        }
-
-        ArrayList<PoiItem> pois = poiResult.getPois();
-        if (pois != null && pois.size() > 0) {
-            callback.onSuccess(GaodeDataConverter.toPoiList(pois));
-            return;
-        }
-
-        List<SuggestionCity> suggestionCities = poiResult.getSearchSuggestionCitys();
-        if (suggestionCities != null && suggestionCities.size() > 0) {
-            callback.onSuggestion(GaodeDataConverter.toSuggestions(suggestionCities));
-            return;
-        }
-
-        callback.onNoSearchResult();
-    }
-
-    @Override
-    public void queryPoi(String keyword, String city, int pageIndex, int pageSize, POISearchCallback callback) {
-        PoiSearch.Query query = new PoiSearch.Query(keyword, SEARCH_TYPE, city);
-        query.setPageSize(pageSize);
-        query.setPageNum(pageIndex);
-        PoiSearch poiSearch = new PoiSearch(mContext, query);
-
-        PoiResult poiResult;
-        try {
-            poiResult = poiSearch.searchPOI();
-        } catch (AMapException e) {
-            e.printStackTrace();
-            callback.onFailure(FailureCallback.ERROR_CODE_NO_RESULT, e.getErrorMessage());
-            return;
-        }
-
-        if (poiResult == null) {
-            callback.onFailure(FailureCallback.ERROR_CODE_NO_RESULT, mContext.getResources().getString(R.string.wufahuoqushuju));
-            return;
-        }
-
-        ArrayList<PoiItem> pois = poiResult.getPois();
-        if (pois != null && pois.size() > 0) {
-            callback.onSuccess(GaodeDataConverter.toPoiList(pois));
-            return;
-        }
-
-        List<SuggestionCity> suggestionCities = poiResult.getSearchSuggestionCitys();
-        if (suggestionCities != null && suggestionCities.size() > 0) {
-            callback.onSuggestion(GaodeDataConverter.toSuggestions(suggestionCities));
-            return;
-        }
-
-        callback.onNoSearchResult();
-    }
-
-    @Override
-    public void geoCode(String address, String city, DataCallback<MapPoint> callback) {
         GeocodeQuery query = new GeocodeQuery(address, city);
         GeocodeSearch geoCoderSearch = new GeocodeSearch(mContext);
 
@@ -169,14 +124,16 @@ public class GaodeDataSource implements MapDataSource {
         try {
             addresses = geoCoderSearch.getFromLocationName(query);
         } catch (AMapException e) {
-            e.printStackTrace();
-            callback.onFailure(FailureCallback.ERROR_CODE_NO_RESULT, e.getErrorMessage());
-            return;
+            return result.succeed(false)
+                    .throwable(e)
+                    .errorCode(ERROR_CODE_NO_RESULT)
+                    .errorMsg(e.getErrorMessage());
         }
 
         if (addresses == null) {
-            callback.onFailure(FailureCallback.ERROR_CODE_NO_RESULT, mContext.getResources().getString(R.string.wufahuoqushuju));
-            return;
+            return result.succeed(false)
+                    .errorCode(ERROR_CODE_NO_RESULT)
+                    .errorMsg("无法获取数据");
         }
 
         for (GeocodeAddress geocodeAddress : addresses) {
@@ -188,15 +145,108 @@ public class GaodeDataSource implements MapDataSource {
                 continue;
             }
 
-            callback.onSuccess(new MapPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude(), MapType.GAODE.getCoordinateType()));
-            return;
+            return result.succeed(true)
+                    .data(new MapPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude(), mCoordinateType));
         }
 
-        callback.onFailure(FailureCallback.ERROR_CODE_NO_RESULT, mContext.getResources().getString(R.string.wufahuoqushuju));
+        return result.succeed(false)
+                .errorCode(ERROR_CODE_NO_RESULT)
+                .errorMsg("无法获取数据");
     }
 
     @Override
-    public void locate(DataCallback<Address> callback) {
+    public Result2<List<Poi>, List<PoiSearchSuggestion>> queryPoi(MapPoint mapPoint, int searchBound, int pageIndex, int pageSize) {
+        Result2<List<Poi>, List<PoiSearchSuggestion>> result = new Result2<>();
+
+        PoiSearch.Query query = new PoiSearch.Query(SEARCH_TYPE, null);
+        query.setPageSize(pageSize);
+        query.setPageNum(pageIndex);
+        mapPoint = mapPoint.copy(mCoordinateType);
+        LatLonPoint lp = new LatLonPoint(mapPoint.getLatitude(), mapPoint.getLongitude());
+        PoiSearch poiSearch = new PoiSearch(mContext, query);
+        poiSearch.setBound(new PoiSearch.SearchBound(lp, searchBound, true));
+
+        PoiResult poiResult;
+        try {
+            poiResult = poiSearch.searchPOI();
+        } catch (AMapException e) {
+            return result.succeed(false)
+                    .errorCode(ERROR_CODE_NO_RESULT)
+                    .errorMsg(e.getErrorMessage())
+                    .throwable(e);
+        }
+
+        if (poiResult == null) {
+            return result.succeed(false)
+                    .errorCode(ERROR_CODE_NO_RESULT)
+                    .errorMsg("无法获取数据");
+        }
+
+        ArrayList<PoiItem> pois = poiResult.getPois();
+        if (pois != null && pois.size() > 0) {
+            return result.succeed(true)
+                    .data0(GaodeDataConverter.toPoiList(pois));
+        }
+
+        List<SuggestionCity> suggestionCities = poiResult.getSearchSuggestionCitys();
+        if (suggestionCities != null && suggestionCities.size() > 0) {
+            return result.succeed(false)
+                    .errorCode(ERROR_CODE_POI_SUGGESTION)
+                    .data1(GaodeDataConverter.toSuggestions(suggestionCities));
+        }
+
+        return result.succeed(false)
+                .errorCode(ERROR_CODE_NO_RESULT)
+                .errorMsg("无法获取数据");
+    }
+
+    @Override
+    public Result2<List<Poi>, List<PoiSearchSuggestion>> queryPoi(String keyword, String city, int pageIndex, int pageSize) {
+        Result2<List<Poi>, List<PoiSearchSuggestion>> result = new Result2<>();
+
+        PoiSearch.Query query = new PoiSearch.Query(keyword, SEARCH_TYPE, city);
+        query.setPageSize(pageSize);
+        query.setPageNum(pageIndex);
+        PoiSearch poiSearch = new PoiSearch(mContext, query);
+
+        PoiResult poiResult;
+        try {
+            poiResult = poiSearch.searchPOI();
+        } catch (AMapException e) {
+            return result.succeed(false)
+                    .errorCode(ERROR_CODE_NO_RESULT)
+                    .errorMsg(e.getErrorMessage())
+                    .throwable(e);
+        }
+
+        if (poiResult == null) {
+            return result.succeed(false)
+                    .errorCode(ERROR_CODE_NO_RESULT)
+                    .errorMsg("无法获取数据");
+        }
+
+        ArrayList<PoiItem> pois = poiResult.getPois();
+        if (pois != null && pois.size() > 0) {
+            return result.succeed(true)
+                    .data0(GaodeDataConverter.toPoiList(pois));
+        }
+
+        List<SuggestionCity> suggestionCities = poiResult.getSearchSuggestionCitys();
+        if (suggestionCities != null && suggestionCities.size() > 0) {
+            return result.succeed(false)
+                    .errorCode(ERROR_CODE_POI_SUGGESTION)
+                    .data1(GaodeDataConverter.toSuggestions(suggestionCities));
+        }
+
+        return result.succeed(false)
+                .errorCode(ERROR_CODE_NO_RESULT)
+                .errorMsg("无法获取数据");
+    }
+
+    @Override
+    public Result<Address> locate() {
+        Result<Address> result = new Result<>();
+
         final AMapLocationClient client = createOnceLocationClient();
         final AMapLocation[] location = new AMapLocation[1];
         client.setLocationListener(new AMapLocationListener() {
@@ -220,15 +270,13 @@ public class GaodeDataSource implements MapDataSource {
         client.onDestroy();
 
         AMapLocation aMapLocation = location[0];
-        if (aMapLocation == null) {
-            callback.onFailure(FailureCallback.ERROR_CODE_NO_RESULT, mContext.getResources().getString(R.string.wufahuoqushuju));
-            return;
-        }
-        if (aMapLocation.getErrorCode() != 0) {
-            callback.onFailure(FailureCallback.ERROR_CODE_NO_RESULT, mContext.getResources().getString(R.string.dingweishibai) + aMapLocation.getErrorCode() + ": " + aMapLocation.getErrorInfo());
-            return;
+        if (aMapLocation == null || aMapLocation.getErrorCode() != 0) {
+            return result.succeed(false)
+                    .errorCode(ERROR_CODE_NO_RESULT)
+                    .errorMsg("无法获取数据");
         }
 
-        callback.onSuccess(GaodeDataConverter.toAddress(aMapLocation));
+        return result.succeed(true)
+                .data(GaodeDataConverter.toAddress(aMapLocation));
     }
 }

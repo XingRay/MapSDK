@@ -1,10 +1,8 @@
 package com.ray.lib_map.listener;
 
 
-import com.ray.lib_map.base.FailureCallback;
-
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-10-22
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -12,6 +10,8 @@ import com.ray.lib_map.base.FailureCallback;
  * Description : xxx
  */
 
-public interface MapSwitchListener extends FailureCallback {
+public interface MapSwitchListener {
     void onMapSwitch();
+
+    void onFailure(int errorCode, String errorMsg);
 }

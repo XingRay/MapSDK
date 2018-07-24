@@ -45,7 +45,6 @@ public class ZoomStandardization {
         return zoom;
     }
 
-
     private static float gaodeZoomToStandardZoom(float zoom) {
         return zoom + 5 - GAODE_ZOOM_FACTOR;
     }

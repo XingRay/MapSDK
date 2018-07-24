@@ -37,12 +37,12 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+//    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+//        exclude group: 'com.android.support', module: 'support-annotations'
+//    })
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'com.jakewharton:butterknife:8.8.1'
-    testImplementation 'junit:junit:4.12'
+//    testImplementation 'junit:junit:4.12'
     implementation 'com.yanzhenjie:permission:1.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     //noinspection GradleCompatible
@@ -50,7 +50,7 @@ dependencies {
     //noinspection GradleCompatible
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation project(':lib-map-gaode')
-    implementation project(':lib-map-baidu')
-    implementation project(':lib-map-google')
+//    implementation project(':lib-map-baidu')
+//    implementation project(':lib-map-google')
     implementation project(':lib-map')
 }

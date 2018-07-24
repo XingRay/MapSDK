@@ -15,13 +15,11 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.ray.lib_map.KeyManager;
-import com.ray.lib_map.base.DataCallback;
-import com.ray.lib_map.base.FailureCallback;
 import com.ray.lib_map.data.MapDataSource;
 import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Poi;
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.MapConfig;
 import com.leixing.lib_map_google.params.GeoCodeParam;
 import com.leixing.lib_map_google.params.Language;
 import com.leixing.lib_map_google.params.NearbySearchParam;
@@ -92,7 +90,7 @@ public class GoogleDataSource implements MapDataSource {
 
 
     private void reverseGeoCode(MapPoint mapPoint, float radius, Language language, DataCallback<Address> callback) {
-        MapPoint googlePoint = mapPoint.copy(MapType.GOOGLE.getCoordinateType());
+        MapPoint googlePoint = mapPoint.copy(MapConfig.GOOGLE.getCoordinateType());
         ReGeoCodeParam param = new ReGeoCodeParam(googlePoint.getLatitude(), googlePoint.getLongitude(), GEO_API_KEY);
         param.setLanguage(language);
 
@@ -113,7 +111,7 @@ public class GoogleDataSource implements MapDataSource {
 
     @Override
     public void queryPoi(MapPoint mapPoint, int searchBound, int pageIndex, int pageSize, POISearchCallback callback) {
-        MapPoint googlePoint = mapPoint.copy(MapType.GOOGLE);
+        MapPoint googlePoint = mapPoint.copy(MapConfig.GOOGLE);
         NearbySearchParam param = new NearbySearchParam(SEARCH_API_KEY, googlePoint.getLatitude(), googlePoint.getLongitude()/*, searchBound*/);
         param.setLanguage(Language.getSystemLanguage(mContext));
         param.setRankBy("distance");
@@ -133,7 +131,7 @@ public class GoogleDataSource implements MapDataSource {
         Iterator<Poi> iterator = pois.iterator();
         while (iterator.hasNext()) {
             Poi poi = iterator.next();
-            int distance = (int) MapUtil.getDistance(googlePoint, new MapPoint(poi.getLatitude(), poi.getLongitude(), MapType.GOOGLE.getCoordinateType()));
+            int distance = (int) MapUtil.getDistance(googlePoint, new MapPoint(poi.getLatitude(), poi.getLongitude(), MapConfig.GOOGLE.getCoordinateType()));
             if (distance >= searchBound) {
                 iterator.remove();
             } else {
@@ -160,7 +158,7 @@ public class GoogleDataSource implements MapDataSource {
     }
 
     private void queryPoi(MapPoint mapPoint, String keyword, int searchBound, int pageIndex, int pageSize, Language language, POISearchCallback callback) {
-        MapPoint googlePoint = mapPoint.copy(MapType.GOOGLE);
+        MapPoint googlePoint = mapPoint.copy(MapConfig.GOOGLE);
         NearbySearchParam param = new NearbySearchParam(SEARCH_API_KEY, googlePoint.getLatitude(), googlePoint.getLongitude());
         param.setKeyword(keyword);
         param.setLanguage(language);
@@ -181,7 +179,7 @@ public class GoogleDataSource implements MapDataSource {
         Iterator<Poi> iterator = pois.iterator();
         while (iterator.hasNext()) {
             Poi poi = iterator.next();
-            int distance = (int) MapUtil.getDistance(googlePoint, new MapPoint(poi.getLatitude(), poi.getLongitude(), MapType.GOOGLE.getCoordinateType()));
+            int distance = (int) MapUtil.getDistance(googlePoint, new MapPoint(poi.getLatitude(), poi.getLongitude(), MapConfig.GOOGLE.getCoordinateType()));
             if (distance >= searchBound) {
                 iterator.remove();
             } else {
@@ -272,7 +270,7 @@ public class GoogleDataSource implements MapDataSource {
                 callback.onFailure(FailureCallback.ERROR_CODE_NO_RESULT, "定位失败");
             } else {
                 Address address = new Address();
-                address.setMapPoint(new MapPoint(location.getLatitude(), location.getLongitude(), CoordinateType.WGS84).copy(MapType.GOOGLE.getCoordinateType()));
+                address.setMapPoint(new MapPoint(location.getLatitude(), location.getLongitude(), CoordinateType.WGS84).copy(MapConfig.GOOGLE.getCoordinateType()));
                 callback.onSuccess(address);
             }
 

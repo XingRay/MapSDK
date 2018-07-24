@@ -7,7 +7,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Poi;
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.MapConfig;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,11 +32,11 @@ class GoogleDataConverter {
 
 
     static MapPoint toMapPoint(LatLng latLng) {
-        return new MapPoint(latLng.latitude, latLng.longitude, MapType.GOOGLE.getCoordinateType());
+        return new MapPoint(latLng.latitude, latLng.longitude, MapConfig.GOOGLE.getCoordinateType());
     }
 
     static LatLng fromMapPoint(MapPoint mapPoint) {
-        MapPoint googleMapPoint = mapPoint.copy(MapType.GOOGLE.getCoordinateType());
+        MapPoint googleMapPoint = mapPoint.copy(MapConfig.GOOGLE.getCoordinateType());
         return new LatLng(googleMapPoint.getLatitude(), googleMapPoint.getLongitude());
     }
 
@@ -96,7 +96,7 @@ class GoogleDataConverter {
             JSONObject location = geometry.getJSONObject("location");
             double latitude = location.getDouble("lat");
             double longitude = location.getDouble("lng");
-            return new MapPoint(latitude, longitude, MapType.GOOGLE.getCoordinateType());
+            return new MapPoint(latitude, longitude, MapConfig.GOOGLE.getCoordinateType());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -165,7 +165,7 @@ class GoogleDataConverter {
                     JSONObject location = geometry.getJSONObject("location");
                     double latitude = location.getDouble("lat");
                     double longitude = location.getDouble("lng");
-                    address.setMapPoint(new MapPoint(latitude, longitude, MapType.GOOGLE.getCoordinateType()));
+                    address.setMapPoint(new MapPoint(latitude, longitude, MapConfig.GOOGLE.getCoordinateType()));
                 }
             }
 
@@ -256,7 +256,7 @@ class GoogleDataConverter {
                     JSONObject location = geometry.getJSONObject("location");
                     double latitude = location.getDouble("lat");
                     double longitude = location.getDouble("lng");
-                    poi.setMapPoint(new MapPoint(latitude, longitude, MapType.GOOGLE.getCoordinateType()));
+                    poi.setMapPoint(new MapPoint(latitude, longitude, MapConfig.GOOGLE.getCoordinateType()));
                 }
             }
             if (result.has("name")) {

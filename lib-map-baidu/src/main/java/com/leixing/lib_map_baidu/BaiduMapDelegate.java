@@ -38,7 +38,7 @@ import com.ray.lib_map.entity.polyline.ColorTexture;
 import com.ray.lib_map.entity.polyline.Polyline;
 import com.ray.lib_map.entity.polyline.PolylineHelper;
 import com.ray.lib_map.entity.polyline.PolylineTexture;
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.MapConfig;
 import com.ray.lib_map.extern.ZoomStandardization;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
@@ -105,7 +105,7 @@ public class BaiduMapDelegate implements MapDelegate {
 
     private CoordType getCoordinateType() {
         CoordType coordType = null;
-        switch (MapType.BAIDU.getCoordinateType()) {
+        switch (MapConfig.BAIDU.getCoordinateType()) {
             case GCJ02:
                 coordType = CoordType.GCJ02;
                 break;
@@ -258,12 +258,12 @@ public class BaiduMapDelegate implements MapDelegate {
     @Override
     public MapPoint getPosition() {
         LatLng target = getMap().getMapStatus().target;
-        return new MapPoint(target.latitude, target.longitude, MapType.BAIDU.getCoordinateType());
+        return new MapPoint(target.latitude, target.longitude, MapConfig.BAIDU.getCoordinateType());
     }
 
     @Override
     public void setPosition(MapPoint mapPoint) {
-        MapPoint baiduPoint = mapPoint.copy(MapType.BAIDU.getCoordinateType());
+        MapPoint baiduPoint = mapPoint.copy(MapConfig.BAIDU.getCoordinateType());
         LatLng latLng = new LatLng(baiduPoint.getLatitude(), baiduPoint.getLongitude());
         com.baidu.mapapi.map.MapStatus status = new com.baidu.mapapi.map.MapStatus.Builder(getMap().getMapStatus()).target(latLng).build();
         MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
@@ -272,12 +272,12 @@ public class BaiduMapDelegate implements MapDelegate {
 
     @Override
     public float getZoom() {
-        return ZoomStandardization.toStandardZoom(getMap().getMapStatus().zoom, MapType.BAIDU);
+        return ZoomStandardization.toStandardZoom(getMap().getMapStatus().zoom, MapConfig.BAIDU);
     }
 
     @Override
     public void setZoom(float zoom) {
-        float baiduZoom = ZoomStandardization.fromStandardZoom(zoom, MapType.BAIDU);
+        float baiduZoom = ZoomStandardization.fromStandardZoom(zoom, MapConfig.BAIDU);
         com.baidu.mapapi.map.MapStatus status = new com.baidu.mapapi.map.MapStatus.Builder(getMap().getMapStatus()).zoom(baiduZoom).build();
         MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(status);
         getMap().animateMapStatus(update);
@@ -298,12 +298,12 @@ public class BaiduMapDelegate implements MapDelegate {
 
     @Override
     public float getMaxZoom() {
-        return ZoomStandardization.toStandardZoom(getMap().getMaxZoomLevel(), MapType.BAIDU);
+        return ZoomStandardization.toStandardZoom(getMap().getMaxZoomLevel(), MapConfig.BAIDU);
     }
 
     @Override
     public float getMinZoom() {
-        return ZoomStandardization.toStandardZoom(getMap().getMinZoomLevel(), MapType.BAIDU);
+        return ZoomStandardization.toStandardZoom(getMap().getMinZoomLevel(), MapConfig.BAIDU);
     }
 
     @Override
@@ -336,9 +336,9 @@ public class BaiduMapDelegate implements MapDelegate {
         MapStatus mapStatus = getMap().getMapStatus();
 
         CameraPosition position = new CameraPosition();
-        position.setPosition(new MapPoint(mapStatus.target.latitude, mapStatus.target.longitude, MapType.BAIDU.getCoordinateType()));
+        position.setPosition(new MapPoint(mapStatus.target.latitude, mapStatus.target.longitude, MapConfig.BAIDU.getCoordinateType()));
         position.setRotate(mapStatus.rotate);
-        position.setZoom(ZoomStandardization.toStandardZoom(mapStatus.zoom, MapType.BAIDU));
+        position.setZoom(ZoomStandardization.toStandardZoom(mapStatus.zoom, MapConfig.BAIDU));
         position.setOverlook(BaiduDataConverter.toStandardOverlook(mapStatus.overlook));
 
         return position;
@@ -346,9 +346,9 @@ public class BaiduMapDelegate implements MapDelegate {
 
     @Override
     public void setCameraPosition(CameraPosition position) {
-        MapPoint mapPoint = position.getPosition().copy(MapType.BAIDU.getCoordinateType());
+        MapPoint mapPoint = position.getPosition().copy(MapConfig.BAIDU.getCoordinateType());
         float overlook = BaiduDataConverter.fromStandardOverlook(position.getOverlook());
-        float baiduZoom = ZoomStandardization.fromStandardZoom(position.getZoom(), MapType.BAIDU);
+        float baiduZoom = ZoomStandardization.fromStandardZoom(position.getZoom(), MapConfig.BAIDU);
         LatLng latLng = new LatLng(mapPoint.getLatitude(), mapPoint.getLongitude());
 
         com.baidu.mapapi.map.MapStatus status = new com.baidu.mapapi.map.MapStatus
@@ -366,12 +366,12 @@ public class BaiduMapDelegate implements MapDelegate {
     @Override
     public MapPoint graphicPointToMapPoint(Point point) {
         LatLng latLng = getMap().getProjection().fromScreenLocation(point);
-        return new MapPoint(latLng.latitude, latLng.longitude, MapType.BAIDU.getCoordinateType());
+        return new MapPoint(latLng.latitude, latLng.longitude, MapConfig.BAIDU.getCoordinateType());
     }
 
     @Override
     public Point mapPointToGraphicPoint(MapPoint point) {
-        MapPoint copy = point.copy(MapType.BAIDU.getCoordinateType());
+        MapPoint copy = point.copy(MapConfig.BAIDU.getCoordinateType());
         return getMap().getProjection().toScreenLocation(new LatLng(copy.getLatitude(), copy.getLongitude()));
     }
 
@@ -464,7 +464,7 @@ public class BaiduMapDelegate implements MapDelegate {
     }
 
     private void doAddMarker(MapMarker marker) {
-        MapPoint point = marker.getMapPoint().copy(MapType.BAIDU.getCoordinateType());
+        MapPoint point = marker.getMapPoint().copy(MapConfig.BAIDU.getCoordinateType());
         double latitude = point.getLatitude();
         double longitude = point.getLongitude();
         LatLng latLng = new LatLng(latitude, longitude);
@@ -475,7 +475,7 @@ public class BaiduMapDelegate implements MapDelegate {
                 .anchor(marker.getAnchorX(), marker.getAnchorY())
                 .title(marker.getTitle())
                 .zIndex(marker.getZIndex()));
-        marker.setRawMarker(MapType.BAIDU, overlay);
+        marker.setRawMarker(MapConfig.BAIDU, overlay);
 
         if (marker.isInfoWindowVisible()) {
             setInfoWindow(marker);
@@ -489,10 +489,10 @@ public class BaiduMapDelegate implements MapDelegate {
     }
 
     private void removeRawMarker(MapMarker mapMarker) {
-        Overlay overlay = (Overlay) mapMarker.getRawMarker(MapType.BAIDU);
+        Overlay overlay = (Overlay) mapMarker.getRawMarker(MapConfig.BAIDU);
         if (overlay != null) {
             overlay.remove();
-            mapMarker.setRawMarker(MapType.BAIDU, null);
+            mapMarker.setRawMarker(MapConfig.BAIDU, null);
         }
     }
 
@@ -512,7 +512,7 @@ public class BaiduMapDelegate implements MapDelegate {
 
     @Override
     public void setMarkerVisible(MapMarker mapMarker, boolean visible) {
-        Overlay overlay = (Overlay) mapMarker.getRawMarker(MapType.BAIDU);
+        Overlay overlay = (Overlay) mapMarker.getRawMarker(MapConfig.BAIDU);
         overlay.setVisible(visible);
     }
 
@@ -527,7 +527,7 @@ public class BaiduMapDelegate implements MapDelegate {
 
     @Override
     public void showInfoWindow(MapMarker mapMarker) {
-        ((Marker) mapMarker.getRawMarker(MapType.BAIDU)).setToTop();
+        ((Marker) mapMarker.getRawMarker(MapConfig.BAIDU)).setToTop();
         mapMarker.setInfoWindowVisible(true);
         setInfoWindow(mapMarker);
     }
@@ -536,7 +536,7 @@ public class BaiduMapDelegate implements MapDelegate {
         hideInfoWindow();
         mShowingInfoWindowMapMarker = mapMarker;
 
-        MapPoint point = mapMarker.getMapPoint().copy(MapType.BAIDU.getCoordinateType());
+        MapPoint point = mapMarker.getMapPoint().copy(MapConfig.BAIDU.getCoordinateType());
         double latitude = point.getLatitude();
         double longitude = point.getLongitude();
         LatLng latLng = new LatLng(latitude, longitude);
@@ -590,7 +590,7 @@ public class BaiduMapDelegate implements MapDelegate {
                 applyBitmapPolylineOptions(polylineOptions, (BitmapTexture) texture);
             }
 
-            polyline.addRawPolyline(MapType.BAIDU, getMap().addOverlay(polylineOptions));
+            polyline.addRawPolyline(MapConfig.BAIDU, getMap().addOverlay(polylineOptions));
         }
 
         mPolylines.add(polyline);
@@ -615,7 +615,7 @@ public class BaiduMapDelegate implements MapDelegate {
     @SuppressWarnings("unchecked")
     @Override
     public void removePolyline(Polyline polyline) {
-        List<com.baidu.mapapi.map.Polyline> rawPolylines = (List<com.baidu.mapapi.map.Polyline>) polyline.getRawPolylines(MapType.BAIDU);
+        List<com.baidu.mapapi.map.Polyline> rawPolylines = (List<com.baidu.mapapi.map.Polyline>) polyline.getRawPolylines(MapConfig.BAIDU);
         if (rawPolylines == null) {
             return;
         }
@@ -636,7 +636,7 @@ public class BaiduMapDelegate implements MapDelegate {
 
     private MapMarker findMapMarker(Marker marker) {
         for (MapMarker mapMarker : mMapMarkers) {
-            if (marker.equals(mapMarker.getRawMarker(MapType.BAIDU))) {
+            if (marker.equals(mapMarker.getRawMarker(MapConfig.BAIDU))) {
                 return mapMarker;
             }
         }
@@ -659,7 +659,7 @@ public class BaiduMapDelegate implements MapDelegate {
 
     @SuppressWarnings("unchecked")
     private void removeRawPolyline(Polyline polyline) {
-        List<com.baidu.mapapi.map.Polyline> rawPolylines = (List<com.baidu.mapapi.map.Polyline>) polyline.getRawPolylines(MapType.GOOGLE);
+        List<com.baidu.mapapi.map.Polyline> rawPolylines = (List<com.baidu.mapapi.map.Polyline>) polyline.getRawPolylines(MapConfig.GOOGLE);
         for (com.baidu.mapapi.map.Polyline polyline1 : rawPolylines) {
             polyline1.remove();
         }
@@ -686,7 +686,7 @@ public class BaiduMapDelegate implements MapDelegate {
                 .center(point);
 
         Overlay overlay = getMap().addOverlay(options);
-        circle.setRawGraph(MapType.BAIDU, overlay);
+        circle.setRawGraph(MapConfig.BAIDU, overlay);
     }
 
     private void addPolygon(Polygon polygon) {
@@ -698,12 +698,12 @@ public class BaiduMapDelegate implements MapDelegate {
                 .points(points);
 
         Overlay overlay = getMap().addOverlay(options);
-        polygon.setRawGraph(MapType.BAIDU, overlay);
+        polygon.setRawGraph(MapConfig.BAIDU, overlay);
     }
 
     @Override
     public void removeGraph(Graph graph) {
-        Overlay overlay = (Overlay) graph.getRawGraph(MapType.BAIDU);
+        Overlay overlay = (Overlay) graph.getRawGraph(MapConfig.BAIDU);
         if (overlay != null) {
             overlay.remove();
         }

@@ -10,7 +10,7 @@ import android.widget.Toast;
 import com.ray.lib_map.MapView;
 import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.MapPoint;
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.MapConfig;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.MapClickListener;
 import com.ray.lib_map.listener.MapLoadListener;
@@ -22,7 +22,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-10-17
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -62,7 +62,7 @@ public class ListenerActivity extends Activity {
         setContentView(R.layout.activity_listener);
         ButterKnife.bind(this);
 
-        mvMap.initMap(MapType.GAODE);
+//        mvMap.initMap(MapConfig.GAODE);
         mvMap.onCreate(null);
 
         setListeners();
@@ -130,13 +130,13 @@ public class ListenerActivity extends Activity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_gaode_map:
-                mvMap.switchMapType(MapType.GAODE);
+//                mvMap.switchMapType(MapConfig.GAODE);
                 break;
             case R.id.bt_baidu_map:
-                mvMap.switchMapType(MapType.BAIDU);
+//                mvMap.switchMapType(MapConfig.BAIDU);
                 break;
             case R.id.bt_google_map:
-                mvMap.switchMapType(MapType.GOOGLE);
+//                mvMap.switchMapType(MapConfig.GOOGLE);
                 break;
             case R.id.bt_set_zoom:
                 setZoom();
@@ -177,6 +177,7 @@ public class ListenerActivity extends Activity {
             case R.id.bt_animate_all:
                 animateAll();
                 break;
+            default:
         }
     }
 
@@ -208,7 +209,7 @@ public class ListenerActivity extends Activity {
         double latitude = Double.parseDouble(etLatitude.getText().toString().trim());
         double longitude = Double.parseDouble(etLongitude.getText().toString().trim());
 
-        mvMap.setPosition(new MapPoint(latitude, longitude, MapType.GAODE.getCoordinateType()));
+//        mvMap.setPosition(new MapPoint(latitude, longitude, MapConfig.GAODE.getCoordinateType()));
     }
 
     private void animatePosition() {
@@ -223,19 +224,19 @@ public class ListenerActivity extends Activity {
     }
 
     private void setAll() {
-        double latitude = Double.parseDouble(etLatitude.getText().toString().trim());
-        double longitude = Double.parseDouble(etLongitude.getText().toString().trim());
-        MapPoint mapPoint = new MapPoint(latitude, longitude, MapType.GAODE.getCoordinateType());
-        float zoom = Float.parseFloat(etZoom.getText().toString().trim());
-        float overlook = Float.parseFloat(etOverlook.getText().toString().trim());
-        float rotate = Float.parseFloat(etRotate.getText().toString().trim());
-
-        CameraPosition cameraPosition = new CameraPosition();
-        cameraPosition.setPosition(mapPoint);
-        cameraPosition.setZoom(zoom);
-        cameraPosition.setOverlook(overlook);
-        cameraPosition.setRotate(rotate);
-        mvMap.setCameraPosition(cameraPosition);
+//        double latitude = Double.parseDouble(etLatitude.getText().toString().trim());
+//        double longitude = Double.parseDouble(etLongitude.getText().toString().trim());
+//        MapPoint mapPoint = new MapPoint(latitude, longitude, MapConfig.GAODE.getCoordinateType());
+//        float zoom = Float.parseFloat(etZoom.getText().toString().trim());
+//        float overlook = Float.parseFloat(etOverlook.getText().toString().trim());
+//        float rotate = Float.parseFloat(etRotate.getText().toString().trim());
+//
+//        CameraPosition cameraPosition = new CameraPosition();
+//        cameraPosition.setPosition(mapPoint);
+//        cameraPosition.setZoom(zoom);
+//        cameraPosition.setOverlook(overlook);
+//        cameraPosition.setRotate(rotate);
+//        mvMap.setCameraPosition(cameraPosition);
     }
 
     private void animateAll() {

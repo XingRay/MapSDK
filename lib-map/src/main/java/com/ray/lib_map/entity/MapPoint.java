@@ -1,7 +1,10 @@
 package com.ray.lib_map.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.ray.lib_map.coordinate.Coordinate;
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.MapConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +20,17 @@ import java.util.Map;
  */
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class MapPoint {
+public class MapPoint implements Parcelable {
+    private static String STANDARD_TYPE = "wgs84";
+
+    public static void setStandardType(String type) {
+        STANDARD_TYPE = type;
+    }
+
+    public static String getStandardType() {
+        return STANDARD_TYPE;
+    }
+
     private final Map<String, Coordinate> coordinates;
     private String coordinateType;
     private Coordinate coordinate;
@@ -65,8 +78,8 @@ public class MapPoint {
         return copy().as(type);
     }
 
-    public MapPoint copy(MapType mapType) {
-        return copy(mapType.getCoordinateType());
+    public MapPoint copy(MapConfig mapConfig) {
+        return copy(mapConfig.getCoordinateType());
     }
 
     @Override
@@ -98,4 +111,45 @@ public class MapPoint {
                 ", coordinates=" + coordinates +
                 '}';
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.coordinates.size());
+        for (Map.Entry<String, Coordinate> entry : this.coordinates.entrySet()) {
+            dest.writeString(entry.getKey());
+            dest.writeParcelable(entry.getValue(), flags);
+        }
+        dest.writeString(this.coordinateType);
+        dest.writeParcelable(this.coordinate, flags);
+    }
+
+    protected MapPoint(Parcel in) {
+        int coordinatesSize = in.readInt();
+        this.coordinates = new HashMap<String, Coordinate>(coordinatesSize);
+        for (int i = 0; i < coordinatesSize; i++) {
+            String key = in.readString();
+            Coordinate value = in.readParcelable(Coordinate.class.getClassLoader());
+            this.coordinates.put(key, value);
+        }
+        this.coordinateType = in.readString();
+        this.coordinate = in.readParcelable(Coordinate.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<MapPoint> CREATOR = new Parcelable.Creator<MapPoint>() {
+        @Override
+        public MapPoint createFromParcel(Parcel source) {
+            return new MapPoint(source);
+        }
+
+        @Override
+        public MapPoint[] newArray(int size) {
+            return new MapPoint[size];
+        }
+    };
 }

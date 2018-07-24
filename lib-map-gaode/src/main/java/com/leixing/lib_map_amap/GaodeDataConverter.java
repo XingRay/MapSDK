@@ -13,14 +13,14 @@ import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Poi;
 import com.ray.lib_map.entity.PoiSearchSuggestion;
-import com.ray.lib_map.extern.MapType;
 import com.ray.lib_map.extern.ZoomStandardization;
+import com.ray.lib_map.manager.MapConfigManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-07-14
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -37,8 +37,11 @@ class GaodeDataConverter {
     static CameraPosition toCameraPosition(com.amap.api.maps.model.CameraPosition cameraPosition) {
         CameraPosition position = new CameraPosition();
 
-        position.setPosition(new MapPoint(cameraPosition.target.latitude, cameraPosition.target.longitude, MapType.GAODE.getCoordinateType()));
-        position.setZoom(ZoomStandardization.toStandardZoom(cameraPosition.zoom, MapType.GAODE));
+        String coordinateType = GaodeMap.getDefault().getCoordinateType();
+        double latitude = cameraPosition.target.latitude;
+        double longitude = cameraPosition.target.longitude;
+        position.setPosition(new MapPoint(latitude, longitude, coordinateType));
+        position.setZoom(ZoomStandardization.toStandardZoom(cameraPosition.zoom, GaodeMap.getDefault().getName()));
         position.setRotate(cameraPosition.bearing);
         position.setOverlook(cameraPosition.tilt);
 
@@ -46,19 +49,22 @@ class GaodeDataConverter {
     }
 
     static com.amap.api.maps.model.CameraPosition fromCameraPosition(CameraPosition position) {
-        MapPoint mapPoint = position.getPosition().copy(MapType.GAODE.getCoordinateType());
+        String coordinateType = GaodeMap.getDefault().getCoordinateType();
+        MapPoint mapPoint = position.getPosition().copy(coordinateType);
         LatLng latLng = new LatLng(mapPoint.getLatitude(), mapPoint.getLongitude());
-        float gaodeZoom = ZoomStandardization.fromStandardZoom(position.getZoom(), MapType.GAODE);
+        float gaodeZoom = ZoomStandardization.fromStandardZoom(position.getZoom(), GaodeMap.getDefault().getName());
 
         return new com.amap.api.maps.model.CameraPosition(latLng, gaodeZoom, position.getOverlook(), position.getRotate());
     }
 
     static MapPoint toMapPoint(LatLng latLng) {
-        return new MapPoint(latLng.latitude, latLng.longitude, MapType.GAODE.getCoordinateType());
+        String coordinateType = GaodeMap.getDefault().getCoordinateType();
+        return new MapPoint(latLng.latitude, latLng.longitude, coordinateType);
     }
 
     static LatLng fromMapPoint(MapPoint point) {
-        MapPoint gaodePoint = point.copy(MapType.GAODE.getCoordinateType());
+        String coordinateType = GaodeMap.getDefault().getCoordinateType();
+        MapPoint gaodePoint = point.copy(coordinateType);
         return new LatLng(gaodePoint.getLatitude(), gaodePoint.getLongitude());
     }
 
@@ -100,7 +106,8 @@ class GaodeDataConverter {
         poi.setAddress(poiItem.getSnippet());
 
         LatLonPoint latLonPoint = poiItem.getLatLonPoint();
-        poi.setMapPoint(new MapPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude(), MapType.GAODE.getCoordinateType()));
+        String coordinateType = GaodeMap.getDefault().getCoordinateType();
+        poi.setMapPoint(new MapPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude(), coordinateType));
 
         poi.setProvinceName(poiItem.getProvinceName());
         poi.setProvinceCode(poiItem.getProvinceCode());
@@ -146,8 +153,8 @@ class GaodeDataConverter {
             return null;
         }
         Address address = new Address();
-
-        address.setMapPoint(new MapPoint(aMapLocation.getLatitude(), aMapLocation.getLongitude(), MapType.GAODE.getCoordinateType()));
+        String coordinateType = GaodeMap.getDefault().getCoordinateType();
+        address.setMapPoint(new MapPoint(aMapLocation.getLatitude(), aMapLocation.getLongitude(), coordinateType));
 
         address.setCity(aMapLocation.getCity());
         address.setCityCode(aMapLocation.getCityCode());

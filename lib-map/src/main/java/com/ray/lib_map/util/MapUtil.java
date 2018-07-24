@@ -24,8 +24,8 @@ public class MapUtil {
             throw new IllegalArgumentException("point can not be null");
         }
 
-        MapPoint p1 = point1.copy(CoordinateType.WGS84);
-        MapPoint p2 = point2.copy(CoordinateType.WGS84);
+        MapPoint p1 = point1.copy(MapPoint.getStandardType());
+        MapPoint p2 = point2.copy(MapPoint.getStandardType());
         return distance(p1.getLongitude(), p1.getLatitude(), p2.getLongitude(), p2.getLatitude());
 
     }
@@ -58,7 +58,7 @@ public class MapUtil {
 
         MapPoint center = circle.getCenter();
         double radius = circle.getRadius();
-        CoordinateType coordinateType = center.getCoordinateType();
+        String coordinateType = center.getCoordinateType();
 
         double deltaAngle = getDeltaAngleInEarth(radius);
 

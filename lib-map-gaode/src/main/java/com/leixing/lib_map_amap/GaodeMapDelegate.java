@@ -30,7 +30,7 @@ import com.ray.lib_map.entity.polyline.ColorTexture;
 import com.ray.lib_map.entity.polyline.Polyline;
 import com.ray.lib_map.entity.polyline.PolylineHelper;
 import com.ray.lib_map.entity.polyline.PolylineTexture;
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.MapConfig;
 import com.ray.lib_map.extern.ZoomStandardization;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
@@ -57,6 +57,8 @@ import java.util.List;
 public class GaodeMapDelegate implements MapDelegate {
     private static final String MAP_VIEW_BUNDLE_KEY = "gaode_map_view_bundle_key";
 
+    private static final int MIN_POINT_SIZE_IN_POLYLINE = 2;
+
     private final Context mContext;
     private final List<MapMarker> mMapMarkers;
     private MapView mMapView;
@@ -64,13 +66,15 @@ public class GaodeMapDelegate implements MapDelegate {
     private List<Polyline> mPolylines;
     private MapLoadListener mMapLoadListener;
     private List<Graph> mGraphs;
-    private final String mMapType;
     private final String mCoordinateType;
+    private final MapConfig mMapConfig;
+    private final String mMapType;
 
-    public GaodeMapDelegate(Context context, String mapType, String coordinateType) {
+    public GaodeMapDelegate(Context context, MapConfig mapConfig) {
         mContext = context;
-        mMapType = mapType;
-        mCoordinateType = coordinateType;
+        mMapConfig = mapConfig;
+        mCoordinateType = mapConfig.getCoordinateType();
+        mMapType = mapConfig.getName();
 
         mMapMarkers = new ArrayList<>();
         mPolylines = new ArrayList<>();
@@ -391,7 +395,7 @@ public class GaodeMapDelegate implements MapDelegate {
                 .title(marker.getTitle())
                 .snippet(marker.getContent())
                 .position(new LatLng(latitude, longitude)));
-//        marker.setRawMarker(mMapType, rawMarker);
+        marker.setRawMarker(mMapType, rawMarker);
 
         if (marker.isInfoWindowVisible()) {
             setInfoWindow(marker);
@@ -407,12 +411,12 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     private void removeRawMarker(MapMarker mapMarker) {
-//        Marker rawMarker = (Marker) mapMarker.getRawMarker(mMapType);
-//        if (rawMarker == null) {
-//            return;
-//        }
-//        rawMarker.remove();
-//        mapMarker.setRawMarker(mMapType, null);
+        Marker rawMarker = (Marker) mapMarker.getRawMarker(mMapType);
+        if (rawMarker == null) {
+            return;
+        }
+        rawMarker.remove();
+        mapMarker.setRawMarker(mMapType, null);
     }
 
     @Override
@@ -431,7 +435,7 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void setMarkerVisible(MapMarker marker, boolean visible) {
-        Marker rawMarker = (Marker) marker.getRawMarker(MapType.GAODE);
+        Marker rawMarker = (Marker) marker.getRawMarker(mMapType);
         rawMarker.setVisible(visible);
     }
 
@@ -442,7 +446,7 @@ public class GaodeMapDelegate implements MapDelegate {
 
     @Override
     public void showInfoWindow(MapMarker mapMarker) {
-        ((Marker) mapMarker.getRawMarker(MapType.GAODE)).setToTop();
+        ((Marker) mapMarker.getRawMarker(mMapType)).setToTop();
         mapMarker.setInfoWindowVisible(true);
         setInfoWindow(mapMarker);
     }
@@ -451,7 +455,7 @@ public class GaodeMapDelegate implements MapDelegate {
     public void hideInfoWindow() {
         if (mShowingInfoWindowMapMarker != null) {
             mShowingInfoWindowMapMarker.setInfoWindowVisible(false);
-            Marker rawMarker = (Marker) mShowingInfoWindowMapMarker.getRawMarker(MapType.GAODE);
+            Marker rawMarker = (Marker) mShowingInfoWindowMapMarker.getRawMarker(mMapType);
             if (rawMarker != null) {
                 rawMarker.hideInfoWindow();
             }
@@ -462,7 +466,7 @@ public class GaodeMapDelegate implements MapDelegate {
     private void setInfoWindow(MapMarker mapMarker) {
         hideInfoWindow();
         mShowingInfoWindowMapMarker = mapMarker;
-        Marker rawMarker = (Marker) mapMarker.getRawMarker(MapType.GAODE);
+        Marker rawMarker = (Marker) mapMarker.getRawMarker(mMapType);
         rawMarker.showInfoWindow();
     }
 
@@ -486,13 +490,14 @@ public class GaodeMapDelegate implements MapDelegate {
     @Override
     public MapPoint graphicPointToMapPoint(Point point) {
         LatLng latLng = getMap().getProjection().fromScreenLocation(point);
-        return new MapPoint(latLng.latitude, latLng.longitude, MapType.GAODE.getCoordinateType());
+        return new MapPoint(latLng.latitude, latLng.longitude, mCoordinateType);
     }
 
     @Override
     public Point mapPointToGraphicPoint(MapPoint point) {
-        MapPoint copy = point.copy(MapType.GAODE.getCoordinateType());
-        return getMap().getProjection().toScreenLocation(new LatLng(copy.getLatitude(), copy.getLongitude()));
+        MapPoint copy = point.copy(mCoordinateType);
+        LatLng latLng = new LatLng(copy.getLatitude(), copy.getLongitude());
+        return getMap().getProjection().toScreenLocation(latLng);
     }
 
     @Override
@@ -512,7 +517,7 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     private void addCircle(Circle circle) {
-        MapPoint center = circle.getCenter().copy(MapType.GAODE);
+        MapPoint center = circle.getCenter().copy(mCoordinateType);
         LatLng latLng = new LatLng(center.getLatitude(), center.getLongitude());
         CircleOptions options = new CircleOptions()
                 .zIndex(circle.getZIndex())
@@ -524,7 +529,7 @@ public class GaodeMapDelegate implements MapDelegate {
 
 
         com.amap.api.maps.model.Circle rawCircle = getMap().addCircle(options);
-        circle.setRawGraph(MapType.GAODE, rawCircle);
+        circle.setRawGraph(mMapType, rawCircle);
     }
 
     private void addPolygon(Polygon polygon) {
@@ -537,7 +542,7 @@ public class GaodeMapDelegate implements MapDelegate {
                 .addAll(points);
 
         com.amap.api.maps.model.Polygon rawPolygon = getMap().addPolygon(options);
-        polygon.setRawGraph(MapType.GAODE, rawPolygon);
+        polygon.setRawGraph(mMapType, rawPolygon);
     }
 
     @Override
@@ -552,29 +557,29 @@ public class GaodeMapDelegate implements MapDelegate {
     }
 
     private void removeCircle(Circle circle) {
-        com.amap.api.maps.model.Circle rawCircle = (com.amap.api.maps.model.Circle) circle.getRawGraph(MapType.GAODE);
+        com.amap.api.maps.model.Circle rawCircle = (com.amap.api.maps.model.Circle) circle.getRawGraph(mMapType);
         if (rawCircle != null) {
             rawCircle.remove();
-            circle.setRawGraph(MapType.GAODE, null);
+            circle.setRawGraph(mMapType, null);
         }
     }
 
     private void removePolygon(Polygon polygon) {
-        com.amap.api.maps.model.Polygon rawPolygon = (com.amap.api.maps.model.Polygon) polygon.getRawGraph(MapType.GAODE);
+        com.amap.api.maps.model.Polygon rawPolygon = (com.amap.api.maps.model.Polygon) polygon.getRawGraph(mMapType);
         if (rawPolygon != null) {
             rawPolygon.remove();
-            polygon.setRawGraph(MapType.GAODE, null);
+            polygon.setRawGraph(mMapType, null);
         }
     }
 
     @Override
     public void addPolyline(Polyline polyline) {
         List<LatLng> latLngList = GaodeDataConverter.fromMapPoints(polyline.getPoints());
-        int zIndex = polyline.getZIndex();
         int pointSize = latLngList.size();
-        if (pointSize < 2) {
+        if (pointSize < MIN_POINT_SIZE_IN_POLYLINE) {
             return;
         }
+        int zIndex = polyline.getZIndex();
 
         List<PolylineTexture> textures = polyline.getTextures();
         PolylineHelper.sortByIndex(textures);
@@ -625,7 +630,7 @@ public class GaodeMapDelegate implements MapDelegate {
     @SuppressWarnings("unchecked")
     @Override
     public void removePolyline(Polyline polyline) {
-        List<com.amap.api.maps.model.Polyline> rawPolylines = (List<com.amap.api.maps.model.Polyline>) polyline.getRawPolylines(MapType.GAODE);
+        List<com.amap.api.maps.model.Polyline> rawPolylines = (List<com.amap.api.maps.model.Polyline>) polyline.getRawPolylines(mMapType);
         if (rawPolylines == null) {
             return;
         }
@@ -670,7 +675,7 @@ public class GaodeMapDelegate implements MapDelegate {
 
     private void removeRawPolyline(Polyline polyline) {
         @SuppressWarnings("unchecked")
-        List<com.amap.api.maps.model.Polyline> rawPolylines = (List<com.amap.api.maps.model.Polyline>) polyline.getRawPolylines(MapType.GOOGLE);
+        List<com.amap.api.maps.model.Polyline> rawPolylines = (List<com.amap.api.maps.model.Polyline>) polyline.getRawPolylines(mMapType);
         for (com.amap.api.maps.model.Polyline polyline1 : rawPolylines) {
             polyline1.remove();
         }

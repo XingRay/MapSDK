@@ -8,7 +8,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.ray.lib_map.MapView;
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.MapConfig;
 import com.ray.mapsdk.R;
 
 import butterknife.BindView;
@@ -16,7 +16,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-10-16
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -52,7 +52,7 @@ public class GestureControlActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gesture_control);
         ButterKnife.bind(this);
 
-        mvMap.initMap(MapType.GAODE);
+//        mvMap.initMap(MapConfig.GAODE);
         mvMap.onCreate(null);
 
         swDrag.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -100,14 +100,15 @@ public class GestureControlActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_gaode_map:
-                mvMap.switchMapType(MapType.GAODE);
+//                mvMap.switchMapType(MapConfig.GAODE);
                 break;
             case R.id.bt_baidu_map:
-                mvMap.switchMapType(MapType.BAIDU);
+//                mvMap.switchMapType(MapConfig.BAIDU);
                 break;
             case R.id.bt_google_map:
-                mvMap.switchMapType(MapType.GOOGLE);
+//                mvMap.switchMapType(MapConfig.GOOGLE);
                 break;
+            default:
         }
     }
 }

@@ -1,8 +1,6 @@
 package com.leixing.lib_map_google;
 
 
-import com.ray.lib_map.base.FailureCallback;
-
 /**
  * @author      : leixing
  * Date        : 2017-10-23

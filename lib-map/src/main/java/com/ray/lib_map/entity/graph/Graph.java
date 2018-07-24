@@ -1,7 +1,7 @@
 package com.ray.lib_map.entity.graph;
 
 
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.MapConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,14 +16,14 @@ import java.util.Map;
  */
 
 public abstract class Graph {
-    private Map<MapType, Object> rawGraphs;
+    private Map<String, Object> rawGraphs;
     private int fillColor;
     private int strokeColor;
     private int strokeWidth;
     private int zIndex;
 
-    public Graph() {
-        rawGraphs = new HashMap<>(MapType.values().length);
+    protected Graph() {
+        rawGraphs = new HashMap<>();
     }
 
     public Graph(Graph graph) {
@@ -67,11 +67,11 @@ public abstract class Graph {
         return this;
     }
 
-    public Object getRawGraph(MapType mapType) {
+    public Object getRawGraph(String mapType) {
         return rawGraphs.get(mapType);
     }
 
-    public void setRawGraph(MapType mapType, Object rawPolygon) {
+    public void setRawGraph(String mapType, Object rawPolygon) {
         rawGraphs.put(mapType, rawPolygon);
     }
 

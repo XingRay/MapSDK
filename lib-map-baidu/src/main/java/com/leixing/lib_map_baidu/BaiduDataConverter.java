@@ -12,7 +12,7 @@ import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Poi;
 import com.ray.lib_map.entity.PoiSearchSuggestion;
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.MapConfig;
 import com.ray.lib_map.extern.ZoomStandardization;
 
 import org.json.JSONArray;
@@ -40,8 +40,8 @@ class BaiduDataConverter {
     static CameraPosition toCameraPosition(MapStatus mapStatus) {
         CameraPosition position = new CameraPosition();
 
-        position.setPosition(new MapPoint(mapStatus.target.latitude, mapStatus.target.longitude, MapType.BAIDU.getCoordinateType()));
-        position.setZoom(ZoomStandardization.toStandardZoom(mapStatus.zoom, MapType.BAIDU));
+        position.setPosition(new MapPoint(mapStatus.target.latitude, mapStatus.target.longitude, MapConfig.BAIDU.getCoordinateType()));
+        position.setZoom(ZoomStandardization.toStandardZoom(mapStatus.zoom, MapConfig.BAIDU));
         position.setRotate(mapStatus.rotate);
         position.setOverlook(toStandardOverlook(mapStatus.overlook));
 
@@ -58,7 +58,7 @@ class BaiduDataConverter {
     }
 
     static MapPoint toMapPoint(LatLng latLng) {
-        return new MapPoint(latLng.latitude, latLng.longitude, MapType.BAIDU.getCoordinateType());
+        return new MapPoint(latLng.latitude, latLng.longitude, MapConfig.BAIDU.getCoordinateType());
     }
 
     static List<LatLng> fromMapPoints(List<MapPoint> points) {
@@ -75,7 +75,7 @@ class BaiduDataConverter {
     }
 
     static LatLng fromMapPoint(MapPoint mapPoint) {
-        MapPoint baiduPoint = mapPoint.copy(MapType.BAIDU.getCoordinateType());
+        MapPoint baiduPoint = mapPoint.copy(MapConfig.BAIDU.getCoordinateType());
         return new LatLng(baiduPoint.getLatitude(), baiduPoint.getLongitude());
     }
 
@@ -140,7 +140,7 @@ class BaiduDataConverter {
                 JSONObject location = result.getJSONObject("location");
                 double latitude = location.getDouble("lat");
                 double longitude = location.getDouble("lng");
-                address.setMapPoint(new MapPoint(latitude, longitude, MapType.BAIDU.getCoordinateType()));
+                address.setMapPoint(new MapPoint(latitude, longitude, MapConfig.BAIDU.getCoordinateType()));
             }
 
             String name = null;
@@ -189,7 +189,7 @@ class BaiduDataConverter {
             JSONObject location = result.getJSONObject("location");
             double latitude = location.getDouble("lat");
             double longitude = location.getDouble("lng");
-            return new MapPoint(latitude, longitude, MapType.BAIDU.getCoordinateType());
+            return new MapPoint(latitude, longitude, MapConfig.BAIDU.getCoordinateType());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -250,7 +250,7 @@ class BaiduDataConverter {
         Poi poi = new Poi();
         poi.setAddress(poiInfo.address);
         poi.setCityName(poiInfo.city);
-        poi.setMapPoint(new MapPoint(poiInfo.location.latitude, poiInfo.location.longitude, MapType.BAIDU.getCoordinateType()));
+        poi.setMapPoint(new MapPoint(poiInfo.location.latitude, poiInfo.location.longitude, MapConfig.BAIDU.getCoordinateType()));
         poi.setName(poiInfo.name);
         return poi;
     }

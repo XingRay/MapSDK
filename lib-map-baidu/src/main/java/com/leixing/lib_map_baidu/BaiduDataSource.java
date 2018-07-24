@@ -21,14 +21,12 @@ import com.baidu.mapapi.search.poi.PoiSortType;
 import com.leixing.lib_map_baidu.params.GeoCodeParam;
 import com.leixing.lib_map_baidu.params.ReGeoCodeParam;
 import com.ray.lib_map.KeyManager;
-import com.ray.lib_map.base.DataCallback;
-import com.ray.lib_map.base.FailureCallback;
 import com.ray.lib_map.data.MapDataSource;
 import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Poi;
 import com.ray.lib_map.entity.PoiSearchSuggestion;
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.MapConfig;
 import com.ray.lib_map.util.IOUtil;
 
 import java.util.List;
@@ -87,7 +85,7 @@ public class BaiduDataSource implements MapDataSource {
 
     @Override
     public void reverseGeoCode(MapPoint mapPoint, float radius, DataCallback<Address> callback) {
-        MapPoint baiduPoint = mapPoint.copy(MapType.BAIDU);
+        MapPoint baiduPoint = mapPoint.copy(MapConfig.BAIDU);
         ReGeoCodeParam param = new ReGeoCodeParam(baiduPoint.getLatitude(), baiduPoint.getLongitude(), KeyManager.getBaiduApiKey(mContext), KeyManager.getBaiduMCode(mContext));
         String response = IOUtil.get(param.buildRequestUrl());
         Address address = BaiduDataConverter.parseReGeoResponse(response);
@@ -139,7 +137,7 @@ public class BaiduDataSource implements MapDataSource {
                 }
             }
         });
-        MapPoint baiduPoint = mapPoint.copy(MapType.BAIDU);
+        MapPoint baiduPoint = mapPoint.copy(MapConfig.BAIDU);
         LatLng latLng = new LatLng(baiduPoint.getLatitude(), baiduPoint.getLongitude());
 
         final PoiNearbySearchOption searchOption = new PoiNearbySearchOption()

@@ -39,7 +39,6 @@ public class PolylineActivity extends Activity {
     private Polyline mPolyline;
     private int mColor;
     private int mWidth;
-    private GaodeMap mGaodeMap;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,14 +54,14 @@ public class PolylineActivity extends Activity {
         mColor = 0xffff0000;
         mWidth = 10;
 
-        mGaodeMap = new GaodeMap(getApplicationContext());
+        GaodeMap.init(getApplicationContext());
     }
 
     private void initView() {
         setContentView(R.layout.activity_polyline);
         ButterKnife.bind(this);
 
-        mvMap.initMap(mGaodeMap.getMapType());
+//        mvMap.initMap(GaodeMap.NAME);
         mvMap.onCreate(null);
 
         mvMap.setMapClickListener(new MapClickListener() {
@@ -89,13 +88,13 @@ public class PolylineActivity extends Activity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_gaode_map:
-                mvMap.switchMapType(mGaodeMap.getMapType());
+//                mvMap.switchMapType(GaodeMap.NAME);
                 break;
             case R.id.bt_baidu_map:
-//                mvMap.switchMapType(MapType.BAIDU);
+//                mvMap.switchMapType(MapConfig.BAIDU);
                 break;
             case R.id.bt_google_map:
-//                mvMap.switchMapType(MapType.GOOGLE);
+//                mvMap.switchMapType(MapConfig.GOOGLE);
                 break;
             case R.id.bt_color:
                 setColor();

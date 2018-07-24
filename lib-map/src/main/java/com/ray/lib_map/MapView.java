@@ -15,7 +15,7 @@ import com.ray.lib_map.entity.graph.Circle;
 import com.ray.lib_map.entity.graph.Graph;
 import com.ray.lib_map.entity.graph.Polygon;
 import com.ray.lib_map.entity.polyline.Polyline;
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.MapConfig;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
 import com.ray.lib_map.listener.MapClickListener;
@@ -42,7 +42,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class MapView extends View {
     private View mCurrentMapView;
-    private MapType mMapType;
+    private MapConfig mMapConfig;
     private MapDelegate mMapDelegate;
 
     private MarkerClickListener mMarkerClickListener;
@@ -106,22 +106,21 @@ public class MapView extends View {
         }
     }
 
-
-    public void initMap(MapType mapType) {
-        mMapType = mapType;
-        mMapDelegate = mMapType.getDelegate();
+    public void initMap(MapConfig config) {
+        mMapConfig = config;
+        mMapDelegate = mMapConfig.getDelegateFactory().create();
         mCurrentMapView = ViewUtil.replaceView(mCurrentMapView, mMapDelegate.getMapView());
 
         setListeners();
     }
 
-    public void switchMapType(MapType mapType) {
-        switchMapType(mapType, null, null);
+    public void switchMapType(MapConfig newConfig) {
+        switchMapType(newConfig, null, null);
     }
 
     @SuppressWarnings("SameParameterValue")
-    public void switchMapType(final MapType newMapType, Bundle savedInstanceState, final MapSwitchListener listener) {
-        if (mMapType == newMapType) {
+    public void switchMapType(final MapConfig newConfig, Bundle savedInstanceState, final MapSwitchListener listener) {
+        if (mMapConfig == newConfig) {
             if (listener != null) {
                 listener.onMapSwitch();
             }
@@ -134,7 +133,7 @@ public class MapView extends View {
         final List<Polyline> polylines = mMapDelegate.getPolylines();
         final List<Graph> graphs = mMapDelegate.getGraphs();
 
-        final MapDelegate newMapDelegate = newMapType.getDelegate();
+        final MapDelegate newMapDelegate = newConfig.getDelegateFactory().create();
 
         //新地图控件切换进界面
         newMapDelegate.onSwitchIn(savedInstanceState, new MapSwitchListener() {
@@ -142,10 +141,10 @@ public class MapView extends View {
             public void onMapSwitch() {
                 mCurrentMapView = ViewUtil.replaceView(mCurrentMapView, newMapDelegate.getMapView());
                 mMapDelegate.onSwitchOut();
-                clearRawPolylines(polylines, mMapType);
-                clearRawMarker(mapMarkers, mMapType);
+                clearRawPolylines(polylines, mMapConfig);
+                clearRawMarker(mapMarkers, mMapConfig);
 
-                mMapType = newMapType;
+                mMapConfig = newConfig;
                 mMapDelegate = newMapDelegate;
 
                 mMapDelegate.setZoomControlsEnabled(mZoomControlsEnable);
@@ -199,7 +198,7 @@ public class MapView extends View {
         mMapDelegate.clearGraphs();
     }
 
-    private void clearRawPolylines(List<Polyline> polylines, MapType mapType) {
+    private void clearRawPolylines(List<Polyline> polylines, MapConfig mapConfig) {
         if (polylines == null) {
             return;
         }
@@ -208,7 +207,7 @@ public class MapView extends View {
         }
     }
 
-    private void clearRawMarker(List<MapMarker> mapMarkers, MapType mapType) {
+    private void clearRawMarker(List<MapMarker> mapMarkers, MapConfig mapConfig) {
         if (mapMarkers == null) {
             return;
         }

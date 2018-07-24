@@ -1,7 +1,8 @@
 package com.ray.lib_map.data;
 
 
-import com.ray.lib_map.base.DataCallback;
+import com.ray.lib_map.base.Result;
+import com.ray.lib_map.base.Result2;
 import com.ray.lib_map.entity.Address;
 import com.ray.lib_map.entity.MapPoint;
 import com.ray.lib_map.entity.Poi;
@@ -10,7 +11,7 @@ import com.ray.lib_map.entity.PoiSearchSuggestion;
 import java.util.List;
 
 /**
- * @author      : leixing
+ * @author : leixing
  * Date        : 2017-07-12
  * Email       : leixing@qq.com
  * Version     : 0.0.1
@@ -19,6 +20,9 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 public interface MapDataSource {
+    int ERROR_CODE_NO_RESULT = 1;
+    int ERROR_CODE_POI_SUGGESTION = 2;
+
     /**
      * 逆地理编码
      * <p>
@@ -28,7 +32,7 @@ public interface MapDataSource {
      * 如：
      * (latitude, longitude) -> "xx省xx市xx区(县)"
      */
-    void reverseGeoCode(MapPoint mapPoint, float radius, DataCallback<Address> callback);
+    Result<Address> reverseGeoCode(MapPoint mapPoint, float radius);
 
     /**
      * 地理编码，又称为地址匹配，
@@ -39,17 +43,10 @@ public interface MapDataSource {
      * 首先，地址肯定是一串字符，内含国家、省份、城市、城镇、乡村、街道、门牌号码、屋邨、大厦等建筑物名称。
      * 按照由大区域名称到小区域名称组合在一起的字符。
      *
-     * @param address  结构化地址
-     * @param city     查询城市名称、城市编码或行政区划代码
-     * @param callback 回调
+     * @param address 结构化地址
+     * @param city    查询城市名称、城市编码或行政区划代码
      */
-    void geoCode(String address, String city, DataCallback<MapPoint> callback);
-
-    interface POISearchCallback extends DataCallback<List<Poi>> {
-        void onSuggestion(List<PoiSearchSuggestion> suggestions);
-
-        void onNoSearchResult();
-    }
+    Result<MapPoint> geoCode(String address, String city);
 
     /**
      * 搜索POI列表
@@ -58,9 +55,8 @@ public interface MapDataSource {
      * @param searchBound 搜索范围
      * @param pageIndex   页码
      * @param pageSize    页大小
-     * @param callback    回调
      */
-    void queryPoi(MapPoint mapPoint, int searchBound, int pageIndex, int pageSize, POISearchCallback callback);
+    Result2<List<Poi>, List<PoiSearchSuggestion>> queryPoi(MapPoint mapPoint, int searchBound, int pageIndex, int pageSize);
 
     /**
      * 搜索POI列表
@@ -69,14 +65,13 @@ public interface MapDataSource {
      * @param city      城市
      * @param pageIndex 页码
      * @param pageSize  页大小
-     * @param callback  回调
      */
-    void queryPoi(String keyword, String city, int pageIndex, int pageSize, POISearchCallback callback);
+    Result2<List<Poi>, List<PoiSearchSuggestion>> queryPoi(String keyword, String city, int pageIndex, int pageSize);
 
     /**
-     * 定位当前用户的位置
+     * 定位
      *
-     * @param callback 回调
+     * @return 位置
      */
-    void locate(DataCallback<Address> callback);
+    Result<Address> locate();
 }

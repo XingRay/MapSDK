@@ -25,7 +25,6 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.ray.lib_map.InfoWindowInflater;
 import com.ray.lib_map.MapDelegate;
-import com.ray.lib_map.base.FailureCallback;
 import com.ray.lib_map.entity.CameraPosition;
 import com.ray.lib_map.entity.MapMarker;
 import com.ray.lib_map.entity.MapPoint;
@@ -37,7 +36,7 @@ import com.ray.lib_map.entity.polyline.ColorTexture;
 import com.ray.lib_map.entity.polyline.Polyline;
 import com.ray.lib_map.entity.polyline.PolylineHelper;
 import com.ray.lib_map.entity.polyline.PolylineTexture;
-import com.ray.lib_map.extern.MapType;
+import com.ray.lib_map.extern.MapConfig;
 import com.ray.lib_map.extern.ZoomStandardization;
 import com.ray.lib_map.listener.CameraMoveListener;
 import com.ray.lib_map.listener.InfoWindowClickListener;
@@ -461,7 +460,7 @@ public class GoogleMapDelegate implements MapDelegate {
 
         CameraPosition position = new CameraPosition();
         position.setPosition(mapPoint);
-        position.setZoom(ZoomStandardization.toStandardZoom(cameraPosition.zoom, MapType.GOOGLE));
+        position.setZoom(ZoomStandardization.toStandardZoom(cameraPosition.zoom, MapConfig.GOOGLE));
         position.setRotate(cameraPosition.bearing);
         position.setOverlook(cameraPosition.tilt);
 
@@ -472,7 +471,7 @@ public class GoogleMapDelegate implements MapDelegate {
     public void setCameraPosition(final CameraPosition position) {
         MapPoint mapPoint = position.getPosition();
         LatLng latLng = GoogleDataConverter.fromMapPoint(mapPoint);
-        float zoom = ZoomStandardization.fromStandardZoom(position.getZoom(), MapType.GOOGLE);
+        float zoom = ZoomStandardization.fromStandardZoom(position.getZoom(), MapConfig.GOOGLE);
         float overlook = position.getOverlook();
         float rotate = position.getRotate();
 
@@ -541,12 +540,12 @@ public class GoogleMapDelegate implements MapDelegate {
 
     @Override
     public float getZoom() {
-        return ZoomStandardization.toStandardZoom(getMap().getCameraPosition().zoom, MapType.GOOGLE);
+        return ZoomStandardization.toStandardZoom(getMap().getCameraPosition().zoom, MapConfig.GOOGLE);
     }
 
     @Override
     public void setZoom(float zoom) {
-        float googleZoom = ZoomStandardization.fromStandardZoom(zoom, MapType.GOOGLE);
+        float googleZoom = ZoomStandardization.fromStandardZoom(zoom, MapConfig.GOOGLE);
         com.google.android.gms.maps.model.CameraPosition cameraPosition = new com.google.android.gms.maps.model.CameraPosition.Builder(getMap().getCameraPosition())
                 .zoom(googleZoom)
                 .build();
@@ -556,12 +555,12 @@ public class GoogleMapDelegate implements MapDelegate {
 
     @Override
     public float getMaxZoom() {
-        return ZoomStandardization.toStandardZoom(getMap().getMaxZoomLevel(), MapType.GOOGLE);
+        return ZoomStandardization.toStandardZoom(getMap().getMaxZoomLevel(), MapConfig.GOOGLE);
     }
 
     @Override
     public float getMinZoom() {
-        return ZoomStandardization.toStandardZoom(getMap().getMinZoomLevel(), MapType.GOOGLE);
+        return ZoomStandardization.toStandardZoom(getMap().getMinZoomLevel(), MapConfig.GOOGLE);
     }
 
     @Override
@@ -578,7 +577,7 @@ public class GoogleMapDelegate implements MapDelegate {
                 .title(mapMarker.getTitle());
 
         Marker marker = getMap().addMarker(options);
-        mapMarker.setRawMarker(MapType.GOOGLE, marker);
+        mapMarker.setRawMarker(MapConfig.GOOGLE, marker);
     }
 
     @Override
@@ -589,7 +588,7 @@ public class GoogleMapDelegate implements MapDelegate {
 
     @Override
     public void setMarkerVisible(MapMarker mapMarker, boolean visible) {
-        Marker rawMarker = (Marker) mapMarker.getRawMarker(MapType.GOOGLE);
+        Marker rawMarker = (Marker) mapMarker.getRawMarker(MapConfig.GOOGLE);
         rawMarker.setVisible(visible);
     }
 
@@ -627,7 +626,7 @@ public class GoogleMapDelegate implements MapDelegate {
                 applyBitmapPolylineOptions(polylineOptions, (BitmapTexture) texture);
             }
 
-            polyline.addRawPolyline(MapType.GOOGLE, getMap().addPolyline(polylineOptions));
+            polyline.addRawPolyline(MapConfig.GOOGLE, getMap().addPolyline(polylineOptions));
 
         }
 
@@ -663,7 +662,7 @@ public class GoogleMapDelegate implements MapDelegate {
     @SuppressWarnings("unchecked")
     @Override
     public void removePolyline(Polyline polyline) {
-        List<com.google.android.gms.maps.model.Polyline> rawPolylines = (List<com.google.android.gms.maps.model.Polyline>) polyline.getRawPolylines(MapType.GOOGLE);
+        List<com.google.android.gms.maps.model.Polyline> rawPolylines = (List<com.google.android.gms.maps.model.Polyline>) polyline.getRawPolylines(MapConfig.GOOGLE);
         if (rawPolylines == null) {
             return;
         }
@@ -685,9 +684,9 @@ public class GoogleMapDelegate implements MapDelegate {
     @Override
     public void showInfoWindow(MapMarker mapMarker) {
         if (mShowingInfoWindowMapMarker != null) {
-            ((Marker) mShowingInfoWindowMapMarker.getRawMarker(MapType.GOOGLE)).setZIndex(0);
+            ((Marker) mShowingInfoWindowMapMarker.getRawMarker(MapConfig.GOOGLE)).setZIndex(0);
         }
-        ((Marker) mapMarker.getRawMarker(MapType.GOOGLE)).setZIndex(Integer.MAX_VALUE);
+        ((Marker) mapMarker.getRawMarker(MapConfig.GOOGLE)).setZIndex(Integer.MAX_VALUE);
         mapMarker.setInfoWindowVisible(true);
         setInfoWindow(mapMarker);
     }
@@ -696,7 +695,7 @@ public class GoogleMapDelegate implements MapDelegate {
     public void hideInfoWindow() {
         if (mShowingInfoWindowMapMarker != null) {
             mShowingInfoWindowMapMarker.setInfoWindowVisible(false);
-            Marker rawMarker = (Marker) mShowingInfoWindowMapMarker.getRawMarker(MapType.GOOGLE);
+            Marker rawMarker = (Marker) mShowingInfoWindowMapMarker.getRawMarker(MapConfig.GOOGLE);
             if (rawMarker != null) {
                 rawMarker.hideInfoWindow();
             }
@@ -707,13 +706,13 @@ public class GoogleMapDelegate implements MapDelegate {
     private void setInfoWindow(MapMarker mapMarker) {
         hideInfoWindow();
         mShowingInfoWindowMapMarker = mapMarker;
-        Marker rawMarker = (Marker) mapMarker.getRawMarker(MapType.GOOGLE);
+        Marker rawMarker = (Marker) mapMarker.getRawMarker(MapConfig.GOOGLE);
         rawMarker.showInfoWindow();
     }
 
     private MapMarker findMapMarker(Marker marker) {
         for (MapMarker mapMarker : mMapMarkers) {
-            if (marker.equals(mapMarker.getRawMarker(MapType.GOOGLE))) {
+            if (marker.equals(mapMarker.getRawMarker(MapConfig.GOOGLE))) {
                 return mapMarker;
             }
         }
@@ -721,10 +720,10 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     private void removeRawMarker(MapMarker mapMarker) {
-        Marker rawMarker = (Marker) mapMarker.getRawMarker(MapType.GOOGLE);
+        Marker rawMarker = (Marker) mapMarker.getRawMarker(MapConfig.GOOGLE);
         if (rawMarker != null) {
             rawMarker.remove();
-            mapMarker.setRawMarker(MapType.GOOGLE, null);
+            mapMarker.setRawMarker(MapConfig.GOOGLE, null);
         }
     }
 
@@ -744,7 +743,7 @@ public class GoogleMapDelegate implements MapDelegate {
 
     @SuppressWarnings("unchecked")
     private void removeRawPolyline(Polyline polyline) {
-        List<com.google.android.gms.maps.model.Polyline> rawPolylines = (List<com.google.android.gms.maps.model.Polyline>) polyline.getRawPolylines(MapType.GOOGLE);
+        List<com.google.android.gms.maps.model.Polyline> rawPolylines = (List<com.google.android.gms.maps.model.Polyline>) polyline.getRawPolylines(MapConfig.GOOGLE);
         for (com.google.android.gms.maps.model.Polyline polyline1 : rawPolylines) {
             polyline1.remove();
         }
@@ -773,7 +772,7 @@ public class GoogleMapDelegate implements MapDelegate {
                 .center(point);
 
         com.google.android.gms.maps.model.Circle rawCircle = getMap().addCircle(options);
-        circle.setRawGraph(MapType.GOOGLE, rawCircle);
+        circle.setRawGraph(MapConfig.GOOGLE, rawCircle);
     }
 
     private void addPolygon(Polygon polygon) {
@@ -786,7 +785,7 @@ public class GoogleMapDelegate implements MapDelegate {
                 .addAll(latLngs);
 
         com.google.android.gms.maps.model.Polygon rawPolygon = getMap().addPolygon(options);
-        polygon.setRawGraph(MapType.GOOGLE, rawPolygon);
+        polygon.setRawGraph(MapConfig.GOOGLE, rawPolygon);
     }
 
     @Override
@@ -815,12 +814,12 @@ public class GoogleMapDelegate implements MapDelegate {
     }
 
     private void removeCircle(Circle circle) {
-        com.google.android.gms.maps.model.Circle rawCircle = (com.google.android.gms.maps.model.Circle) circle.getRawGraph(MapType.GOOGLE);
+        com.google.android.gms.maps.model.Circle rawCircle = (com.google.android.gms.maps.model.Circle) circle.getRawGraph(MapConfig.GOOGLE);
         rawCircle.remove();
     }
 
     private void removePolygon(Polygon polygon) {
-        com.google.android.gms.maps.model.Polygon rawPolygon = (com.google.android.gms.maps.model.Polygon) polygon.getRawGraph(MapType.GOOGLE);
+        com.google.android.gms.maps.model.Polygon rawPolygon = (com.google.android.gms.maps.model.Polygon) polygon.getRawGraph(MapConfig.GOOGLE);
         rawPolygon.remove();
     }
 
